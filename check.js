@@ -15,6 +15,15 @@ const fs = require("fs");
   
   await page.waitForTimeout(5000);
 
+  const fs = require("fs");
+  
+  fs.writeFileSync("page.html", await page.content());
+  
+  await page.screenshot({
+    path: "page.png",
+    fullPage: true
+  });
+  
   fs.writeFileSync("page.html", await page.content());
 
   await page.screenshot({ path: "page.png", fullPage: true });
