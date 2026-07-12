@@ -35,9 +35,27 @@ const fs = require("fs");
 
     console.log("saved");
   } catch (e) {
-    console.log("save error:");
-    console.log(e.message);
-  }
+  console.log("goto error:");
+  console.log(e.message);
+}
 
-  await browser.close();
+try {
+  fs.writeFileSync("page.html", await page.content());
+
+  await page.screenshot({
+    path: "page.png",
+    fullPage: true
+  });
+
+  console.log("saved page.html and page.png");
+
+} catch (e) {
+  console.log("save error:");
+  console.log(e);
+}
+
+await browser.close();
+
+// ★重要
+process.exit(0);
 })();
