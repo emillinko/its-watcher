@@ -18,7 +18,9 @@ const { chromium } = require('playwright');
 
   console.log("Title:", await page.title());
 
-  console.log(await page.content().substring(0, 1000));
+//  console.log(await page.content().substring(0, 1000));
+  const html = await page.content();
+  console.log(html.substring(0, 1000));
 
   await browser.close();
 
