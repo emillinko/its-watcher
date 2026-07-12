@@ -1,19 +1,23 @@
-const https = require("https");
+const { chromium } = require("playwright");
+const fs = require("fs");
 
-const url =
-  "REMOVED_ITS_KENPO_URL";
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
 
-https.get(url, (res) => {
-  console.log("Status:", res.statusCode);
-  console.log("Content-Type:", res.headers["content-type"]);
-  console.log("Location:", res.headers["location"]);
+  await page.goto(
+    "REMOVED_ITS_KENPO_URL",
+    {
+      waitUntil: "networkidle",
+      timeout: 60000
+    }
+  );
 
-  let body = "";
+  fs.writeFileSync("page.html", await page.content());
 
-  res.on("data", chunk => body += chunk);
+  await page.screenshot({ path: "page.png", fullPage: true });
 
-  res.on("end", () => {
-    console.log("Length:", body.length);
-    console.log(body);
-  });
-});
+  console.log("saved");
+
+  await browser.close();
+})();
