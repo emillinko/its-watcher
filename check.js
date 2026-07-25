@@ -1,31 +1,6 @@
 const fs = require("fs");
 
-const url =
-  "REMOVED_ITS_KENPO_URL";
+// HTML全部保存
+fs.writeFileSync("page.html", text);
 
-(async () => {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0",
-      "X-Requested-With": "XMLHttpRequest",
-      "Referer": "REMOVED_ITS_KENPO_URL",
-    },
-  });
-
-  console.log("status =", res.status);
-
-  const text = await res.text();
-
-  fs.writeFileSync("page.html", text);
-
-  console.log("===== HTML先頭 =====");
-  console.log(text.substring(0, 3000));
-  console.log("===== ここまで =====");
-
-  console.log("○ =", text.includes("○"));
-  console.log("△ =", text.includes("△"));
-  console.log("× =", text.includes("×"));
-
-  console.log("富士屋 =", text.includes("フルーツパーク富士屋ホテル"));
-  console.log("ラビスタ =", text.includes("ラビスタ富士河口湖"));
-})();
+console.log("HTML length =", text.length);
