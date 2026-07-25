@@ -1,61 +1,19 @@
-const { chromium } = require("playwright");
-const fs = require("fs");
+const url =
+  "REMOVED_ITS_KENPO_URL";
 
 (async () => {
-  const browser = await chromium.launch({
-    headless: true
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/138.0 Safari/537.36",
+      "X-Requested-With": "XMLHttpRequest",
+      "Referer": "REMOVED_ITS_KENPO_URL"
+    }
   });
 
-  const page = await browser.newPage();
+  console.log("status =", res.status);
 
-  try {
-    await page.goto(
-      "REMOVED_ITS_KENPO_URL",
-      {
-        waitUntil: "domcontentloaded",
-        timeout: 30000
-      }
-    );
+  const text = await res.text();
 
-    await page.waitForTimeout(5000);
-
-  } catch (e) {
-    console.log("goto error:");
-    console.log(e.message);
-  }
-
-  // ここは必ず実行される
-  try {
-    fs.writeFileSync("page.html", await page.content());
-
-    await page.screenshot({
-      path: "page.png",
-      fullPage: true
-    });
-
-    console.log("saved");
-  } catch (e) {
-  console.log("goto error:");
-  console.log(e.message);
-}
-
-try {
-  fs.writeFileSync("page.html", await page.content());
-
-  await page.screenshot({
-    path: "page.png",
-    fullPage: true
-  });
-
-  console.log("saved page.html and page.png");
-
-} catch (e) {
-  console.log("save error:");
-  console.log(e);
-}
-
-await browser.close();
-
-// ★重要
-process.exit(0);
+  console.log(text.substring(0, 1000));
 })();
