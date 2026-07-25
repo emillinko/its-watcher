@@ -24,3 +24,5 @@ const url =
   console.log("富士屋 =", text.includes("フルーツパーク富士屋ホテル"));
   console.log("ラビスタ =", text.includes("ラビスタ富士河口湖"));
 })();
+
+console.log(text.substring(0, 3000));
