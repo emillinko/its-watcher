@@ -1,19 +1,15 @@
-const url =
-  "REMOVED_ITS_KENPO_URL";
+const text = await res.text();
 
-(async () => {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/138.0 Safari/537.36",
-      "X-Requested-With": "XMLHttpRequest",
-      "Referer": "REMOVED_ITS_KENPO_URL"
-    }
-  });
+console.log("status =", res.status);
 
-  console.log("status =", res.status);
+// HTML全部保存
+require("fs").writeFileSync("page.html", text);
 
-  const text = await res.text();
+// ○△×を探す
+console.log("○ =", text.includes("○"));
+console.log("△ =", text.includes("△"));
+console.log("× =", text.includes("×"));
 
-  console.log(text.substring(0, 1000));
-})();
+// ホテル名
+console.log("富士屋 =", text.includes("フルーツパーク富士屋ホテル"));
+console.log("ラビスタ =", text.includes("ラビスタ富士河口湖"));
