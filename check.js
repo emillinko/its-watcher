@@ -63,7 +63,9 @@ const fs = require("fs");
     await browser.close();
   }
 
-  const index = html.indexOf("フルーツパーク富士屋ホテル");
-  console.log(html.substring(index - 500, index + 5000));
-
 })();
+
+const index = html.indexOf("フルーツパーク富士屋ホテル");
+console.log(html.substring(index - 500, index + 5000));
+
+
