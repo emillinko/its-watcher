@@ -56,7 +56,10 @@ const fs = require("fs");
     if (matches) {
       console.log(matches.slice(0, 100).join(""));
     }
-    
+
+    const index = html.indexOf("フルーツパーク富士屋ホテル");
+    console.log(html.substring(index - 500, index + 5000));
+
     console.log("saved");
 
   } finally {
@@ -64,8 +67,4 @@ const fs = require("fs");
   }
 
 })();
-
-const index = html.indexOf("フルーツパーク富士屋ホテル");
-console.log(html.substring(index - 500, index + 5000));
-
 
