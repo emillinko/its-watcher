@@ -1,7 +1,9 @@
 const { chromium } = require("playwright");
 const fs = require("fs");
 
+
 (async () => {
+
 
   const browser = await chromium.launch({
     headless: true
@@ -16,7 +18,9 @@ const fs = require("fs");
   });
 
 
+
   try {
+
 
     await page.goto(
       "REMOVED_ITS_KENPO_URL",
@@ -27,34 +31,93 @@ const fs = require("fs");
     );
 
 
+
     // フルーツパーク富士屋ホテルをクリック
+
     await page.click(
       'text=フルーツパーク富士屋ホテル'
     );
 
 
+    // カレンダー表示待ち
+
     await page.waitForTimeout(5000);
+
 
 
     let emptyList = [];
 
 
+
     // 7月・8月・9月
-    for (let i = 0; i < 3; i++) {
+
+    for (
+      let month = 0;
+      month < 3;
+      month++
+    ) {
+
 
 
       console.log("================");
       console.log(
         "月チェック:",
-        i + 1
+        month + 1
       );
 
 
-      // 表示中のカレンダーだけ取得
+
+      /*
+        表示中のカレンダーだけ取得
+
+        tcas → 除外
+        tcb  → カレンダー
+      */
+
+
+      const calendarLocator =
+        page.locator(
+          '[id^="tcb"]:visible'
+        );
+
+
+
+      const count =
+        await calendarLocator.count();
+
+
+
+      console.log(
+        "表示カレンダー数:",
+        count
+      );
+
+
+
+      if (count === 0) {
+
+
+        console.log(
+          "カレンダーなし"
+        );
+
+
+        break;
+
+      }
+
+
+
       const calendarHtml =
-        await page.locator(
-          ".tabConBody:visible"
-        ).innerHTML();
+        await calendarLocator
+          .first()
+          .innerHTML();
+
+
+
+      /*
+        日付と状態取得
+      */
 
 
       const cells =
@@ -63,10 +126,12 @@ const fs = require("fs");
         );
 
 
+
       if (cells) {
 
 
         cells.forEach(cell => {
+
 
 
           const date =
@@ -75,10 +140,12 @@ const fs = require("fs");
             );
 
 
+
           const status =
             cell.match(
               /<span class="icon">(.*?)<\/span>/
             );
+
 
 
           if (
@@ -87,10 +154,12 @@ const fs = require("fs");
           ) {
 
 
+
             console.log(
               date[1],
               status[1]
             );
+
 
 
             if (
@@ -98,50 +167,69 @@ const fs = require("fs");
               status[1] === "△"
             ) {
 
+
               emptyList.push({
+
                 date: date[1],
                 status: status[1]
+
               });
 
+
             }
+
 
           }
 
 
         });
 
+
       }
 
 
-      // 次月へ
-      if (i < 2) {
+
+      /*
+        翌月へ移動
+      */
+
+
+      if (month < 2) {
+
 
 
         const nextButton =
           page.locator(
-            "input.next-month:visible"
-          );
+            'input.next-month:visible'
+          )
+          .first();
+
 
 
         await nextButton.click();
 
 
-        // Ajax更新待ち
+
         await page.waitForTimeout(
-          3000
+          4000
         );
 
-
       }
+
 
 
     }
 
 
+
     console.log("================");
 
 
-    if (emptyList.length > 0) {
+
+    if (
+      emptyList.length > 0
+    ) {
+
 
 
       console.log(
@@ -149,17 +237,22 @@ const fs = require("fs");
       );
 
 
+
       emptyList.forEach(item => {
+
 
         console.log(
           item.date,
           item.status
         );
 
+
       });
 
 
+
     } else {
+
 
 
       console.log(
@@ -170,21 +263,31 @@ const fs = require("fs");
     }
 
 
+
+
+    // 保存
+
     fs.writeFileSync(
       "page.html",
       await page.content()
     );
 
 
+
     await page.screenshot({
+
       path: "page.png",
+
       fullPage: true
+
     });
+
 
 
     console.log(
       "saved"
     );
+
 
 
   } finally {
@@ -194,6 +297,7 @@ const fs = require("fs");
 
 
   }
+
 
 
 })();
