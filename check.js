@@ -72,146 +72,149 @@ const fs = require("fs");
       カレンダー取得
     */
 
-    const calendarId = "tcb765_1";
+// フルーツパーク富士屋ホテル
+// 7月・8月・9月チェック
+
+const calendarIds = [
+  "tcb765_1",
+  "tcb765_2",
+  "tcb765_3"
+];
 
 
-    const index =
-      html.indexOf(calendarId);
+let emptyList = [];
 
 
-    if (index === -1) {
-
-      console.log(
-        "カレンダーが見つかりません"
-      );
-
-      return;
-
-    }
-    
-    const endIndex =
-      html.indexOf(
-        '<div class="tabConBody"',
-        index + 100
-      );
-    
-    
-    const calendarHtml =
-      html.substring(
-        index,
-        endIndex !== -1 ? endIndex : index + 10000
-      );
-
-    
-
-    /*
-      日付と空き状況取得
-    */
-
-    const cells =
-      calendarHtml.match(
-        /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
-      );
+for (const calendarId of calendarIds) {
 
 
-    let emptyList = [];
+  const index =
+    html.indexOf(calendarId);
 
 
-    if (cells) {
+  if (index === -1) {
 
-      cells.forEach(cell => {
+    console.log(
+      calendarId,
+      "見つからず"
+    );
+
+    continue;
+
+  }
 
 
-        const dateMatch =
-          cell.match(
-            /data-join-time="([^"]+)"/
-          );
+  const nextIndex =
+    html.indexOf(
+      '<div class="tabConBody"',
+      index + 100
+    );
 
 
-        const statusMatch =
-          cell.match(
-            /<span class="icon">(.*?)<\/span>/
-          );
+  const calendarHtml =
+    html.substring(
+      index,
+      nextIndex !== -1
+        ? nextIndex
+        : index + 15000
+    );
+
+
+  console.log(
+    "チェック:",
+    calendarId
+  );
+
+
+  const cells =
+    calendarHtml.match(
+      /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
+    );
+
+
+  if (cells) {
+
+
+    cells.forEach(cell => {
+
+
+      const date =
+        cell.match(
+          /data-join-time="([^"]+)"/
+        );
+
+
+      const status =
+        cell.match(
+          /<span class="icon">(.*?)<\/span>/
+        );
+
+
+      if (
+        date &&
+        status
+      ) {
+
+
+        console.log(
+          date[1],
+          status[1]
+        );
 
 
         if (
-          dateMatch &&
-          statusMatch
+          status[1] === "○" ||
+          status[1] === "△"
         ) {
 
-          const date =
-            dateMatch[1];
-
-
-          const status =
-            statusMatch[1];
-
-
-          console.log(
-            date,
-            status
-          );
-
-
-          if (
-            status === "○" ||
-            status === "△"
-          ) {
-
-            emptyList.push({
-              date: date,
-              status: status
-            });
-
-          }
+          emptyList.push({
+            date: date[1],
+            status: status[1]
+          });
 
         }
 
-
-      });
-
-    }
+      }
 
 
-    console.log("----------------");
-
-    if (emptyList.length > 0) {
-
-
-      console.log(
-        "★★ 空き発見 ★★"
-      );
-
-
-      emptyList.forEach(item => {
-
-        console.log(
-          item.date,
-          item.status
-        );
-
-      });
-
-
-    } else {
-
-
-      console.log(
-        "空きなし"
-      );
-
-
-    }
-
-
-    console.log("saved");
-
-
-  } finally {
-
-    await browser.close();
+    });
 
   }
+
+}
+
+
+console.log("----------------");
+
+
+if (emptyList.length > 0) {
+
+
+  console.log(
+    "★★ 空き発見 ★★"
+  );
+
+
+  emptyList.forEach(item => {
+
+    console.log(
+      item.date,
+      item.status
+    );
+
+  });
+
+
+} else {
+
+
+  console.log(
+    "7月〜9月 空きなし"
+  );
+
+
+}
+    
 
 
 })();
