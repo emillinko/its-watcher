@@ -84,79 +84,60 @@ const fs = require("fs");
       fullPage: true
     });
 
-
-    /*
-      フルーツパーク富士屋ホテル
-      部分だけ取得
-    */
-
-    const hotelName =
-      "フルーツパーク富士屋ホテル";
-
-
-    const index =
-      html.indexOf(hotelName);
-
-
-    if (index !== -1) {
-
-      const hotelHtml =
-        html.substring(
-          index,
-          index + 15000
+    // フルーツパーク富士屋ホテルのカレンダー取得
+  
+  const calendarId = "tcb765_1";
+  
+  const index = html.indexOf(calendarId);
+  
+  
+  if (index !== -1) {
+  
+    const calendarHtml =
+      html.substring(
+        index,
+        index + 20000
+      );
+  
+  
+    const marks =
+      calendarHtml.match(/[○△☓]/g);
+  
+  
+    console.log(
+      "フルーツパーク空き状況:",
+      marks ? marks.join("") : "なし"
+    );
+  
+  
+    if (marks) {
+  
+      if (
+        marks.includes("○") ||
+        marks.includes("△")
+      ) {
+  
+        console.log(
+          "★★ 空きあり ★★"
         );
-
-
-      const marks =
-        hotelHtml.match(/[○△×]/g);
-
-
-      console.log(
-        "フルーツパーク空き状況:",
-        marks ? marks.join("") : "なし"
-      );
-
-
-      if (marks) {
-
-        const hasEmpty =
-          marks.includes("○") ||
-          marks.includes("△");
-
-
-        if (hasEmpty) {
-
-          console.log(
-            "★★ 空きあり ★★"
-          );
-
-        } else {
-
-          console.log(
-            "空きなし"
-          );
-
-        }
-
+  
+      } else {
+  
+        console.log(
+          "空きなし"
+        );
+  
       }
-
-
-    } else {
-
-      console.log(
-        "ホテル部分が見つかりません"
-      );
-
+  
     }
-
-
-    console.log("saved");
-
-
-  } finally {
-
-    await browser.close();
-
+  
+  
+  } else {
+  
+    console.log(
+      "カレンダーIDが見つかりません"
+    );
+  
   }
 
 })();
