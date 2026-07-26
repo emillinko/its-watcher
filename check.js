@@ -49,7 +49,14 @@ const fs = require("fs");
       html.includes("△"),
       html.includes("×")
     );
-
+    
+    const matches = html.match(/[○△×]/g);
+    console.log("記号数 =", matches ? matches.length : 0);
+    
+    if (matches) {
+      console.log(matches.slice(0, 100).join(""));
+    }
+    
     console.log("saved");
 
   } finally {
