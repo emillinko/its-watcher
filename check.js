@@ -7,6 +7,7 @@ const fs = require("fs");
     headless: true
   });
 
+
   const page = await browser.newPage({
     viewport: {
       width: 1400,
@@ -53,168 +54,187 @@ const fs = require("fs");
     );
 
 
-    // HTML保存
+    // 保存
     fs.writeFileSync(
       "page.html",
       html
     );
 
 
-    // スクショ保存
     await page.screenshot({
       path: "page.png",
       fullPage: true
     });
 
 
+
     /*
       フルーツパーク富士屋ホテル
-      カレンダー取得
+      7月〜9月チェック
     */
 
-// フルーツパーク富士屋ホテル
-// 7月・8月・9月チェック
 
-const calendarIds = [
-  "tcb765_1",
-  "tcb765_2",
-  "tcb765_3"
-];
+    // カレンダーIDを自動取得
+    const calendarIds = [
+      ...html.matchAll(/id="(tcb\d+_\d+)"/g)
+    ]
+    .map(m => m[1]);
 
-
-let emptyList = [];
-
-
-for (const calendarId of calendarIds) {
-
-
-  const index =
-    html.indexOf(calendarId);
-
-
-  if (index === -1) {
 
     console.log(
-      calendarId,
-      "見つからず"
-    );
-
-    continue;
-
-  }
-
-
-  const nextIndex =
-    html.indexOf(
-      '<div class="tabConBody"',
-      index + 100
+      "取得したカレンダーID:",
+      calendarIds
     );
 
 
-  const calendarHtml =
-    html.substring(
-      index,
-      nextIndex !== -1
-        ? nextIndex
-        : index + 15000
-    );
+    let emptyList = [];
 
 
-  console.log(
-    "チェック:",
-    calendarId
-  );
+    for (const calendarId of calendarIds) {
 
 
-  const cells =
-    calendarHtml.match(
-      /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
-    );
+      const index =
+        html.indexOf(calendarId);
 
 
-  if (cells) {
+      if (index === -1) {
+        continue;
+      }
 
 
-    cells.forEach(cell => {
-
-
-      const date =
-        cell.match(
-          /data-join-time="([^"]+)"/
+      const nextIndex =
+        html.indexOf(
+          '<div class="tabConBody"',
+          index + 500
         );
 
 
-      const status =
-        cell.match(
-          /<span class="icon">(.*?)<\/span>/
+      const calendarHtml =
+        html.substring(
+          index,
+          nextIndex !== -1
+            ? nextIndex
+            : index + 15000
         );
 
 
-      if (
-        date &&
-        status
-      ) {
+      console.log(
+        "チェック:",
+        calendarId
+      );
+
+
+      const cells =
+        calendarHtml.match(
+          /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
+        );
+
+
+      if (!cells) {
+        continue;
+      }
+
+
+      cells.forEach(cell => {
+
+
+        const dateMatch =
+          cell.match(
+            /data-join-time="([^"]+)"/
+          );
+
+
+        const statusMatch =
+          cell.match(
+            /<span class="icon">(.*?)<\/span>/
+          );
+
+
+        if (
+          !dateMatch ||
+          !statusMatch
+        ) {
+          return;
+        }
+
+
+        const date =
+          dateMatch[1];
+
+
+        const status =
+          statusMatch[1];
 
 
         console.log(
-          date[1],
-          status[1]
+          date,
+          status
         );
 
 
         if (
-          status[1] === "○" ||
-          status[1] === "△"
+          status === "○" ||
+          status === "△"
         ) {
 
           emptyList.push({
-            date: date[1],
-            status: status[1]
+            date,
+            status
           });
 
         }
 
-      }
+
+      });
 
 
-    });
-
-  }
-
-}
+    }
 
 
-console.log("----------------");
+    console.log("----------------");
 
 
-if (emptyList.length > 0) {
+    if (emptyList.length > 0) {
 
 
-  console.log(
-    "★★ 空き発見 ★★"
-  );
+      console.log(
+        "★★ 空き発見 ★★"
+      );
 
 
-  emptyList.forEach(item => {
+      emptyList.forEach(item => {
+
+        console.log(
+          item.date,
+          item.status
+        );
+
+      });
+
+
+    } else {
+
+
+      console.log(
+        "7月〜9月 空きなし"
+      );
+
+
+    }
+
 
     console.log(
-      item.date,
-      item.status
+      "saved"
     );
 
-  });
+
+  } finally {
 
 
-} else {
+    await browser.close();
 
 
-  console.log(
-    "7月〜9月 空きなし"
-  );
-
-
-}
-    
+  }
 
 
 })();
