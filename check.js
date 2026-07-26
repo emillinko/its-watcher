@@ -19,38 +19,49 @@ const fs = require("fs");
 
 
 
+  const url =
+    "REMOVED_ITS_KENPO_URL";
+
+
+
+  const hotels = [
+    "フルーツパーク富士屋ホテル",
+    "ラビスタ富士河口湖"
+  ];
+
+
+
+  let allEmpty = [];
+
+
+
   try {
-
-
-    await page.goto(
-      "REMOVED_ITS_KENPO_URL",
-      {
-        waitUntil: "domcontentloaded",
-        timeout: 60000
-      }
-    );
-
-
-
-    const hotels = [
-      "フルーツパーク富士屋ホテル",
-      "ラビスタ富士河口湖"
-    ];
-
-
-
-    let allEmpty = [];
 
 
 
     for (const hotel of hotels) {
 
 
-
       console.log("================");
       console.log(
         "ホテル:",
         hotel
+      );
+
+
+      // 毎回トップから開始
+
+      await page.goto(
+        url,
+        {
+          waitUntil:"domcontentloaded",
+          timeout:60000
+        }
+      );
+
+
+      await page.waitForTimeout(
+        3000
       );
 
 
@@ -68,8 +79,6 @@ const fs = require("fs");
       );
 
 
-
-      // 月移動して7〜9月チェック
 
       for (
         let month = 0;
@@ -90,23 +99,6 @@ const fs = require("fs");
           page.locator(
             '[id^="tcb"]:visible'
           );
-
-
-
-        const count =
-          await calendar.count();
-
-
-
-        if (count === 0) {
-
-          console.log(
-            "カレンダーなし"
-          );
-
-          break;
-
-        }
 
 
 
@@ -143,11 +135,7 @@ const fs = require("fs");
 
 
 
-            if (
-              date &&
-              status
-            ) {
-
+            if(date && status){
 
 
               console.log(
@@ -157,20 +145,18 @@ const fs = require("fs");
 
 
 
-              if (
-                status[1] === "○" ||
-                status[1] === "△"
-              ) {
-
+              if(
+                status[1]=="○" ||
+                status[1]=="△"
+              ){
 
                 allEmpty.push({
 
-                  hotel: hotel,
-                  date: date[1],
-                  status: status[1]
+                  hotel,
+                  date:date[1],
+                  status:status[1]
 
                 });
-
 
               }
 
@@ -185,17 +171,14 @@ const fs = require("fs");
 
 
 
-        // 翌月へ
-
-        if (month < 2) {
+        if(month < 2){
 
 
-          await page
-            .locator(
-              'input.next-month:visible'
-            )
-            .first()
-            .click();
+          await page.locator(
+            'input.next-month:visible'
+          )
+          .first()
+          .click();
 
 
 
@@ -212,16 +195,6 @@ const fs = require("fs");
 
 
 
-      // 次のホテルへ戻る
-
-      await page.goBack();
-
-
-      await page.waitForTimeout(
-        3000
-      );
-
-
     }
 
 
@@ -229,9 +202,7 @@ const fs = require("fs");
     console.log("================");
 
 
-    if (
-      allEmpty.length > 0
-    ) {
+    if(allEmpty.length){
 
 
       console.log(
@@ -239,21 +210,18 @@ const fs = require("fs");
       );
 
 
-      allEmpty.forEach(item => {
-
+      allEmpty.forEach(x=>{
 
         console.log(
-          item.hotel,
-          item.date,
-          item.status
+          x.hotel,
+          x.date,
+          x.status
         );
-
 
       });
 
 
-
-    } else {
+    }else{
 
 
       console.log(
@@ -285,7 +253,6 @@ const fs = require("fs");
 
 
   }
-
 
 
 })();
