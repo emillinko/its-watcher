@@ -131,13 +131,22 @@ const fs = require("fs");
   
     }
   
-  
-  } else {
-  
+    } else {
+
     console.log(
       "カレンダーIDが見つかりません"
     );
-  
+
+  }
+
+
+  console.log("saved");
+
+
+  } finally {
+
+    await browser.close();
+
   }
 
 })();
