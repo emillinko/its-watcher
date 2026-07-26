@@ -27,7 +27,7 @@ const fs = require("fs");
     );
 
 
-    // フルーツパーククリック
+    // フルーツパーク富士屋ホテルをクリック
     await page.click(
       'text=フルーツパーク富士屋ホテル'
     );
@@ -39,34 +39,34 @@ const fs = require("fs");
     let emptyList = [];
 
 
-    // 7月・8月・9月取得
-    for (let month = 0; month < 3; month++) {
+    // 7月・8月・9月
+    for (let i = 0; i < 3; i++) {
 
 
-      console.log(
-        "=========="
-      );
-
+      console.log("================");
       console.log(
         "月チェック:",
-        month + 1
+        i + 1
       );
 
 
-      const html =
-        await page.content();
+      // 表示中のカレンダーだけ取得
+      const calendarHtml =
+        await page.locator(
+          ".tabConBody:visible"
+        ).innerHTML();
 
 
-      const calendar =
-        html.match(
+      const cells =
+        calendarHtml.match(
           /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
         );
 
 
-      if (calendar) {
+      if (cells) {
 
 
-        calendar.forEach(cell => {
+        cells.forEach(cell => {
 
 
           const date =
@@ -110,21 +110,27 @@ const fs = require("fs");
 
         });
 
-
       }
 
 
       // 次月へ
-      if (month < 2) {
-
-        await page.click(
-          "#nextMonth"
-        );
+      if (i < 2) {
 
 
+        const nextButton =
+          page.locator(
+            "input.next-month:visible"
+          );
+
+
+        await nextButton.click();
+
+
+        // Ajax更新待ち
         await page.waitForTimeout(
           3000
         );
+
 
       }
 
@@ -132,9 +138,7 @@ const fs = require("fs");
     }
 
 
-    console.log(
-      "================"
-    );
+    console.log("================");
 
 
     if (emptyList.length > 0) {
@@ -170,6 +174,12 @@ const fs = require("fs");
       "page.html",
       await page.content()
     );
+
+
+    await page.screenshot({
+      path: "page.png",
+      fullPage: true
+    });
 
 
     console.log(
