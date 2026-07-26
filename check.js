@@ -88,14 +88,21 @@ const fs = require("fs");
       return;
 
     }
-
-
+    
+    const endIndex =
+      html.indexOf(
+        '<div class="tabConBody"',
+        index + 100
+      );
+    
+    
     const calendarHtml =
       html.substring(
         index,
-        index + 20000
+        endIndex !== -1 ? endIndex : index + 10000
       );
 
+    
 
     /*
       日付と空き状況取得
