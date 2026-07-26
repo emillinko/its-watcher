@@ -27,171 +27,114 @@ const fs = require("fs");
     );
 
 
-    // フルーツパーク富士屋ホテルをクリック
+    // フルーツパーククリック
     await page.click(
       'text=フルーツパーク富士屋ホテル'
     );
 
 
-    // カレンダー読み込み待ち
-    await page.waitForTimeout(8000);
-
-
-    // HTML取得
-    const html = await page.content();
-
-
-    console.log(
-      "HTML length =",
-      html.length
-    );
-
-
-    console.log(
-      "ホテル名確認",
-      html.includes("フルーツパーク富士屋ホテル"),
-      html.includes("ラビスタ富士河口湖")
-    );
-
-
-    // 保存
-    fs.writeFileSync(
-      "page.html",
-      html
-    );
-
-
-    await page.screenshot({
-      path: "page.png",
-      fullPage: true
-    });
-
-
-
-    /*
-      フルーツパーク富士屋ホテル
-      7月〜9月チェック
-    */
-
-
-    // カレンダーIDを自動取得
-    const calendarIds = [
-      ...html.matchAll(/id="(tcb\d+_\d+)"/g)
-    ]
-    .map(m => m[1]);
-
-
-    console.log(
-      "取得したカレンダーID:",
-      calendarIds
-    );
+    await page.waitForTimeout(5000);
 
 
     let emptyList = [];
 
 
-    for (const calendarId of calendarIds) {
-
-
-      const index =
-        html.indexOf(calendarId);
-
-
-      if (index === -1) {
-        continue;
-      }
-
-
-      const nextIndex =
-        html.indexOf(
-          '<div class="tabConBody"',
-          index + 500
-        );
-
-
-      const calendarHtml =
-        html.substring(
-          index,
-          nextIndex !== -1
-            ? nextIndex
-            : index + 15000
-        );
+    // 7月・8月・9月取得
+    for (let month = 0; month < 3; month++) {
 
 
       console.log(
-        "チェック:",
-        calendarId
+        "=========="
+      );
+
+      console.log(
+        "月チェック:",
+        month + 1
       );
 
 
-      const cells =
-        calendarHtml.match(
+      const html =
+        await page.content();
+
+
+      const calendar =
+        html.match(
           /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
         );
 
 
-      if (!cells) {
-        continue;
+      if (calendar) {
+
+
+        calendar.forEach(cell => {
+
+
+          const date =
+            cell.match(
+              /data-join-time="([^"]+)"/
+            );
+
+
+          const status =
+            cell.match(
+              /<span class="icon">(.*?)<\/span>/
+            );
+
+
+          if (
+            date &&
+            status
+          ) {
+
+
+            console.log(
+              date[1],
+              status[1]
+            );
+
+
+            if (
+              status[1] === "○" ||
+              status[1] === "△"
+            ) {
+
+              emptyList.push({
+                date: date[1],
+                status: status[1]
+              });
+
+            }
+
+          }
+
+
+        });
+
+
       }
 
 
-      cells.forEach(cell => {
+      // 次月へ
+      if (month < 2) {
 
-
-        const dateMatch =
-          cell.match(
-            /data-join-time="([^"]+)"/
-          );
-
-
-        const statusMatch =
-          cell.match(
-            /<span class="icon">(.*?)<\/span>/
-          );
-
-
-        if (
-          !dateMatch ||
-          !statusMatch
-        ) {
-          return;
-        }
-
-
-        const date =
-          dateMatch[1];
-
-
-        const status =
-          statusMatch[1];
-
-
-        console.log(
-          date,
-          status
+        await page.click(
+          "#nextMonth"
         );
 
 
-        if (
-          status === "○" ||
-          status === "△"
-        ) {
+        await page.waitForTimeout(
+          3000
+        );
 
-          emptyList.push({
-            date,
-            status
-          });
-
-        }
-
-
-      });
+      }
 
 
     }
 
 
-    console.log("----------------");
+    console.log(
+      "================"
+    );
 
 
     if (emptyList.length > 0) {
@@ -221,6 +164,12 @@ const fs = require("fs");
 
 
     }
+
+
+    fs.writeFileSync(
+      "page.html",
+      await page.content()
+    );
 
 
     console.log(
