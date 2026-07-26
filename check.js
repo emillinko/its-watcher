@@ -14,6 +14,7 @@ const fs = require("fs");
     }
   });
 
+
   try {
 
     await page.goto(
@@ -25,7 +26,7 @@ const fs = require("fs");
     );
 
 
-    // ホテルクリック
+    // フルーツパーク富士屋ホテルをクリック
     await page.click(
       'text=フルーツパーク富士屋ホテル'
     );
@@ -51,25 +52,6 @@ const fs = require("fs");
       html.includes("ラビスタ富士河口湖")
     );
 
-    // ○△×が存在する場所を探す
-    const markIndex = html.search(/[○△×]/);
-    
-    console.log(
-      "記号位置:",
-      markIndex
-    );
-    
-    if (markIndex !== -1) {
-    
-      console.log(
-        html.substring(
-          markIndex - 500,
-          markIndex + 1000
-        )
-      );
-    
-    }
-
 
     // HTML保存
     fs.writeFileSync(
@@ -78,69 +60,144 @@ const fs = require("fs");
     );
 
 
-    // スクショ
+    // スクショ保存
     await page.screenshot({
       path: "page.png",
       fullPage: true
     });
 
-    // フルーツパーク富士屋ホテルのカレンダー取得
-  
-  const calendarId = "tcb765_1";
-  
-  const index = html.indexOf(calendarId);
-  
-  
-  if (index !== -1) {
-  
+
+    /*
+      フルーツパーク富士屋ホテル
+      カレンダー取得
+    */
+
+    const calendarId = "tcb765_1";
+
+
+    const index =
+      html.indexOf(calendarId);
+
+
+    if (index === -1) {
+
+      console.log(
+        "カレンダーが見つかりません"
+      );
+
+      return;
+
+    }
+
+
     const calendarHtml =
       html.substring(
         index,
         index + 20000
       );
-  
-  
-    const marks =
-      calendarHtml.match(/[○△☓]/g);
-  
-  
-    console.log(
-      "フルーツパーク空き状況:",
-      marks ? marks.join("") : "なし"
-    );
-  
-  
-    if (marks) {
-  
-      if (
-        marks.includes("○") ||
-        marks.includes("△")
-      ) {
-  
-        console.log(
-          "★★ 空きあり ★★"
-        );
-  
-      } else {
-  
-        console.log(
-          "空きなし"
-        );
-  
-      }
-  
+
+
+    /*
+      日付と空き状況取得
+    */
+
+    const cells =
+      calendarHtml.match(
+        /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
+      );
+
+
+    let emptyList = [];
+
+
+    if (cells) {
+
+      cells.forEach(cell => {
+
+
+        const dateMatch =
+          cell.match(
+            /data-join-time="([^"]+)"/
+          );
+
+
+        const statusMatch =
+          cell.match(
+            /<span class="icon">(.*?)<\/span>/
+          );
+
+
+        if (
+          dateMatch &&
+          statusMatch
+        ) {
+
+          const date =
+            dateMatch[1];
+
+
+          const status =
+            statusMatch[1];
+
+
+          console.log(
+            date,
+            status
+          );
+
+
+          if (
+            status === "○" ||
+            status === "△"
+          ) {
+
+            emptyList.push({
+              date: date,
+              status: status
+            });
+
+          }
+
+        }
+
+
+      });
+
     }
-  
+
+
+    console.log("----------------");
+
+    if (emptyList.length > 0) {
+
+
+      console.log(
+        "★★ 空き発見 ★★"
+      );
+
+
+      emptyList.forEach(item => {
+
+        console.log(
+          item.date,
+          item.status
+        );
+
+      });
+
+
     } else {
 
-    console.log(
-      "カレンダーIDが見つかりません"
-    );
 
-  }
+      console.log(
+        "空きなし"
+      );
 
 
-  console.log("saved");
+    }
+
+
+    console.log("saved");
 
 
   } finally {
@@ -148,5 +205,6 @@ const fs = require("fs");
     await browser.close();
 
   }
+
 
 })();
