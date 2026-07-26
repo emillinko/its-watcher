@@ -51,6 +51,25 @@ const fs = require("fs");
       html.includes("ラビスタ富士河口湖")
     );
 
+    // ○△×が存在する場所を探す
+    const markIndex = html.search(/[○△×]/);
+    
+    console.log(
+      "記号位置:",
+      markIndex
+    );
+    
+    if (markIndex !== -1) {
+    
+      console.log(
+        html.substring(
+          markIndex - 500,
+          markIndex + 1000
+        )
+      );
+    
+    }
+
 
     // HTML保存
     fs.writeFileSync(
