@@ -32,190 +32,194 @@ const fs = require("fs");
 
 
 
-    // フルーツパーク富士屋ホテルをクリック
-
-    await page.click(
-      'text=フルーツパーク富士屋ホテル'
-    );
-
-
-    // カレンダー表示待ち
-
-    await page.waitForTimeout(5000);
+    const hotels = [
+      "フルーツパーク富士屋ホテル",
+      "ラビスタ富士河口湖"
+    ];
 
 
 
-    let emptyList = [];
+    let allEmpty = [];
 
 
 
-    // 7月・8月・9月
-
-    for (
-      let month = 0;
-      month < 3;
-      month++
-    ) {
+    for (const hotel of hotels) {
 
 
 
       console.log("================");
       console.log(
-        "月チェック:",
-        month + 1
+        "ホテル:",
+        hotel
       );
 
 
 
-      /*
-        表示中のカレンダーだけ取得
+      // ホテルクリック
 
-        tcas → 除外
-        tcb  → カレンダー
-      */
-
-
-      const calendarLocator =
-        page.locator(
-          '[id^="tcb"]:visible'
-        );
-
-
-
-      const count =
-        await calendarLocator.count();
-
-
-
-      console.log(
-        "表示カレンダー数:",
-        count
+      await page.click(
+        `text=${hotel}`
       );
 
 
 
-      if (count === 0) {
+      await page.waitForTimeout(
+        5000
+      );
+
+
+
+      // 月移動して7〜9月チェック
+
+      for (
+        let month = 0;
+        month < 3;
+        month++
+      ) {
+
 
 
         console.log(
-          "カレンダーなし"
-        );
-
-
-        break;
-
-      }
-
-
-
-      const calendarHtml =
-        await calendarLocator
-          .first()
-          .innerHTML();
-
-
-
-      /*
-        日付と状態取得
-      */
-
-
-      const cells =
-        calendarHtml.match(
-          /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
+          "月チェック:",
+          month + 1
         );
 
 
 
-      if (cells) {
-
-
-        cells.forEach(cell => {
-
-
-
-          const date =
-            cell.match(
-              /data-join-time="([^"]+)"/
-            );
+        const calendar =
+          page.locator(
+            '[id^="tcb"]:visible'
+          );
 
 
 
-          const status =
-            cell.match(
-              /<span class="icon">(.*?)<\/span>/
-            );
+        const count =
+          await calendar.count();
 
 
 
-          if (
-            date &&
-            status
-          ) {
+        if (count === 0) {
+
+          console.log(
+            "カレンダーなし"
+          );
+
+          break;
+
+        }
 
 
 
-            console.log(
-              date[1],
-              status[1]
-            );
+        const html =
+          await calendar
+            .first()
+            .innerHTML();
+
+
+
+        const cells =
+          html.match(
+            /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
+          );
+
+
+
+        if (cells) {
+
+
+          cells.forEach(cell => {
+
+
+            const date =
+              cell.match(
+                /data-join-time="([^"]+)"/
+              );
+
+
+            const status =
+              cell.match(
+                /<span class="icon">(.*?)<\/span>/
+              );
 
 
 
             if (
-              status[1] === "○" ||
-              status[1] === "△"
+              date &&
+              status
             ) {
 
 
-              emptyList.push({
 
-                date: date[1],
-                status: status[1]
+              console.log(
+                date[1],
+                status[1]
+              );
 
-              });
+
+
+              if (
+                status[1] === "○" ||
+                status[1] === "△"
+              ) {
+
+
+                allEmpty.push({
+
+                  hotel: hotel,
+                  date: date[1],
+                  status: status[1]
+
+                });
+
+
+              }
 
 
             }
 
 
-          }
+          });
 
 
-        });
-
-
-      }
+        }
 
 
 
-      /*
-        翌月へ移動
-      */
+        // 翌月へ
+
+        if (month < 2) {
 
 
-      if (month < 2) {
-
-
-
-        const nextButton =
-          page.locator(
-            'input.next-month:visible'
-          )
-          .first();
+          await page
+            .locator(
+              'input.next-month:visible'
+            )
+            .first()
+            .click();
 
 
 
-        await nextButton.click();
+          await page.waitForTimeout(
+            3000
+          );
 
 
+        }
 
-        await page.waitForTimeout(
-          4000
-        );
+
 
       }
 
+
+
+      // 次のホテルへ戻る
+
+      await page.goBack();
+
+
+      await page.waitForTimeout(
+        3000
+      );
 
 
     }
@@ -225,11 +229,9 @@ const fs = require("fs");
     console.log("================");
 
 
-
     if (
-      emptyList.length > 0
+      allEmpty.length > 0
     ) {
-
 
 
       console.log(
@@ -237,11 +239,11 @@ const fs = require("fs");
       );
 
 
-
-      emptyList.forEach(item => {
+      allEmpty.forEach(item => {
 
 
         console.log(
+          item.hotel,
           item.date,
           item.status
         );
@@ -254,7 +256,6 @@ const fs = require("fs");
     } else {
 
 
-
       console.log(
         "7月〜9月 空きなし"
       );
@@ -264,23 +265,10 @@ const fs = require("fs");
 
 
 
-
-    // 保存
-
     fs.writeFileSync(
       "page.html",
       await page.content()
     );
-
-
-
-    await page.screenshot({
-
-      path: "page.png",
-
-      fullPage: true
-
-    });
 
 
 
