@@ -18,7 +18,24 @@ const fs = require("fs");
         timeout: 60000
       }
     );
-
+    
+    // フルーツパーク富士屋ホテルをクリック
+    await page.click('text=フルーツパーク富士屋ホテル');
+    
+    // 読み込み待ち
+    await page.waitForTimeout(5000);
+    
+    // HTMLを取り直す
+    const html = await page.content();
+    
+    console.log("クリック後 HTML length =", html.length);
+    
+    // カレンダーが読み込まれたか確認
+    console.log(
+      "calendar loaded =",
+      html.includes("tcb2632_1") || html.includes("calendar")
+    );
+        
     // JavaScriptが動くのを待つ
     await page.waitForTimeout(8000);
 
