@@ -3,7 +3,7 @@ name: ITS Kenpo Vacancy Check
 on:
   # 10分ごとに自動実行
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "7,17,27,37,47,57 * * * *"
 
   # 手動実行もできるようにする
   workflow_dispatch:
