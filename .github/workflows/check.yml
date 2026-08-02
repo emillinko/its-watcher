@@ -1,5 +1,9 @@
 name: ITS Kenpo Vacancy Check
 
+push:
+  branches:
+    - main
+
 on:
   # 10分ごとに自動実行
   schedule:
