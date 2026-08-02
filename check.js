@@ -1,14 +1,13 @@
+```javascript
 const { chromium } = require("playwright");
 const fs = require("fs");
 
 
 (async () => {
 
-
   const browser = await chromium.launch({
     headless: true
   });
-
 
   const page = await browser.newPage({
     viewport: {
@@ -18,10 +17,8 @@ const fs = require("fs");
   });
 
 
-
   const url =
     "REMOVED_ITS_KENPO_URL";
-
 
 
   const hotels = [
@@ -30,17 +27,13 @@ const fs = require("fs");
   ];
 
 
-
+  // ○・△が見つかった日
   let allEmpty = [];
-
 
 
   try {
 
-
-
     for (const hotel of hotels) {
-
 
       console.log("================");
       console.log(
@@ -50,43 +43,33 @@ const fs = require("fs");
 
 
       // 毎回トップから開始
-
       await page.goto(
         url,
         {
-          waitUntil:"domcontentloaded",
-          timeout:60000
+          waitUntil: "domcontentloaded",
+          timeout: 60000
         }
       );
 
 
-      await page.waitForTimeout(
-        3000
-      );
-
+      await page.waitForTimeout(3000);
 
 
       // ホテルクリック
-
       await page.click(
         `text=${hotel}`
       );
 
 
-
-      await page.waitForTimeout(
-        5000
-      );
+      await page.waitForTimeout(5000);
 
 
-
+      // 7月・8月・9月
       for (
         let month = 0;
         month < 3;
         month++
       ) {
-
-
 
         console.log(
           "月チェック:",
@@ -94,12 +77,11 @@ const fs = require("fs");
         );
 
 
-
+        // 表示中のカレンダー
         const calendar =
           page.locator(
             '[id^="tcb"]:visible'
           );
-
 
 
         const html =
@@ -108,19 +90,16 @@ const fs = require("fs");
             .innerHTML();
 
 
-
+        // 日付と○△☓を取得
         const cells =
           html.match(
             /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
           );
 
 
-
         if (cells) {
 
-
           cells.forEach(cell => {
-
 
             const date =
               cell.match(
@@ -134,9 +113,7 @@ const fs = require("fs");
               );
 
 
-
-            if(date && status){
-
+            if (date && status) {
 
               console.log(
                 date[1],
@@ -144,35 +121,29 @@ const fs = require("fs");
               );
 
 
-
-              if(
-                status[1]=="○" ||
-                status[1]=="△"
-              ){
+              // ○または△なら空きとして保存
+              if (
+                status[1] === "○" ||
+                status[1] === "△"
+              ) {
 
                 allEmpty.push({
-
-                  hotel,
-                  date:date[1],
-                  status:status[1]
-
+                  hotel: hotel,
+                  date: date[1],
+                  status: status[1]
                 });
 
               }
 
-
             }
 
-
           });
-
 
         }
 
 
-
-        if(month < 2){
-
+        // 次月へ
+        if (month < 2) {
 
           await page.locator(
             'input.next-month:visible'
@@ -181,63 +152,128 @@ const fs = require("fs");
           .click();
 
 
-
-          await page.waitForTimeout(
-            3000
-          );
-
+          // カレンダー更新待ち
+          await page.waitForTimeout(3000);
 
         }
 
-
-
       }
 
-
-
     }
-
 
 
     console.log("================");
 
 
-    if(allEmpty.length){
+    // ============================
+    // 空き状況の確認
+    // ============================
 
+    if (allEmpty.length > 0) {
 
       console.log(
         "★★ 空き発見 ★★"
       );
 
 
-      allEmpty.forEach(x=>{
+      allEmpty.forEach(item => {
 
         console.log(
-          x.hotel,
-          x.date,
-          x.status
+          item.hotel,
+          item.date,
+          item.status
         );
 
       });
 
 
-    }else{
+      // ============================
+      // Discord通知
+      // ============================
 
+      const webhookUrl =
+        process.env.DISCORD_WEBHOOK_URL;
+
+
+      if (!webhookUrl) {
+
+        console.log(
+          "DISCORD_WEBHOOK_URL が設定されていません"
+        );
+
+      } else {
+
+        let message =
+          "🚨 **ITS健保 空き発見！**\n\n";
+
+
+        allEmpty.forEach(item => {
+
+          message +=
+            `🏨 ${item.hotel}\n` +
+            `📅 ${item.date}\n` +
+            `空き状況: ${item.status}\n\n`;
+
+        });
+
+
+        message +=
+          "○ = 空きあり\n" +
+          "△ = 残りわずか";
+
+
+        // Discordへ送信
+        const response =
+          await fetch(
+            webhookUrl,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                content: message
+              })
+            }
+          );
+
+
+        if (response.ok) {
+
+          console.log(
+            "Discord通知成功！"
+          );
+
+        } else {
+
+          console.log(
+            "Discord通知失敗:",
+            response.status,
+            await response.text()
+          );
+
+        }
+
+      }
+
+
+    } else {
 
       console.log(
         "7月〜9月 空きなし"
       );
 
-
     }
 
 
-
+    // HTML保存
     fs.writeFileSync(
       "page.html",
       await page.content()
     );
-
 
 
     console.log(
@@ -245,14 +281,12 @@ const fs = require("fs");
     );
 
 
-
   } finally {
 
-
     await browser.close();
-
 
   }
 
 
 })();
+```
