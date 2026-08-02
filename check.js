@@ -26,11 +26,16 @@ const fs = require("fs");
 
   try {
 
+    // ==========================================
+    // ホテルごとにチェック
+    // ==========================================
+
     for (const hotel of hotels) {
 
       console.log("================");
       console.log("ホテル:", hotel);
 
+      // トップページへ
       await page.goto(url, {
         waitUntil: "domcontentloaded",
         timeout: 60000
@@ -38,26 +43,123 @@ const fs = require("fs");
 
       await page.waitForTimeout(3000);
 
-      await page.getByText(hotel, {
-        exact: true
-      }).click();
+      // ホテルをクリック
+      const hotelLink =
+        page.getByText(hotel, {
+          exact: true
+        }).first();
+
+      await hotelLink.waitFor({
+        state: "visible",
+        timeout: 30000
+      });
+
+      await hotelLink.click();
 
       await page.waitForTimeout(5000);
 
-      // 7月から8月へ
-      console.log("7月 → 8月へ移動");
+      // ==========================================
+      // 現在表示されている月を確認
+      // ==========================================
 
-      const firstNextButton =
-        page.locator(
-          'input.next-month:visible'
-        ).first();
+      const getVisibleMonth = async () => {
 
-      await firstNextButton.click();
+        const visibleCalendars =
+          page.locator(
+            '[id^="tcb"]:visible'
+          );
 
-      await page.waitForTimeout(3000);
+        const count =
+          await visibleCalendars.count();
 
-      // 8月・9月・10月
-      for (let month = 0; month < 3; month++) {
+        if (count === 0) {
+          return null;
+        }
+
+        const monthText =
+          await visibleCalendars
+            .first()
+            .locator(".month")
+            .first()
+            .textContent();
+
+        return monthText
+          ? monthText.trim()
+          : null;
+      };
+
+      let currentMonth =
+        await getVisibleMonth();
+
+      console.log(
+        "最初の表示月:",
+        currentMonth
+      );
+
+      // ==========================================
+      // 8月になるまで次月へ進む
+      // ==========================================
+
+      let safety = 0;
+
+      while (
+        currentMonth &&
+        !currentMonth.includes("2026年08月") &&
+        safety < 6
+      ) {
+
+        const nextButton =
+          page.locator(
+            'input.next-month:visible'
+          ).first();
+
+        const nextCount =
+          await nextButton.count();
+
+        if (nextCount === 0) {
+
+          throw new Error(
+            "翌月ボタンが見つかりません"
+          );
+
+        }
+
+        await nextButton.click();
+
+        await page.waitForTimeout(3000);
+
+        currentMonth =
+          await getVisibleMonth();
+
+        console.log(
+          "移動後:",
+          currentMonth
+        );
+
+        safety++;
+
+      }
+
+      if (
+        !currentMonth ||
+        !currentMonth.includes("2026年08月")
+      ) {
+
+        throw new Error(
+          "2026年08月のカレンダーまで移動できませんでした"
+        );
+
+      }
+
+      // ==========================================
+      // 8月・9月・10月をチェック
+      // ==========================================
+
+      for (
+        let month = 0;
+        month < 3;
+        month++
+      ) {
 
         console.log("================");
         console.log(
@@ -65,13 +167,13 @@ const fs = require("fs");
           month + 1
         );
 
-        const calendar =
+        const visibleCalendars =
           page.locator(
             '[id^="tcb"]:visible'
           );
 
         const calendarCount =
-          await calendar.count();
+          await visibleCalendars.count();
 
         console.log(
           "表示カレンダー数:",
@@ -85,65 +187,88 @@ const fs = require("fs");
           );
 
           break;
+
         }
 
-        const html =
+        const calendar =
+          visibleCalendars.first();
+
+        const monthText =
           await calendar
+            .locator(".month")
             .first()
-            .innerHTML();
+            .textContent();
+
+        console.log(
+          "対象月:",
+          monthText
+            ? monthText.trim()
+            : "不明"
+        );
+
+        // ========================================
+        // 日付と空き状況を取得
+        // ========================================
 
         const cells =
-          html.match(
-            /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
+          calendar.locator(
+            'td[data-join-time]'
           );
 
-        if (cells) {
+        const cellCount =
+          await cells.count();
 
-          cells.forEach((cell) => {
+        for (
+          let i = 0;
+          i < cellCount;
+          i++
+        ) {
 
-            const date =
-              cell.match(
-                /data-join-time="([^"]+)"/
-              );
+          const cell =
+            cells.nth(i);
 
-            const status =
-              cell.match(
-                /<span class="icon">(.*?)<\/span>/
-              );
+          const date =
+            await cell.getAttribute(
+              "data-join-time"
+            );
 
-            if (date && status) {
+          const status =
+            await cell
+              .locator(".icon")
+              .textContent();
 
-              const dateValue =
-                date[1];
+          if (!date || !status) {
+            continue;
+          }
 
-              const statusValue =
-                status[1];
+          const cleanStatus =
+            status.trim();
 
-              console.log(
-                dateValue,
-                statusValue
-              );
+          console.log(
+            date,
+            cleanStatus
+          );
 
-              if (
-                statusValue === "○" ||
-                statusValue === "△"
-              ) {
+          // ○ または △だけ保存
+          if (
+            cleanStatus === "○" ||
+            cleanStatus === "△"
+          ) {
 
-                allEmpty.push({
-                  hotel: hotel,
-                  date: dateValue,
-                  status: statusValue
-                });
+            allEmpty.push({
+              hotel: hotel,
+              date: date,
+              status: cleanStatus
+            });
 
-              }
-
-            }
-
-          });
+          }
 
         }
 
-        // 8月→9月→10月
+        // ========================================
+        // 次の月へ
+        // ========================================
+
         if (month < 2) {
 
           const nextButton =
@@ -154,11 +279,16 @@ const fs = require("fs");
           await nextButton.click();
 
           await page.waitForTimeout(3000);
+
         }
 
       }
 
     }
+
+    // ==========================================
+    // 結果
+    // ==========================================
 
     console.log("================");
 
@@ -178,73 +308,74 @@ const fs = require("fs");
 
       });
 
-      ```javascript
-// Discord通知
-const webhookUrl =
-  process.env.DISCORD_WEBHOOK_URL;
+      // ========================================
+      // Discord通知
+      // ========================================
 
-if (!webhookUrl) {
+      const webhookUrl =
+        process.env.DISCORD_WEBHOOK_URL;
 
-  console.log(
-    "DISCORD_WEBHOOK_URL が設定されていません"
-  );
+      if (!webhookUrl) {
 
-} else {
+        console.log(
+          "DISCORD_WEBHOOK_URL が設定されていません"
+        );
 
-  let message =
-    "🚨 **ITS健保 空き発見！**\n\n";
+      } else {
 
-  allEmpty.forEach((item) => {
+        let message =
+          "🚨 **ITS健保 空き発見！**\n\n";
 
-    message +=
-      "🏨 " + item.hotel + "\n" +
-      "📅 " + item.date + "\n" +
-      "空き状況: " + item.status + "\n\n";
+        allEmpty.forEach((item) => {
 
-  });
+          message +=
+            "🏨 " + item.hotel + "\n" +
+            "📅 " + item.date + "\n" +
+            "空き状況: " + item.status + "\n\n";
 
-  message +=
-    "○ = 空きあり\n" +
-    "△ = 残りわずか\n\n" +
-    "🔗 **予約サイト:**\n" +
-    url;
+        });
 
-  const response =
-    await fetch(
-      webhookUrl,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-        body: JSON.stringify({
-          content: message
-        })
+        message +=
+          "○ = 空きあり\n" +
+          "△ = 残りわずか\n\n" +
+          "🔗 **予約サイト:**\n" +
+          url;
+
+        const response =
+          await fetch(
+            webhookUrl,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                content: message
+              })
+            }
+          );
+
+        if (response.ok) {
+
+          console.log(
+            "Discord通知成功！"
+          );
+
+        } else {
+
+          console.log(
+            "Discord通知失敗:",
+            response.status
+          );
+
+          console.log(
+            await response.text()
+          );
+
+        }
+
       }
-    );
-
-  if (response.ok) {
-
-    console.log(
-      "Discord通知成功！"
-    );
-
-  } else {
-
-    console.log(
-      "Discord通知失敗:",
-      response.status
-    );
-
-    console.log(
-      await response.text()
-    );
-
-  }
-
-}
-
 
     } else {
 
@@ -253,6 +384,10 @@ if (!webhookUrl) {
       );
 
     }
+
+    // ==========================================
+    // HTML保存
+    // ==========================================
 
     fs.writeFileSync(
       "page.html",
@@ -267,7 +402,9 @@ if (!webhookUrl) {
       "★★ エラー発生 ★★"
     );
 
-    console.error(error);
+    console.error(
+      error.message
+    );
 
     process.exitCode = 1;
 
@@ -278,4 +415,3 @@ if (!webhookUrl) {
   }
 
 })();
-```
