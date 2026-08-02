@@ -1,3 +1,4 @@
+```javascript
 const { chromium } = require("playwright");
 const fs = require("fs");
 
@@ -26,19 +27,10 @@ const fs = require("fs");
 
   try {
 
-    // ==========================================
-    // ホテルごとにチェック
-    // ==========================================
-
     for (const hotel of hotels) {
 
       console.log("================");
       console.log("ホテル:", hotel);
-
-
-      // ------------------------------------------
-      // トップページへ戻る
-      // ------------------------------------------
 
       await page.goto(url, {
         waitUntil: "domcontentloaded",
@@ -47,46 +39,26 @@ const fs = require("fs");
 
       await page.waitForTimeout(3000);
 
-
-      // ------------------------------------------
-      // ホテルをクリック
-      // ------------------------------------------
-
       await page.getByText(hotel, {
         exact: true
       }).click();
 
       await page.waitForTimeout(5000);
 
-
-      // ==========================================
-      // 7月 → 8月へ移動
-      // ==========================================
-
+      // 7月から8月へ
       console.log("7月 → 8月へ移動");
-
 
       const firstNextButton =
         page.locator(
           'input.next-month:visible'
         ).first();
 
-
       await firstNextButton.click();
-
 
       await page.waitForTimeout(3000);
 
-
-      // ==========================================
-      // 8月・9月・10月をチェック
-      // ==========================================
-
-      for (
-        let month = 0;
-        month < 3;
-        month++
-      ) {
+      // 8月・9月・10月
+      for (let month = 0; month < 3; month++) {
 
         console.log("================");
         console.log(
@@ -94,26 +66,18 @@ const fs = require("fs");
           month + 1
         );
 
-
-        // ----------------------------------------
-        // 表示中のカレンダーを取得
-        // ----------------------------------------
-
         const calendar =
           page.locator(
             '[id^="tcb"]:visible'
           );
 
-
         const calendarCount =
           await calendar.count();
-
 
         console.log(
           "表示カレンダー数:",
           calendarCount
         );
-
 
         if (calendarCount === 0) {
 
@@ -122,29 +86,17 @@ const fs = require("fs");
           );
 
           break;
-
         }
-
-
-        // ----------------------------------------
-        // HTML取得
-        // ----------------------------------------
 
         const html =
           await calendar
             .first()
             .innerHTML();
 
-
-        // ----------------------------------------
-        // 日付と○△☓を取得
-        // ----------------------------------------
-
         const cells =
           html.match(
             /<td[^>]*data-join-time="([^"]+)"[\s\S]*?<span class="icon">(.*?)<\/span>[\s\S]*?<\/td>/g
           );
-
 
         if (cells) {
 
@@ -155,32 +107,23 @@ const fs = require("fs");
                 /data-join-time="([^"]+)"/
               );
 
-
             const status =
               cell.match(
                 /<span class="icon">(.*?)<\/span>/
               );
-
 
             if (date && status) {
 
               const dateValue =
                 date[1];
 
-
               const statusValue =
                 status[1];
-
 
               console.log(
                 dateValue,
                 statusValue
               );
-
-
-              // ----------------------------------
-              // ○ または △なら保存
-              // ----------------------------------
 
               if (
                 statusValue === "○" ||
@@ -188,13 +131,9 @@ const fs = require("fs");
               ) {
 
                 allEmpty.push({
-
                   hotel: hotel,
-
                   date: dateValue,
-
                   status: statusValue
-
                 });
 
               }
@@ -205,11 +144,7 @@ const fs = require("fs");
 
         }
 
-
-        // ========================================
-        // 次の月へ
-        // ========================================
-
+        // 8月→9月→10月
         if (month < 2) {
 
           const nextButton =
@@ -217,32 +152,22 @@ const fs = require("fs");
               'input.next-month:visible'
             ).first();
 
-
           await nextButton.click();
 
-
           await page.waitForTimeout(3000);
-
         }
 
       }
 
     }
 
-
-    // ==========================================
-    // 結果
-    // ==========================================
-
     console.log("================");
-
 
     if (allEmpty.length > 0) {
 
       console.log(
         "★★ 空き発見 ★★"
       );
-
 
       allEmpty.forEach((item) => {
 
@@ -254,14 +179,9 @@ const fs = require("fs");
 
       });
 
-
-      // ========================================
       // Discord通知
-      // ========================================
-
       const webhookUrl =
         process.env.DISCORD_WEBHOOK_URL;
-
 
       if (!webhookUrl) {
 
@@ -274,7 +194,6 @@ const fs = require("fs");
         let message =
           "🚨 **ITS健保 空き発見！**\n\n";
 
-
         allEmpty.forEach((item) => {
 
           message +=
@@ -284,35 +203,24 @@ const fs = require("fs");
 
         });
 
-
         message +=
           "○ = 空きあり\n" +
           "△ = 残りわずか";
-
-
-        // --------------------------------------
-        // Discordへ送信
-        // --------------------------------------
 
         const response =
           await fetch(
             webhookUrl,
             {
-
               method: "POST",
-
               headers: {
                 "Content-Type":
                   "application/json"
               },
-
               body: JSON.stringify({
                 content: message
               })
-
             }
           );
-
 
         if (response.ok) {
 
@@ -326,7 +234,6 @@ const fs = require("fs");
             "Discord通知失敗:",
             response.status
           );
-
 
           console.log(
             await response.text()
@@ -344,19 +251,12 @@ const fs = require("fs");
 
     }
 
-
-    // ==========================================
-    // HTML保存
-    // ==========================================
-
     fs.writeFileSync(
       "page.html",
       await page.content()
     );
 
-
     console.log("saved");
-
 
   } catch (error) {
 
@@ -364,9 +264,7 @@ const fs = require("fs");
       "★★ エラー発生 ★★"
     );
 
-
     console.error(error);
-
 
     process.exitCode = 1;
 
