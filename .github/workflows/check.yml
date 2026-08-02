@@ -1,6 +1,12 @@
+```yaml
 name: ITS Kenpo Vacancy Check
 
 on:
+  # 1時間ごとに自動実行
+  schedule:
+    - cron: "0/10 * * * *"
+
+  # 手動実行もできるようにする
   workflow_dispatch:
 
 jobs:
@@ -26,3 +32,4 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: node check.js
+```
