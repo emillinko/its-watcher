@@ -1,11 +1,6 @@
 name: ITS Kenpo Vacancy Check
 
 on:
-  # 10分ごとに自動実行
-  schedule:
-    - cron: "7,17,27,37,47,57 * * * *"
-
-  # 手動実行もできるようにする
   workflow_dispatch:
 
 jobs:
@@ -16,18 +11,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install playwright
+        run: npm install
 
-      - name: Install Playwright browser
+      - name: Install Playwright
         run: npx playwright install --with-deps chromium
 
       - name: Run vacancy check
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: node check.js
