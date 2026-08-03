@@ -23,11 +23,10 @@ const { chromium } = require("playwright");
   const allEmpty = [];
 
   // ==========================================
-  // 今月を含めて3ヶ月を自動計算
+  // 今月を含めて3ヶ月
   // ==========================================
 
   const today = new Date();
-
   const targetMonths = [];
 
   for (let i = 0; i < 3; i++) {
@@ -46,39 +45,30 @@ const { chromium } = require("playwright");
   console.log("================");
   console.log("チェック対象月:");
 
-  targetMonths.forEach((item) => {
+  for (const item of targetMonths) {
     console.log(
       item.year +
       "年" +
       String(item.month).padStart(2, "0") +
       "月"
     );
-  });
+  }
 
   try {
-
     // ==========================================
     // ホテルごとにチェック
     // ==========================================
 
     for (const hotel of hotels) {
-
       console.log("================");
       console.log("ホテル:", hotel);
-
-      // ----------------------------------------
-      // トップページへ
-      // ----------------------------------------
 
       await page.goto(url, {
         waitUntil: "domcontentloaded",
         timeout: 60000
       });
 
-      // ----------------------------------------
-      // ホテルを探す
-      // ----------------------------------------
-
+      // ホテルをクリック
       const hotelLink =
         page.getByText(hotel, {
           exact: true
@@ -91,10 +81,7 @@ const { chromium } = require("playwright");
 
       await hotelLink.click();
 
-      // ----------------------------------------
-      // カレンダーが表示されるまで待つ
-      // ----------------------------------------
-
+      // カレンダーを待つ
       const calendarLocator =
         page.locator('[id^="tcb"]:visible').first();
 
@@ -103,19 +90,15 @@ const { chromium } = require("playwright");
         timeout: 30000
       });
 
-      // ----------------------------------------
-      // 現在表示されている月を取得
-      // ----------------------------------------
+      // ==========================================
+      // 現在の月を取得
+      // ==========================================
 
       const getVisibleMonth = async () => {
-
         const calendar =
           page.locator('[id^="tcb"]:visible').first();
 
-        const count =
-          await calendar.count();
-
-        if (count === 0) {
+        if (await calendar.count() === 0) {
           return null;
         }
 
@@ -125,11 +108,9 @@ const { chromium } = require("playwright");
             .first()
             .textContent();
 
-        if (!monthText) {
-          return null;
-        }
-
-        return monthText.trim();
+        return monthText
+          ? monthText.trim()
+          : null;
       };
 
       let currentMonth =
@@ -147,7 +128,7 @@ const { chromium } = require("playwright");
       const firstTarget =
         targetMonths[0];
 
-      let targetMonthText =
+      const targetMonthText =
         firstTarget.year +
         "年" +
         String(firstTarget.month).padStart(2, "0") +
@@ -157,12 +138,9 @@ const { chromium } = require("playwright");
 
       while (
         currentMonth &&
-        !currentMonth.includes(
-          targetMonthText
-        ) &&
+        !currentMonth.includes(targetMonthText) &&
         safety < 12
       ) {
-
         const nextButton =
           page.locator(
             'input.next-month:visible'
@@ -175,14 +153,7 @@ const { chromium } = require("playwright");
 
         await nextButton.click();
 
-        // カレンダーが表示されるまで待つ
-        await page
-          .locator('[id^="tcb"]:visible')
-          .first()
-          .waitFor({
-            state: "visible",
-            timeout: 10000
-          });
+        await page.waitForTimeout(500);
 
         currentMonth =
           await getVisibleMonth();
@@ -196,23 +167,15 @@ const { chromium } = require("playwright");
       }
 
       if (!currentMonth) {
-
         throw new Error(
           "カレンダーの月を取得できませんでした"
         );
-
       }
 
-      if (
-        !currentMonth.includes(
-          targetMonthText
-        )
-      ) {
-
+      if (!currentMonth.includes(targetMonthText)) {
         throw new Error(
           "最初の対象月まで移動できませんでした"
         );
-
       }
 
       // ==========================================
@@ -224,12 +187,10 @@ const { chromium } = require("playwright");
         monthIndex < 3;
         monthIndex++
       ) {
-
         const target =
           targetMonths[monthIndex];
 
         console.log("================");
-
         console.log(
           "月チェック: " +
           target.year +
@@ -262,7 +223,7 @@ const { chromium } = require("playwright");
         );
 
         // ========================================
-        // 日付と空き状況を取得
+        // 日付・空き状況取得
         // ========================================
 
         const cells =
@@ -283,7 +244,6 @@ const { chromium } = require("playwright");
           i < cellCount;
           i++
         ) {
-
           const cell =
             cells.nth(i);
 
@@ -295,12 +255,9 @@ const { chromium } = require("playwright");
           const statusElement =
             cell.locator(".icon").first();
 
-          const statusCount =
-            await statusElement.count();
-
           if (
             !date ||
-            statusCount === 0
+            await statusElement.count() === 0
           ) {
             continue;
           }
@@ -320,23 +277,16 @@ const { chromium } = require("playwright");
             cleanStatus
           );
 
-          // --------------------------------------
-          // ○ または △だけ保存
-          // --------------------------------------
-
           if (
             cleanStatus === "○" ||
             cleanStatus === "△"
           ) {
-
             allEmpty.push({
               hotel: hotel,
               date: date,
               status: cleanStatus
             });
-
           }
-
         }
 
         // ========================================
@@ -344,7 +294,6 @@ const { chromium } = require("playwright");
         // ========================================
 
         if (monthIndex < 2) {
-
           const nextButton =
             page.locator(
               'input.next-month:visible'
@@ -357,13 +306,9 @@ const { chromium } = require("playwright");
 
           await nextButton.click();
 
-          // 次のカレンダーが表示されるまで少し待つ
           await page.waitForTimeout(500);
-
         }
-
       }
-
     }
 
     // ==========================================
@@ -372,21 +317,101 @@ const { chromium } = require("playwright");
 
     console.log("================");
 
-    if (allEmpty.length > 0) {
-
+    if (allEmpty.length === 0) {
+      console.log(
+        "3ヶ月間、空きなし"
+      );
+    } else {
       console.log(
         "★★ 空き発見 ★★"
       );
 
-      allEmpty.forEach((item) => {
-
+      for (const item of allEmpty) {
         console.log(
           item.hotel,
           item.date,
           item.status
         );
+      }
 
-      });
-// ======================================== // Discord通知 // ======================================== const webhookUrl = process.env.DISCORD_WEBHOOK_URL; if (!webhookUrl) { console.log( "DISCORD_WEBHOOK_URL が設定されていません" ); } else { let message = "🚨 **ITS健保 空き発見！**\n\n"; allEmpty.forEach((item) => { message += "🏨 " + item.hotel + "\n" + "📅 " + item.date + "\n" + "空き状況: " + item.status + "\n\n"; }); message += "○ = 空きあり\n" + "△ = 残りわずか\n\n" + "🔗 **予約サイトはこちら**\n" + url; const response = await fetch( webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: message }) } ); if (response.ok) { console.log( "Discord通知成功！" ); } else { console.log( "Discord通知失敗:", response.status ); console.log( await response.text() ); } }
+      // ========================================
+      // Discord通知
+      // ========================================
 
+      const webhookUrl =
+        process.env.DISCORD_WEBHOOK_URL;
+
+      if (!webhookUrl) {
+        console.log(
+          "DISCORD_WEBHOOK_URL が設定されていません"
+        );
+      } else {
+        let message =
+          "🚨 **ITS健保 空き発見！**\n\n";
+
+        for (const item of allEmpty) {
+          message +=
+            "🏨 " +
+            item.hotel +
+            "\n" +
+            "📅 " +
+            item.date +
+            "\n" +
+            "空き状況: " +
+            item.status +
+            "\n\n";
+        }
+
+        message +=
+          "○ = 空きあり\n" +
+          "△ = 残りわずか\n\n" +
+          "🔗 **予約サイトはこちら**\n" +
+          url;
+
+        const response =
+          await fetch(
+            webhookUrl,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                content: message
+              })
+            }
+          );
+
+        if (response.ok) {
+          console.log(
+            "Discord通知成功！"
+          );
+        } else {
+          console.log(
+            "Discord通知失敗:",
+            response.status
+          );
+
+          console.log(
+            await response.text()
+          );
+        }
+      }
+    }
+
+  } catch (error) {
+    console.error(
+      "★★ エラー発生 ★★"
+    );
+
+    console.error(
+      error.message
+    );
+
+    process.exitCode = 1;
+
+  } finally {
+    await browser.close();
+  }
 })();
