@@ -1,4 +1,3 @@
-```javascript
 const { chromium } = require("playwright");
 
 (async () => {
@@ -391,4 +390,3 @@ const { chromium } = require("playwright");
 // ======================================== // Discord通知 // ======================================== const webhookUrl = process.env.DISCORD_WEBHOOK_URL; if (!webhookUrl) { console.log( "DISCORD_WEBHOOK_URL が設定されていません" ); } else { let message = "🚨 **ITS健保 空き発見！**\n\n"; allEmpty.forEach((item) => { message += "🏨 " + item.hotel + "\n" + "📅 " + item.date + "\n" + "空き状況: " + item.status + "\n\n"; }); message += "○ = 空きあり\n" + "△ = 残りわずか\n\n" + "🔗 **予約サイトはこちら**\n" + url; const response = await fetch( webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: message }) } ); if (response.ok) { console.log( "Discord通知成功！" ); } else { console.log( "Discord通知失敗:", response.status ); console.log( await response.text() ); } }
 
 })();
-```
