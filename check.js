@@ -1,8 +1,7 @@
+```javascript
 const { chromium } = require("playwright");
-const fs = require("fs");
 
 (async () => {
-
   const browser = await chromium.launch({
     headless: true
   });
@@ -24,26 +23,45 @@ const fs = require("fs");
 
   const allEmpty = [];
 
+  // 今月を含めて3ヶ月
+  const today = new Date();
+
+  const targetMonths = [];
+
+  for (let i = 0; i < 3; i++) {
+    const date = new Date(
+      today.getFullYear(),
+      today.getMonth() + i,
+      1
+    );
+
+    targetMonths.push({
+      year: date.getFullYear(),
+      month: date.getMonth() + 1
+    });
+  }
+
+  console.log("チェック対象月:");
+
+  targetMonths.forEach((item) => {
+    console.log(
+      `${item.year}年${String(item.month).padStart(2, "0")}月`
+    );
+  });
+
   try {
-
-    // ==========================================
-    // ホテルごとにチェック
-    // ==========================================
-
     for (const hotel of hotels) {
 
       console.log("================");
       console.log("ホテル:", hotel);
 
-      // トップページへ
+      // トップページ
       await page.goto(url, {
         waitUntil: "domcontentloaded",
         timeout: 60000
       });
 
-      await page.waitForTimeout(3000);
-
-      // ホテルをクリック
+      // ホテルが表示されるまで待つ
       const hotelLink =
         page.getByText(hotel, {
           exact: true
@@ -56,29 +74,28 @@ const fs = require("fs");
 
       await hotelLink.click();
 
-      await page.waitForTimeout(5000);
+      // カレンダーが表示されるまで待つ
+      const visibleCalendar =
+        page.locator('[id^="tcb"]:visible').first();
 
-      // ==========================================
-      // 現在表示されている月を確認
-      // ==========================================
+      await visibleCalendar.waitFor({
+        state: "visible",
+        timeout: 30000
+      });
 
+      // 月取得
       const getVisibleMonth = async () => {
+        const calendar =
+          page.locator('[id^="tcb"]:visible').first();
 
-        const visibleCalendars =
-          page.locator(
-            '[id^="tcb"]:visible'
-          );
-
-        const count =
-          await visibleCalendars.count();
+        const count = await calendar.count();
 
         if (count === 0) {
           return null;
         }
 
         const monthText =
-          await visibleCalendars
-            .first()
+          await calendar
             .locator(".month")
             .first()
             .textContent();
@@ -96,16 +113,20 @@ const fs = require("fs");
         currentMonth
       );
 
-      // ==========================================
-      // 8月になるまで次月へ進む
-      // ==========================================
+      // ------------------------------------------
+      // 最初の対象月まで移動
+      // ------------------------------------------
+
+      const firstTarget = targetMonths[0];
 
       let safety = 0;
 
       while (
         currentMonth &&
-        !currentMonth.includes("2026年08月") &&
-        safety < 6
+        !currentMonth.includes(
+          `${firstTarget.year}年${String(firstTarget.month).padStart(2, "0")}月`
+        ) &&
+        safety < 12
       ) {
 
         const nextButton =
@@ -113,20 +134,20 @@ const fs = require("fs");
             'input.next-month:visible'
           ).first();
 
-        const nextCount =
-          await nextButton.count();
-
-        if (nextCount === 0) {
-
-          throw new Error(
-            "翌月ボタンが見つかりません"
-          );
-
-        }
+        await nextButton.waitFor({
+          state: "visible",
+          timeout: 10000
+        });
 
         await nextButton.click();
 
-        await page.waitForTimeout(3000);
+        await page
+          .locator('[id^="tcb"]:visible')
+          .first()
+          .waitFor({
+            state: "visible",
+            timeout: 10000
+          });
 
         currentMonth =
           await getVisibleMonth();
@@ -137,61 +158,41 @@ const fs = require("fs");
         );
 
         safety++;
-
       }
 
-      if (
-        !currentMonth ||
-        !currentMonth.includes("2026年08月")
-      ) {
-
+      if (!currentMonth) {
         throw new Error(
-          "2026年08月のカレンダーまで移動できませんでした"
+          "カレンダーの月を取得できませんでした"
         );
-
       }
 
-      // ==========================================
-      // 8月・9月・10月をチェック
-      // ==========================================
+      // ------------------------------------------
+      // 3ヶ月チェック
+      // ------------------------------------------
 
       for (
-        let month = 0;
-        month < 3;
-        month++
+        let monthIndex = 0;
+        monthIndex < 3;
+        monthIndex++
       ) {
+
+        const target =
+          targetMonths[monthIndex];
 
         console.log("================");
         console.log(
-          "月チェック:",
-          month + 1
+          `月チェック: ${target.year}年${String(target.month).padStart(2, "0")}月`
         );
-
-        const visibleCalendars =
-          page.locator(
-            '[id^="tcb"]:visible'
-          );
-
-        const calendarCount =
-          await visibleCalendars.count();
-
-        console.log(
-          "表示カレンダー数:",
-          calendarCount
-        );
-
-        if (calendarCount === 0) {
-
-          console.log(
-            "カレンダーが見つかりません"
-          );
-
-          break;
-
-        }
 
         const calendar =
-          visibleCalendars.first();
+          page.locator(
+            '[id^="tcb"]:visible'
+          ).first();
+
+        await calendar.waitFor({
+          state: "visible",
+          timeout: 10000
+        });
 
         const monthText =
           await calendar
@@ -206,10 +207,7 @@ const fs = require("fs");
             : "不明"
         );
 
-        // ========================================
-        // 日付と空き状況を取得
-        // ========================================
-
+        // 日付セル
         const cells =
           calendar.locator(
             'td[data-join-time]'
@@ -232,12 +230,20 @@ const fs = require("fs");
               "data-join-time"
             );
 
-          const status =
-            await cell
-              .locator(".icon")
-              .textContent();
+          const statusElement =
+            cell.locator(".icon").first();
 
-          if (!date || !status) {
+          const statusCount =
+            await statusElement.count();
+
+          if (!date || statusCount === 0) {
+            continue;
+          }
+
+          const status =
+            await statusElement.textContent();
+
+          if (!status) {
             continue;
           }
 
@@ -249,7 +255,7 @@ const fs = require("fs");
             cleanStatus
           );
 
-          // ○ または △だけ保存
+          // ○ または △
           if (
             cleanStatus === "○" ||
             cleanStatus === "△"
@@ -260,30 +266,31 @@ const fs = require("fs");
               date: date,
               status: cleanStatus
             });
-
           }
-
         }
 
-        // ========================================
+        // ------------------------------------------
         // 次の月へ
-        // ========================================
+        // ------------------------------------------
 
-        if (month < 2) {
+        if (monthIndex < 2) {
 
           const nextButton =
             page.locator(
               'input.next-month:visible'
             ).first();
 
+          await nextButton.waitFor({
+            state: "visible",
+            timeout: 10000
+          });
+
           await nextButton.click();
 
-          await page.waitForTimeout(3000);
-
+          // 次の月のカレンダーが表示されるまで待つ
+          await page.waitForTimeout(500);
         }
-
       }
-
     }
 
     // ==========================================
@@ -305,7 +312,6 @@ const fs = require("fs");
           item.date,
           item.status
         );
-
       });
 
       // ========================================
@@ -332,7 +338,6 @@ const fs = require("fs");
             "🏨 " + item.hotel + "\n" +
             "📅 " + item.date + "\n" +
             "空き状況: " + item.status + "\n\n";
-
         });
 
         message +=
@@ -372,29 +377,15 @@ const fs = require("fs");
           console.log(
             await response.text()
           );
-
         }
-
       }
 
     } else {
 
       console.log(
-        "8月〜10月 空きなし"
+        "3ヶ月間、空きなし"
       );
-
     }
-
-    // ==========================================
-    // HTML保存
-    // ==========================================
-
-    fs.writeFileSync(
-      "page.html",
-      await page.content()
-    );
-
-    console.log("saved");
 
   } catch (error) {
 
@@ -411,7 +402,7 @@ const fs = require("fs");
   } finally {
 
     await browser.close();
-
   }
 
 })();
+```
