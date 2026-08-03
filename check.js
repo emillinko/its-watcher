@@ -182,8 +182,12 @@ const { chromium } = require("playwright");
           targetMonths[monthIndex];
 
         console.log("================");
+
         console.log(
-          `月チェック: ${target.year}年${String(target.month).padStart(2, "0")}月`
+          "月チェック: " +
+          target.year + "年" +
+          String(target.month).padStart(2, "0") +
+          "月"
         );
 
         const calendar =
