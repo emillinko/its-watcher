@@ -45,7 +45,9 @@ const { chromium } = require("playwright");
 
   targetMonths.forEach((item) => {
     console.log(
-      `${item.year}年${String(item.month).padStart(2, "0")}月`
+      item.year + "年" +
+      String(item.month).padStart(2, "0") +
+      "月"
     );
   });
 
