@@ -23,7 +23,10 @@ const { chromium } = require("playwright");
 
   const allEmpty = [];
 
-  // 今月を含めて3ヶ月
+  // ==========================================
+  // 今月を含めて3ヶ月を自動計算
+  // ==========================================
+
   const today = new Date();
 
   const targetMonths = [];
@@ -41,29 +44,42 @@ const { chromium } = require("playwright");
     });
   }
 
+  console.log("================");
   console.log("チェック対象月:");
 
   targetMonths.forEach((item) => {
     console.log(
-      item.year + "年" +
+      item.year +
+      "年" +
       String(item.month).padStart(2, "0") +
       "月"
     );
   });
 
   try {
+
+    // ==========================================
+    // ホテルごとにチェック
+    // ==========================================
+
     for (const hotel of hotels) {
 
       console.log("================");
       console.log("ホテル:", hotel);
 
-      // トップページ
+      // ----------------------------------------
+      // トップページへ
+      // ----------------------------------------
+
       await page.goto(url, {
         waitUntil: "domcontentloaded",
         timeout: 60000
       });
 
-      // ホテルが表示されるまで待つ
+      // ----------------------------------------
+      // ホテルを探す
+      // ----------------------------------------
+
       const hotelLink =
         page.getByText(hotel, {
           exact: true
@@ -76,21 +92,29 @@ const { chromium } = require("playwright");
 
       await hotelLink.click();
 
+      // ----------------------------------------
       // カレンダーが表示されるまで待つ
-      const visibleCalendar =
+      // ----------------------------------------
+
+      const calendarLocator =
         page.locator('[id^="tcb"]:visible').first();
 
-      await visibleCalendar.waitFor({
+      await calendarLocator.waitFor({
         state: "visible",
         timeout: 30000
       });
 
-      // 月取得
+      // ----------------------------------------
+      // 現在表示されている月を取得
+      // ----------------------------------------
+
       const getVisibleMonth = async () => {
+
         const calendar =
           page.locator('[id^="tcb"]:visible').first();
 
-        const count = await calendar.count();
+        const count =
+          await calendar.count();
 
         if (count === 0) {
           return null;
@@ -102,9 +126,11 @@ const { chromium } = require("playwright");
             .first()
             .textContent();
 
-        return monthText
-          ? monthText.trim()
-          : null;
+        if (!monthText) {
+          return null;
+        }
+
+        return monthText.trim();
       };
 
       let currentMonth =
@@ -115,18 +141,25 @@ const { chromium } = require("playwright");
         currentMonth
       );
 
-      // ------------------------------------------
+      // ==========================================
       // 最初の対象月まで移動
-      // ------------------------------------------
+      // ==========================================
 
-      const firstTarget = targetMonths[0];
+      const firstTarget =
+        targetMonths[0];
+
+      let targetMonthText =
+        firstTarget.year +
+        "年" +
+        String(firstTarget.month).padStart(2, "0") +
+        "月";
 
       let safety = 0;
 
       while (
         currentMonth &&
         !currentMonth.includes(
-          `${firstTarget.year}年${String(firstTarget.month).padStart(2, "0")}月`
+          targetMonthText
         ) &&
         safety < 12
       ) {
@@ -143,6 +176,7 @@ const { chromium } = require("playwright");
 
         await nextButton.click();
 
+        // カレンダーが表示されるまで待つ
         await page
           .locator('[id^="tcb"]:visible')
           .first()
@@ -163,14 +197,28 @@ const { chromium } = require("playwright");
       }
 
       if (!currentMonth) {
+
         throw new Error(
           "カレンダーの月を取得できませんでした"
         );
+
       }
 
-      // ------------------------------------------
+      if (
+        !currentMonth.includes(
+          targetMonthText
+        )
+      ) {
+
+        throw new Error(
+          "最初の対象月まで移動できませんでした"
+        );
+
+      }
+
+      // ==========================================
       // 3ヶ月チェック
-      // ------------------------------------------
+      // ==========================================
 
       for (
         let monthIndex = 0;
@@ -185,7 +233,8 @@ const { chromium } = require("playwright");
 
         console.log(
           "月チェック: " +
-          target.year + "年" +
+          target.year +
+          "年" +
           String(target.month).padStart(2, "0") +
           "月"
         );
@@ -213,7 +262,10 @@ const { chromium } = require("playwright");
             : "不明"
         );
 
-        // 日付セル
+        // ========================================
+        // 日付と空き状況を取得
+        // ========================================
+
         const cells =
           calendar.locator(
             'td[data-join-time]'
@@ -221,6 +273,11 @@ const { chromium } = require("playwright");
 
         const cellCount =
           await cells.count();
+
+        console.log(
+          "日付セル数:",
+          cellCount
+        );
 
         for (
           let i = 0;
@@ -242,7 +299,10 @@ const { chromium } = require("playwright");
           const statusCount =
             await statusElement.count();
 
-          if (!date || statusCount === 0) {
+          if (
+            !date ||
+            statusCount === 0
+          ) {
             continue;
           }
 
@@ -261,7 +321,10 @@ const { chromium } = require("playwright");
             cleanStatus
           );
 
-          // ○ または △
+          // --------------------------------------
+          // ○ または △だけ保存
+          // --------------------------------------
+
           if (
             cleanStatus === "○" ||
             cleanStatus === "△"
@@ -272,12 +335,14 @@ const { chromium } = require("playwright");
               date: date,
               status: cleanStatus
             });
+
           }
+
         }
 
-        // ------------------------------------------
+        // ========================================
         // 次の月へ
-        // ------------------------------------------
+        // ========================================
 
         if (monthIndex < 2) {
 
@@ -293,10 +358,13 @@ const { chromium } = require("playwright");
 
           await nextButton.click();
 
-          // 次の月のカレンダーが表示されるまで待つ
+          // 次のカレンダーが表示されるまで少し待つ
           await page.waitForTimeout(500);
+
         }
+
       }
+
     }
 
     // ==========================================
@@ -318,6 +386,7 @@ const { chromium } = require("playwright");
           item.date,
           item.status
         );
+
       });
 
       // ========================================
@@ -341,9 +410,16 @@ const { chromium } = require("playwright");
         allEmpty.forEach((item) => {
 
           message +=
-            "🏨 " + item.hotel + "\n" +
-            "📅 " + item.date + "\n" +
-            "空き状況: " + item.status + "\n\n";
+            "🏨 " +
+            item.hotel +
+            "\n" +
+            "📅 " +
+            item.date +
+            "\n" +
+            "空き状況: " +
+            item.status +
+            "\n\n";
+
         });
 
         message +=
@@ -383,7 +459,9 @@ const { chromium } = require("playwright");
           console.log(
             await response.text()
           );
+
         }
+
       }
 
     } else {
@@ -391,6 +469,7 @@ const { chromium } = require("playwright");
       console.log(
         "3ヶ月間、空きなし"
       );
+
     }
 
   } catch (error) {
@@ -408,6 +487,7 @@ const { chromium } = require("playwright");
   } finally {
 
     await browser.close();
+
   }
 
 })();
