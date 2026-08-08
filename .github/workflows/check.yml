@@ -1,4 +1,7 @@
-name: ITS Kenpo Vacancy Check
+name: Run vacancy check
+  env:
+    DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  run: node check.js
 
 on:
   workflow_dispatch:
