@@ -1,7 +1,4 @@
-name: Run vacancy check
-  env:
-    DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-  run: node check.js
+name: ITS Kenpo Vacancy Check
 
 on:
   workflow_dispatch:
@@ -26,4 +23,6 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run vacancy check
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: node check.js
