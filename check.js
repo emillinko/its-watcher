@@ -12,8 +12,7 @@ const { chromium } = require("playwright");
     }
   });
 
-  const url =
-    "REMOVED_ITS_KENPO_URL";
+  const url = process.env.ITS_KENPO_URL;
 
   const hotels = [
     "フルーツパーク富士屋ホテル",
