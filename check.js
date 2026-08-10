@@ -1,6 +1,7 @@
 const { chromium } = require("playwright");
 
 (async () => {
+
   const browser = await chromium.launch({
     headless: true
   });
@@ -17,22 +18,31 @@ const { chromium } = require("playwright");
   try {
 
     // ==========================================
-    // 施設選択ページへ
+    // ① トップページ
     // ==========================================
+
+    console.log("================");
+    console.log("トップページへ");
 
     await page.goto(url, {
       waitUntil: "domcontentloaded",
       timeout: 60000
     });
 
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
+
+    // ==========================================
+    // ② 空き照会
+    // ==========================================
 
     console.log("================");
-    console.log("空き照会ページ");
+    console.log("空き照会ページへ");
 
     const vacancyLink = page.getByText(
       "直営・通年・夏季・冬季保養施設(空き照会)",
-      { exact: true }
+      {
+        exact: true
+      }
     ).first();
 
     await vacancyLink.waitFor({
@@ -42,257 +52,344 @@ const { chromium } = require("playwright");
 
     await vacancyLink.click();
 
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
+
+    console.log(
+      "現在URL:",
+      page.url()
+    );
 
     // ==========================================
-    // ラビスタ富士河口湖を探す
+    // ③ ラビスタ富士河口湖のリンクを取得
     // ==========================================
 
     console.log("================");
-    console.log("施設を探しています");
+    console.log("施設リンクを検索");
 
-    const facilityLink = page.locator(
-      "a",
-      {
-        hasText: "ラビスタ富士河口湖"
+    const links = page.locator("a");
+
+    const linkCount =
+      await links.count();
+
+    console.log(
+      "リンク数:",
+      linkCount
+    );
+
+    let facilityUrl = null;
+
+    for (
+      let i = 0;
+      i < linkCount;
+      i++
+    ) {
+
+      const link =
+        links.nth(i);
+
+      const text = (
+        await link.innerText()
+          .catch(() => "")
+      ).trim();
+
+      const href =
+        await link.getAttribute("href");
+
+      if (
+        text.includes(
+          "ラビスタ富士河口湖"
+        )
+      ) {
+
+        console.log(
+          "施設発見:",
+          text
+        );
+
+        console.log(
+          "HREF:",
+          href
+        );
+
+        if (href) {
+          facilityUrl =
+            new URL(
+              href,
+              page.url()
+            ).href;
+        }
+
+        break;
       }
-    ).first();
+    }
 
-    await facilityLink.waitFor({
-      state: "attached",
-      timeout: 30000
-    });
-
-    const href =
-      await facilityLink.getAttribute("href");
-
-    if (!href) {
+    if (!facilityUrl) {
       throw new Error(
-        "ラビスタ富士河口湖のリンクが取得できませんでした"
+        "ラビスタ富士河口湖の施設URLが見つかりません"
       );
     }
 
-    const facilityUrl =
-      new URL(href, page.url()).href;
-
+    console.log("================");
     console.log(
       "施設URL:",
       facilityUrl
     );
 
     // ==========================================
-    // 施設ページへ
+    // ④ 施設ページ
     // ==========================================
 
-    await page.goto(facilityUrl, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000
-    });
+    await page.goto(
+      facilityUrl,
+      {
+        waitUntil: "domcontentloaded",
+        timeout: 60000
+      }
+    );
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(5000);
 
     console.log("================");
-    console.log("施設ページタイトル:");
+    console.log(
+      "施設ページURL:",
+      page.url()
+    );
 
     console.log(
+      "タイトル:",
       await page.title()
     );
 
     // ==========================================
-    // ページ内容
+    // ⑤ body確認
     // ==========================================
-
-    console.log("================");
-    console.log("ページ内容:");
 
     const bodyText =
       await page.locator("body").innerText();
 
-    console.log(
-      bodyText.slice(0, 10000)
-    );
-
-    // ==========================================
-    // HTML
-    // ==========================================
-
-    const html =
-      await page.content();
-
-    const keyword =
-      "申込対象サービス";
-
-    const keywordIndex =
-      html.indexOf(keyword);
-
     console.log("================");
+    console.log("ページ内容:");
+
     console.log(
-      "申込対象サービス位置:",
-      keywordIndex
+      bodyText.slice(0, 5000)
     );
 
     // ==========================================
-    // ラビスタ富士河口湖申込を探す
+    // ⑥ 「申込対象サービス」を探す
     // ==========================================
 
     console.log("================");
     console.log(
-      "ラビスタ富士河口湖申込を調査"
+      "申込対象サービスを検索"
     );
 
-    const target =
+    const serviceText =
       page.getByText(
-        "ラビスタ富士河口湖申込",
+        "申込対象サービス",
         {
           exact: true
         }
       ).first();
 
-    const targetCount =
-      await target.count();
+    const serviceCount =
+      await serviceText.count();
 
     console.log(
-      "存在:",
-      targetCount
+      "見つかった数:",
+      serviceCount
     );
 
-    if (targetCount === 0) {
-
-      console.log(
-        "ラビスタ富士河口湖申込が見つかりませんでした"
-      );
-
-    } else {
-
-      // ========================================
-      // 本体
-      // ========================================
-
-      console.log("================");
-      console.log("対象要素");
-
-      console.log(
-        "TAG:",
-        await target.evaluate(
-          el => el.tagName
-        )
-      );
-
-      console.log(
-        "TEXT:",
-        (
-          await target.innerText()
-        ).trim()
-      );
-
-      console.log(
-        "ID:",
-        await target.getAttribute("id")
-      );
-
-      console.log(
-        "CLASS:",
-        await target.getAttribute("class")
-      );
-
-      console.log(
-        "HREF:",
-        await target.getAttribute("href")
-      );
-
-      console.log(
-        "ONCLICK:",
-        await target.getAttribute("onclick")
-      );
-
-      console.log(
-        "TYPE:",
-        await target.getAttribute("type")
-      );
-
-      console.log(
-        "NAME:",
-        await target.getAttribute("name")
-      );
-
-      console.log(
-        "VALUE:",
-        await target.getAttribute("value")
-      );
-
-      // ========================================
-      // 本体HTML
-      // ========================================
-
-      console.log("================");
-      console.log("対象要素HTML:");
-
-      console.log(
-        await target.evaluate(
-          el => el.outerHTML
-        )
-      );
-
-      // ========================================
-      // 親要素
-      // ========================================
-
-      console.log("================");
-      console.log("親要素HTML:");
-
-      console.log(
-        await target.evaluate(
-          el =>
-            el.parentElement
-              ? el.parentElement.outerHTML
-              : ""
-        )
-      );
-
-      // ========================================
-      // さらに親
-      // ========================================
-
-      console.log("================");
-      console.log("さらに親のHTML:");
-
-      console.log(
-        await target.evaluate(
-          el =>
-            el.parentElement?.parentElement
-              ? el.parentElement.parentElement.outerHTML
-              : ""
-        )
-      );
-
-      // ========================================
-      // さらにさらに親
-      // ========================================
-
-      console.log("================");
-      console.log("さらに上のHTML:");
-
-      console.log(
-        await target.evaluate(
-          el =>
-            el.parentElement
-              ?.parentElement
-              ?.parentElement
-              ? el.parentElement
-                  .parentElement
-                  .parentElement
-                  .outerHTML
-              : ""
-        )
+    if (serviceCount === 0) {
+      throw new Error(
+        "申込対象サービスが見つかりません"
       );
     }
 
     // ==========================================
-    // INPUT一覧
+    // ⑦ タグ情報
     // ==========================================
 
     console.log("================");
-    console.log("INPUT一覧");
+    console.log(
+      "申込対象サービスのタグ"
+    );
+
+    console.log(
+      "TAG:",
+      await serviceText.evaluate(
+        el => el.tagName
+      )
+    );
+
+    console.log(
+      "CLASS:",
+      await serviceText.getAttribute(
+        "class"
+      )
+    );
+
+    console.log(
+      "ID:",
+      await serviceText.getAttribute(
+        "id"
+      )
+    );
+
+    // ==========================================
+    // ⑧ 親要素
+    // ==========================================
+
+    console.log("================");
+    console.log(
+      "親要素HTML"
+    );
+
+    const parentHTML =
+      await serviceText.evaluate(
+        el => {
+          let parent =
+            el.parentElement;
+
+          return parent
+            ? parent.outerHTML
+            : "";
+        }
+      );
+
+    console.log(
+      parentHTML.slice(0, 10000)
+    );
+
+    // ==========================================
+    // ⑨ さらに親
+    // ==========================================
+
+    console.log("================");
+    console.log(
+      "2階層上のHTML"
+    );
+
+    const grandParentHTML =
+      await serviceText.evaluate(
+        el => {
+          let parent =
+            el.parentElement;
+
+          let grand =
+            parent
+              ? parent.parentElement
+              : null;
+
+          return grand
+            ? grand.outerHTML
+            : "";
+        }
+      );
+
+    console.log(
+      grandParentHTML.slice(0, 15000)
+    );
+
+    // ==========================================
+    // ⑩ 3階層上
+    // ==========================================
+
+    console.log("================");
+    console.log(
+      "3階層上のHTML"
+    );
+
+    const greatParentHTML =
+      await serviceText.evaluate(
+        el => {
+
+          let parent =
+            el.parentElement;
+
+          let grand =
+            parent
+              ? parent.parentElement
+              : null;
+
+          let great =
+            grand
+              ? grand.parentElement
+              : null;
+
+          return great
+            ? great.outerHTML
+            : "";
+        }
+      );
+
+    console.log(
+      greatParentHTML.slice(0, 20000)
+    );
+
+    // ==========================================
+    // ⑪ ページ内のリンクを再調査
+    // ==========================================
+
+    console.log("================");
+    console.log(
+      "現在ページのリンク一覧"
+    );
+
+    const pageLinks =
+      page.locator("a");
+
+    const pageLinkCount =
+      await pageLinks.count();
+
+    console.log(
+      "リンク数:",
+      pageLinkCount
+    );
+
+    for (
+      let i = 0;
+      i < pageLinkCount;
+      i++
+    ) {
+
+      const link =
+        pageLinks.nth(i);
+
+      const text = (
+        await link.innerText()
+          .catch(() => "")
+      ).trim();
+
+      const href =
+        await link.getAttribute("href");
+
+      if (
+        text ||
+        href
+      ) {
+
+        console.log(
+          "LINK",
+          i,
+          "TEXT:",
+          text
+        );
+
+        console.log(
+          "HREF:",
+          href
+        );
+      }
+    }
+
+    // ==========================================
+    // ⑫ input一覧
+    // ==========================================
+
+    console.log("================");
+    console.log(
+      "INPUT一覧"
+    );
 
     const inputs =
       page.locator("input");
@@ -315,199 +412,55 @@ const { chromium } = require("playwright");
         inputs.nth(i);
 
       console.log(
-        "INPUT",
-        i,
         JSON.stringify({
           type:
-            await input.getAttribute("type"),
+            await input.getAttribute(
+              "type"
+            ),
 
           name:
-            await input.getAttribute("name"),
+            await input.getAttribute(
+              "name"
+            ),
 
           value:
-            await input.getAttribute("value"),
+            await input.getAttribute(
+              "value"
+            ),
 
           id:
-            await input.getAttribute("id"),
+            await input.getAttribute(
+              "id"
+            ),
 
           class:
-            await input.getAttribute("class")
+            await input.getAttribute(
+              "class"
+            ),
+
+          onclick:
+            await input.getAttribute(
+              "onclick"
+            )
         })
       );
     }
 
     // ==========================================
-    // BUTTON一覧
-    // ==========================================
-
-    console.log("================");
-    console.log("BUTTON一覧");
-
-    const buttons =
-      page.locator("button");
-
-    const buttonCount =
-      await buttons.count();
-
-    console.log(
-      "BUTTON数:",
-      buttonCount
-    );
-
-    for (
-      let i = 0;
-      i < buttonCount;
-      i++
-    ) {
-
-      const button =
-        buttons.nth(i);
-
-      console.log(
-        "BUTTON",
-        i,
-        JSON.stringify({
-          text:
-            (
-              await button.innerText()
-                .catch(() => "")
-            ).trim(),
-
-          type:
-            await button.getAttribute("type"),
-
-          name:
-            await button.getAttribute("name"),
-
-          value:
-            await button.getAttribute("value"),
-
-          id:
-            await button.getAttribute("id"),
-
-          class:
-            await button.getAttribute("class")
-        })
-      );
-    }
-
-    // ==========================================
-    // ONCLICK一覧
-    // ==========================================
-
-    console.log("================");
-    console.log("ONCLICK一覧");
-
-    const onclickElements =
-      page.locator("[onclick]");
-
-    const onclickCount =
-      await onclickElements.count();
-
-    console.log(
-      "ONCLICK数:",
-      onclickCount
-    );
-
-    for (
-      let i = 0;
-      i < onclickCount;
-      i++
-    ) {
-
-      const element =
-        onclickElements.nth(i);
-
-      const text =
-        (
-          await element.innerText()
-            .catch(() => "")
-        ).trim();
-
-      const onclick =
-        await element.getAttribute("onclick");
-
-      if (
-        text ||
-        onclick
-      ) {
-
-        console.log(
-          "ONCLICK",
-          i,
-          JSON.stringify({
-            tag:
-              await element.evaluate(
-                el => el.tagName
-              ),
-
-            text,
-
-            onclick
-          })
-        );
-      }
-    }
-
-    // ==========================================
-    // FORM一覧
-    // ==========================================
-
-    console.log("================");
-    console.log("FORM一覧");
-
-    const forms =
-      page.locator("form");
-
-    const formCount =
-      await forms.count();
-
-    console.log(
-      "FORM数:",
-      formCount
-    );
-
-    for (
-      let i = 0;
-      i < formCount;
-      i++
-    ) {
-
-      const form =
-        forms.nth(i);
-
-      console.log(
-        "FORM",
-        i,
-        JSON.stringify({
-          action:
-            await form.getAttribute("action"),
-
-          method:
-            await form.getAttribute("method"),
-
-          id:
-            await form.getAttribute("id"),
-
-          class:
-            await form.getAttribute("class")
-        })
-      );
-    }
-
-    // ==========================================
-    // 完了
+    // ⑬ 完了
     // ==========================================
 
     console.log("================");
     console.log(
-      "調査完了"
+      "HTML調査完了"
     );
 
   } catch (error) {
 
     console.error("================");
-    console.error("エラー発生");
+    console.error(
+      "エラー発生"
+    );
 
     console.error(
       error.message
