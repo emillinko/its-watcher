@@ -15,6 +15,7 @@ const { chromium } = require("playwright");
   const url = process.env.ITS_KENPO_URL_2;
 
   try {
+
     // ==========================================
     // 施設選択ページ
     // ==========================================
@@ -61,7 +62,7 @@ const { chromium } = require("playwright");
 
     if (!href) {
       throw new Error(
-        "施設リンクを取得できませんでした"
+        "ラビスタ富士河口湖のリンクが取得できませんでした"
       );
     }
 
@@ -72,6 +73,10 @@ const { chromium } = require("playwright");
     console.log("施設ページ:");
     console.log(facilityUrl);
 
+    // ==========================================
+    // 施設ページ
+    // ==========================================
+
     await page.goto(facilityUrl, {
       waitUntil: "domcontentloaded",
       timeout: 60000
@@ -79,192 +84,141 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(3000);
 
+    console.log("================");
+    console.log("タイトル:");
+    console.log(await page.title());
+
     // ==========================================
-    // ページ本文
+    // 画面に表示されている全要素を調査
     // ==========================================
 
     console.log("================");
-    console.log("ページ内容:");
-
-    const text =
-      await page.locator("body").innerText();
-
-    console.log(text.slice(0, 10000));
-
-    // ==========================================
-    // FORM
-    // ==========================================
-
-    console.log("================");
-    console.log("FORM");
-
-    const forms = page.locator("form");
-    const formCount = await forms.count();
-
-    console.log(
-      "フォーム数:",
-      formCount
-    );
-
-    for (let i = 0; i < formCount; i++) {
-
-      const form = forms.nth(i);
-
-      console.log(
-        "FORM",
-        i
-      );
-
-      console.log(
-        "action:",
-        await form.getAttribute("action")
-      );
-
-      console.log(
-        "method:",
-        await form.getAttribute("method")
-      );
-
-      console.log(
-        await form.innerText().catch(() => "")
-      );
-    }
-
-    // ==========================================
-    // INPUT
-    // ==========================================
-
-    console.log("================");
-    console.log("INPUT");
-
-    const inputs = page.locator("input");
-    const inputCount = await inputs.count();
-
-    console.log(
-      "input数:",
-      inputCount
-    );
-
-    for (let i = 0; i < inputCount; i++) {
-
-      const input = inputs.nth(i);
-
-      console.log(
-        "INPUT",
-        i,
-        "type=",
-        await input.getAttribute("type"),
-        "name=",
-        await input.getAttribute("name"),
-        "value=",
-        await input.getAttribute("value"),
-        "id=",
-        await input.getAttribute("id"),
-        "class=",
-        await input.getAttribute("class")
-      );
-    }
-
-    // ==========================================
-    // BUTTON
-    // ==========================================
-
-    console.log("================");
-    console.log("BUTTON");
-
-    const buttons = page.locator("button");
-    const buttonCount = await buttons.count();
-
-    console.log(
-      "button数:",
-      buttonCount
-    );
-
-    for (let i = 0; i < buttonCount; i++) {
-
-      const button = buttons.nth(i);
-
-      console.log(
-        "BUTTON",
-        i,
-        "text=",
-        (
-          await button.innerText().catch(() => "")
-        ).trim(),
-        "type=",
-        await button.getAttribute("type"),
-        "name=",
-        await button.getAttribute("name"),
-        "value=",
-        await button.getAttribute("value"),
-        "id=",
-        await button.getAttribute("id")
-      );
-    }
-
-    // ==========================================
-    // SELECT
-    // ==========================================
-
-    console.log("================");
-    console.log("SELECT");
-
-    const selects = page.locator("select");
-    const selectCount = await selects.count();
-
-    console.log(
-      "select数:",
-      selectCount
-    );
-
-    for (let i = 0; i < selectCount; i++) {
-
-      const select = selects.nth(i);
-
-      console.log(
-        "SELECT",
-        i,
-        "name=",
-        await select.getAttribute("name"),
-        "id=",
-        await select.getAttribute("id")
-      );
-
-      const options =
-        select.locator("option");
-
-      const optionCount =
-        await options.count();
-
-      for (let j = 0; j < optionCount; j++) {
-
-        const option =
-          options.nth(j);
-
-        console.log(
-          "  OPTION:",
-          (
-            await option.innerText().catch(() => "")
-          ).trim(),
-          "value=",
-          await option.getAttribute("value")
-        );
-      }
-    }
-
-    // ==========================================
-    // ページ内HTMLの先頭部分
-    // ==========================================
-
-    console.log("================");
-    console.log("HTML確認");
+    console.log("申込対象サービス周辺のHTML");
 
     const html =
       await page.content();
 
+    const keyword =
+      "申込対象サービス";
+
+    const index =
+      html.indexOf(keyword);
+
     console.log(
-      html.slice(0, 20000)
+      "キーワード位置:",
+      index
     );
+
+    if (index >= 0) {
+
+      console.log(
+        html.substring(
+          Math.max(0, index - 5000),
+          Math.min(
+            html.length,
+            index + 10000
+          )
+        )
+      );
+
+    } else {
+
+      console.log(
+        "申込対象サービスがHTML内にありません"
+      );
+    }
+
+    // ==========================================
+    // input / button / select / textarea
+    // ==========================================
+
+    console.log("================");
+    console.log("INPUT / BUTTON / SELECT");
+
+    const elements =
+      page.locator(
+        "input, button, select, textarea"
+      );
+
+    const count =
+      await elements.count();
+
+    console.log(
+      "対象要素数:",
+      count
+    );
+
+    for (let i = 0; i < count; i++) {
+
+      const element =
+        elements.nth(i);
+
+      console.log(
+        "ELEMENT",
+        i,
+        "tag=",
+        await element.evaluate(
+          el => el.tagName
+        ),
+        "type=",
+        await element.getAttribute("type"),
+        "name=",
+        await element.getAttribute("name"),
+        "value=",
+        await element.getAttribute("value"),
+        "id=",
+        await element.getAttribute("id"),
+        "class=",
+        await element.getAttribute("class"),
+        "text=",
+        (
+          await element.innerText().catch(() => "")
+        ).trim()
+      );
+    }
+
+    // ==========================================
+    // JavaScript onclick 属性
+    // ==========================================
+
+    console.log("================");
+    console.log("ONCLICK要素");
+
+    const clickable =
+      page.locator("[onclick]");
+
+    const clickableCount =
+      await clickable.count();
+
+    console.log(
+      "onclick要素数:",
+      clickableCount
+    );
+
+    for (
+      let i = 0;
+      i < clickableCount;
+      i++
+    ) {
+
+      const element =
+        clickable.nth(i);
+
+      console.log(
+        "ONCLICK",
+        i,
+        "tag=",
+        await element.evaluate(
+          el => el.tagName
+        ),
+        "text=",
+        (
+          await element.innerText().catch(() => "")
+        ).trim(),
+        "onclick=",
+        await element.getAttribute("onclick")
+      );
+    }
 
   } catch (error) {
 
