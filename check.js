@@ -15,49 +15,43 @@ const { chromium } = require("playwright");
   const url = process.env.ITS_KENPO_URL_2;
 
   try {
-    console.log("================");
-    console.log("新しいURLを確認します");
-
     await page.goto(url, {
       waitUntil: "domcontentloaded",
       timeout: 60000
     });
 
-    await page.waitForTimeout(3000);
-
-    console.log("現在のURL:");
-    console.log(page.url());
+    await page.waitForTimeout(2000);
 
     console.log("================");
-    console.log("空き照会リンクを探します");
+    console.log("施設選択ページ");
+    console.log(page.url());
 
-    const link = page.getByText(
-      "直営・通年・夏季・冬季保養施設(空き照会)",
+    const facility = page.getByText(
+      "ラビスタ富士河口湖",
       { exact: true }
     ).first();
 
     console.log(
-      "リンク数:",
+      "施設リンク数:",
       await page.getByText(
-        "直営・通年・夏季・冬季保養施設(空き照会)",
+        "ラビスタ富士河口湖",
         { exact: true }
       ).count()
     );
 
-    await link.waitFor({
+    await facility.waitFor({
       state: "visible",
       timeout: 30000
     });
 
-    console.log("リンク発見！");
-    console.log("クリックします");
+    console.log("ラビスタ富士河口湖をクリック");
 
-    await link.click();
+    await facility.click();
 
     await page.waitForTimeout(3000);
 
     console.log("================");
-    console.log("クリック後のURL:");
+    console.log("クリック後URL:");
     console.log(page.url());
 
     console.log("================");
