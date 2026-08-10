@@ -113,10 +113,44 @@ const { chromium } = require("playwright");
           index + 5000
         )
       );
+console.log("================");
+console.log("申込対象サービス周辺の要素");
 
-    console.log("================");
-    console.log("周辺HTML:");
-    console.log(section);
+const serviceElements = page.locator(
+  'input, button, select, a, label, div, li'
+);
+
+const elementCount = await serviceElements.count();
+
+for (let i = 0; i < elementCount; i++) {
+  const el = serviceElements.nth(i);
+
+  const text = (
+    await el.innerText().catch(() => "")
+  ).trim();
+
+  if (
+    text &&
+    text.includes("申込")
+  ) {
+    console.log(
+      "TAG:",
+      await el.evaluate(el => el.tagName)
+    );
+
+    console.log(
+      "TEXT:",
+      text
+    );
+
+    console.log(
+      "HTML:",
+      await el.evaluate(el => el.outerHTML)
+    );
+
+    console.log("----------------");
+  }
+}
 
     // ==========================================
     // FORM
