@@ -22,53 +22,77 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(2000);
 
-    console.log("================");
-    console.log("施設選択ページ");
-    console.log(page.url());
-
-    const facility = page.getByText(
-      "ラビスタ富士河口湖",
+    // 「空き照会」を開く
+    const vacancyLink = page.getByText(
+      "直営・通年・夏季・冬季保養施設(空き照会)",
       { exact: true }
     ).first();
 
-    console.log(
-      "施設リンク数:",
-      await page.getByText(
-        "ラビスタ富士河口湖",
-        { exact: true }
-      ).count()
-    );
-
-    await facility.waitFor({
+    await vacancyLink.waitFor({
       state: "visible",
       timeout: 30000
     });
 
-    console.log("ラビスタ富士河口湖をクリック");
+    await vacancyLink.click();
 
-    await facility.click();
-
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(2000);
 
     console.log("================");
-    console.log("クリック後URL:");
+    console.log("施設選択ページ:");
     console.log(page.url());
 
     console.log("================");
-    console.log("タイトル:");
-    console.log(await page.title());
+    console.log("ラビスタ周辺のHTMLを探します");
+
+    const html = await page.content();
+
+    const index = html.indexOf("ラビスタ富士河口湖");
+
+    console.log("文字の位置:", index);
+
+    if (index >= 0) {
+      console.log("================");
+      console.log(
+        html.substring(
+          Math.max(0, index - 1500),
+          index + 1500
+        )
+      );
+    } else {
+      console.log(
+        "ラビスタ富士河口湖がHTML内にありません"
+      );
+    }
 
     console.log("================");
-    console.log("HTML length:");
-    console.log((await page.content()).length);
+    console.log("施設関連リンク一覧");
 
-    console.log("================");
-    console.log("ページ内容:");
+    const links = page.locator("a");
+    const count = await links.count();
 
-    const text =
-      await page.locator("body").innerText();
+    for (let i = 0; i < count; i++) {
+      const link = links.nth(i);
 
-    console.log(text.slice(0, 15000));
+      const text = (
+        await link.innerText().catch(() => "")
+      ).trim();
+
+      if (
+        text.includes("ラビスタ") ||
+        text.includes("富士") ||
+        text.includes("ホテル")
+      ) {
+        console.log(
+          "TEXT:",
+          text
+        );
+
+        console.log(
+          "HREF:",
+          await link.getAttribute("href")
+        );
+      }
+    }
 
   } catch (error) {
 
