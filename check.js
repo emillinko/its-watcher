@@ -1,7 +1,6 @@
 const { chromium } = require("playwright");
 
 (async () => {
-
   const browser = await chromium.launch({
     headless: true
   });
@@ -13,453 +12,396 @@ const { chromium } = require("playwright");
     }
   });
 
-  const url = process.env.ITS_KENPO_URL_2;
+  const url = process.env.ITS_KENPO_URL;
+
+  const hotels = [
+    "フルーツパーク富士屋ホテル",
+    "ラビスタ富士河口湖"
+  ];
+
+  const allEmpty = [];
+
+  // ==========================================
+  // 今月を含めて3ヶ月
+  // ==========================================
+
+  const today = new Date();
+  const targetMonths = [];
+
+  for (let i = 0; i < 3; i++) {
+    const date = new Date(
+      today.getFullYear(),
+      today.getMonth() + i,
+      1
+    );
+
+    targetMonths.push({
+      year: date.getFullYear(),
+      month: date.getMonth() + 1
+    });
+  }
+
+  console.log("================");
+  console.log("チェック対象月:");
+
+  for (const item of targetMonths) {
+    console.log(
+      item.year +
+      "年" +
+      String(item.month).padStart(2, "0") +
+      "月"
+    );
+  }
 
   try {
-
     // ==========================================
-    // ① トップページ
-    // ==========================================
-
-    console.log("================");
-    console.log("トップページへ");
-
-    await page.goto(url, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000
-    });
-
-    await page.waitForTimeout(3000);
-
-    // ==========================================
-    // ② 空き照会
+    // ホテルごとにチェック
     // ==========================================
 
-    console.log("================");
-    console.log("空き照会ページへ");
+    for (const hotel of hotels) {
+      console.log("================");
+      console.log("ホテル:", hotel);
 
-    const vacancyLink = page.getByText(
-      "直営・通年・夏季・冬季保養施設(空き照会)",
-      {
-        exact: true
-      }
-    ).first();
-
-    await vacancyLink.waitFor({
-      state: "visible",
-      timeout: 30000
-    });
-
-    await vacancyLink.click();
-
-    await page.waitForTimeout(3000);
-
-    console.log(
-      "現在URL:",
-      page.url()
-    );
-
-    // ==========================================
-    // ③ ラビスタ富士河口湖のリンクを取得
-    // ==========================================
-
-    console.log("================");
-    console.log("施設リンクを検索");
-
-    const links = page.locator("a");
-
-    const linkCount =
-      await links.count();
-
-    console.log(
-      "リンク数:",
-      linkCount
-    );
-
-    let facilityUrl = null;
-
-    for (
-      let i = 0;
-      i < linkCount;
-      i++
-    ) {
-
-      const link =
-        links.nth(i);
-
-      const text = (
-        await link.innerText()
-          .catch(() => "")
-      ).trim();
-
-      const href =
-        await link.getAttribute("href");
-
-      if (
-        text.includes(
-          "ラビスタ富士河口湖"
-        )
-      ) {
-
-        console.log(
-          "施設発見:",
-          text
-        );
-
-        console.log(
-          "HREF:",
-          href
-        );
-
-        if (href) {
-          facilityUrl =
-            new URL(
-              href,
-              page.url()
-            ).href;
-        }
-
-        break;
-      }
-    }
-
-    if (!facilityUrl) {
-      throw new Error(
-        "ラビスタ富士河口湖の施設URLが見つかりません"
-      );
-    }
-
-    console.log("================");
-    console.log(
-      "施設URL:",
-      facilityUrl
-    );
-
-    // ==========================================
-    // ④ 施設ページ
-    // ==========================================
-
-    await page.goto(
-      facilityUrl,
-      {
+      await page.goto(url, {
         waitUntil: "domcontentloaded",
         timeout: 60000
-      }
-    );
+      });
 
-    await page.waitForTimeout(5000);
-
-    console.log("================");
-    console.log(
-      "施設ページURL:",
-      page.url()
-    );
-
-    console.log(
-      "タイトル:",
-      await page.title()
-    );
-
-    // ==========================================
-    // ⑤ body確認
-    // ==========================================
-
-    const bodyText =
-      await page.locator("body").innerText();
-
-    console.log("================");
-    console.log("ページ内容:");
-
-    console.log(
-      bodyText.slice(0, 5000)
-    );
-
-    // ==========================================
-    // ⑥ 「申込対象サービス」を探す
-    // ==========================================
-
-    console.log("================");
-    console.log(
-      "申込対象サービスを検索"
-    );
-
-    const serviceText =
-      page.getByText(
-        "申込対象サービス",
-        {
+      // ホテルをクリック
+      const hotelLink =
+        page.getByText(hotel, {
           exact: true
+        }).first();
+
+      await hotelLink.waitFor({
+        state: "visible",
+        timeout: 30000
+      });
+
+      await hotelLink.click();
+
+      // カレンダーを待つ
+      const calendarLocator =
+        page.locator('[id^="tcb"]:visible').first();
+
+      await calendarLocator.waitFor({
+        state: "visible",
+        timeout: 30000
+      });
+
+      // ==========================================
+      // 現在の月を取得
+      // ==========================================
+
+      const getVisibleMonth = async () => {
+        const calendar =
+          page.locator('[id^="tcb"]:visible').first();
+
+        if (await calendar.count() === 0) {
+          return null;
         }
-      ).first();
 
-    const serviceCount =
-      await serviceText.count();
+        const monthText =
+          await calendar
+            .locator(".month")
+            .first()
+            .textContent();
 
-    console.log(
-      "見つかった数:",
-      serviceCount
-    );
+        return monthText
+          ? monthText.trim()
+          : null;
+      };
 
-    if (serviceCount === 0) {
-      throw new Error(
-        "申込対象サービスが見つかりません"
-      );
-    }
-
-    // ==========================================
-    // ⑦ タグ情報
-    // ==========================================
-
-    console.log("================");
-    console.log(
-      "申込対象サービスのタグ"
-    );
-
-    console.log(
-      "TAG:",
-      await serviceText.evaluate(
-        el => el.tagName
-      )
-    );
-
-    console.log(
-      "CLASS:",
-      await serviceText.getAttribute(
-        "class"
-      )
-    );
-
-    console.log(
-      "ID:",
-      await serviceText.getAttribute(
-        "id"
-      )
-    );
-
-    // ==========================================
-    // ⑧ 親要素
-    // ==========================================
-
-    console.log("================");
-    console.log(
-      "親要素HTML"
-    );
-
-    const parentHTML =
-      await serviceText.evaluate(
-        el => {
-          let parent =
-            el.parentElement;
-
-          return parent
-            ? parent.outerHTML
-            : "";
-        }
-      );
-
-    console.log(
-      parentHTML.slice(0, 10000)
-    );
-
-    // ==========================================
-    // ⑨ さらに親
-    // ==========================================
-
-    console.log("================");
-    console.log(
-      "2階層上のHTML"
-    );
-
-    const grandParentHTML =
-      await serviceText.evaluate(
-        el => {
-          let parent =
-            el.parentElement;
-
-          let grand =
-            parent
-              ? parent.parentElement
-              : null;
-
-          return grand
-            ? grand.outerHTML
-            : "";
-        }
-      );
-
-    console.log(
-      grandParentHTML.slice(0, 15000)
-    );
-
-    // ==========================================
-    // ⑩ 3階層上
-    // ==========================================
-
-    console.log("================");
-    console.log(
-      "3階層上のHTML"
-    );
-
-    const greatParentHTML =
-      await serviceText.evaluate(
-        el => {
-
-          let parent =
-            el.parentElement;
-
-          let grand =
-            parent
-              ? parent.parentElement
-              : null;
-
-          let great =
-            grand
-              ? grand.parentElement
-              : null;
-
-          return great
-            ? great.outerHTML
-            : "";
-        }
-      );
-
-    console.log(
-      greatParentHTML.slice(0, 20000)
-    );
-
-    // ==========================================
-    // ⑪ ページ内のリンクを再調査
-    // ==========================================
-
-    console.log("================");
-    console.log(
-      "現在ページのリンク一覧"
-    );
-
-    const pageLinks =
-      page.locator("a");
-
-    const pageLinkCount =
-      await pageLinks.count();
-
-    console.log(
-      "リンク数:",
-      pageLinkCount
-    );
-
-    for (
-      let i = 0;
-      i < pageLinkCount;
-      i++
-    ) {
-
-      const link =
-        pageLinks.nth(i);
-
-      const text = (
-        await link.innerText()
-          .catch(() => "")
-      ).trim();
-
-      const href =
-        await link.getAttribute("href");
-
-      if (
-        text ||
-        href
-      ) {
-
-        console.log(
-          "LINK",
-          i,
-          "TEXT:",
-          text
-        );
-
-        console.log(
-          "HREF:",
-          href
-        );
-      }
-    }
-
-    // ==========================================
-    // ⑫ input一覧
-    // ==========================================
-
-    console.log("================");
-    console.log(
-      "INPUT一覧"
-    );
-
-    const inputs =
-      page.locator("input");
-
-    const inputCount =
-      await inputs.count();
-
-    console.log(
-      "INPUT数:",
-      inputCount
-    );
-
-    for (
-      let i = 0;
-      i < inputCount;
-      i++
-    ) {
-
-      const input =
-        inputs.nth(i);
+      let currentMonth =
+        await getVisibleMonth();
 
       console.log(
-        JSON.stringify({
-          type:
-            await input.getAttribute(
-              "type"
-            ),
-
-          name:
-            await input.getAttribute(
-              "name"
-            ),
-
-          value:
-            await input.getAttribute(
-              "value"
-            ),
-
-          id:
-            await input.getAttribute(
-              "id"
-            ),
-
-          class:
-            await input.getAttribute(
-              "class"
-            ),
-
-          onclick:
-            await input.getAttribute(
-              "onclick"
-            )
-        })
+        "最初の表示月:",
+        currentMonth
       );
+
+      // ==========================================
+      // 最初の対象月まで移動
+      // ==========================================
+
+      const firstTarget =
+        targetMonths[0];
+
+      const targetMonthText =
+        firstTarget.year +
+        "年" +
+        String(firstTarget.month).padStart(2, "0") +
+        "月";
+
+      let safety = 0;
+
+      while (
+        currentMonth &&
+        !currentMonth.includes(targetMonthText) &&
+        safety < 12
+      ) {
+        const nextButton =
+          page.locator(
+            'input.next-month:visible'
+          ).first();
+
+        await nextButton.waitFor({
+          state: "visible",
+          timeout: 10000
+        });
+
+        await nextButton.click();
+
+        await page.waitForTimeout(500);
+
+        currentMonth =
+          await getVisibleMonth();
+
+        console.log(
+          "移動後:",
+          currentMonth
+        );
+
+        safety++;
+      }
+
+      if (!currentMonth) {
+        throw new Error(
+          "カレンダーの月を取得できませんでした"
+        );
+      }
+
+      if (!currentMonth.includes(targetMonthText)) {
+        throw new Error(
+          "最初の対象月まで移動できませんでした"
+        );
+      }
+
+      // ==========================================
+      // 3ヶ月チェック
+      // ==========================================
+
+      for (
+        let monthIndex = 0;
+        monthIndex < 3;
+        monthIndex++
+      ) {
+        const target =
+          targetMonths[monthIndex];
+
+        console.log("================");
+        console.log(
+          "月チェック: " +
+          target.year +
+          "年" +
+          String(target.month).padStart(2, "0") +
+          "月"
+        );
+
+        const calendar =
+          page.locator(
+            '[id^="tcb"]:visible'
+          ).first();
+
+        await calendar.waitFor({
+          state: "visible",
+          timeout: 10000
+        });
+
+        const monthText =
+          await calendar
+            .locator(".month")
+            .first()
+            .textContent();
+
+        console.log(
+          "対象月:",
+          monthText
+            ? monthText.trim()
+            : "不明"
+        );
+
+        // ========================================
+        // 日付・空き状況取得
+        // ========================================
+
+        const cells =
+          calendar.locator(
+            'td[data-join-time]'
+          );
+
+        const cellCount =
+          await cells.count();
+
+        console.log(
+          "日付セル数:",
+          cellCount
+        );
+
+        for (
+          let i = 0;
+          i < cellCount;
+          i++
+        ) {
+          const cell =
+            cells.nth(i);
+
+          const date =
+            await cell.getAttribute(
+              "data-join-time"
+            );
+
+          const statusElement =
+            cell.locator(".icon").first();
+
+          if (
+            !date ||
+            await statusElement.count() === 0
+          ) {
+            continue;
+          }
+
+          const status =
+            await statusElement.textContent();
+
+          if (!status) {
+            continue;
+          }
+
+          const cleanStatus =
+            status.trim();
+
+          console.log(
+            date,
+            cleanStatus
+          );
+
+          if (
+            cleanStatus === "○" ||
+            cleanStatus === "△"
+          ) {
+            allEmpty.push({
+              hotel: hotel,
+              date: date,
+              status: cleanStatus
+            });
+          }
+        }
+
+        // ========================================
+        // 次の月へ
+        // ========================================
+
+        if (monthIndex < 2) {
+          const nextButton =
+            page.locator(
+              'input.next-month:visible'
+            ).first();
+
+          await nextButton.waitFor({
+            state: "visible",
+            timeout: 10000
+          });
+
+          await nextButton.click();
+
+          await page.waitForTimeout(500);
+        }
+      }
     }
 
     // ==========================================
-    // ⑬ 完了
+    // 結果
     // ==========================================
 
     console.log("================");
-    console.log(
-      "HTML調査完了"
-    );
+
+    if (allEmpty.length === 0) {
+      console.log(
+        "3ヶ月間、空きなし"
+      );
+    } else {
+      console.log(
+        "★★ 空き発見 ★★"
+      );
+
+      for (const item of allEmpty) {
+        console.log(
+          item.hotel,
+          item.date,
+          item.status
+        );
+      }
+
+      // ========================================
+      // Discord通知
+      // ========================================
+
+      const webhookUrl =
+        process.env.DISCORD_WEBHOOK_URL;
+
+      if (!webhookUrl) {
+        console.log(
+          "DISCORD_WEBHOOK_URL が設定されていません"
+        );
+      } else {
+        let message =
+          "🚨 **ITS健保 空き発見！**\n\n";
+
+        for (const item of allEmpty) {
+          message +=
+            "🏨 " +
+            item.hotel +
+            "\n" +
+            "📅 " +
+            item.date +
+            "\n" +
+            "空き状況: " +
+            item.status +
+            "\n\n";
+        }
+
+        message +=
+          "○ = 空きあり\n" +
+          "△ = 残りわずか\n\n" +
+          "🔗 **予約サイトはこちら**\n" +
+          url;
+
+        const response =
+          await fetch(
+            webhookUrl,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                content: message
+              })
+            }
+          );
+
+        if (response.ok) {
+          console.log(
+            "Discord通知成功！"
+          );
+        } else {
+          console.log(
+            "Discord通知失敗:",
+            response.status
+          );
+
+          console.log(
+            await response.text()
+          );
+        }
+      }
+    }
 
   } catch (error) {
-
-    console.error("================");
     console.error(
-      "エラー発生"
+      "★★ エラー発生 ★★"
     );
 
     console.error(
@@ -469,9 +411,6 @@ const { chromium } = require("playwright");
     process.exitCode = 1;
 
   } finally {
-
     await browser.close();
-
   }
-
 })();
