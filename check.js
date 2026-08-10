@@ -16,7 +16,7 @@ const { chromium } = require("playwright");
 
   try {
     // ==========================================
-    // 施設選択ページへ
+    // 施設選択ページ
     // ==========================================
 
     await page.goto(url, {
@@ -61,7 +61,7 @@ const { chromium } = require("playwright");
 
     if (!href) {
       throw new Error(
-        "ラビスタ富士河口湖のリンクが取得できませんでした"
+        "施設リンクを取得できませんでした"
       );
     }
 
@@ -79,9 +79,9 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(3000);
 
-    console.log("================");
-    console.log("施設ページタイトル:");
-    console.log(await page.title());
+    // ==========================================
+    // ページ本文
+    // ==========================================
 
     console.log("================");
     console.log("ページ内容:");
@@ -92,50 +92,179 @@ const { chromium } = require("playwright");
     console.log(text.slice(0, 10000));
 
     // ==========================================
-    // 申込対象サービスのリンクを調査
+    // FORM
     // ==========================================
 
     console.log("================");
-    console.log("申込対象サービスのリンク");
+    console.log("FORM");
 
-    const links = page.locator("a");
-    const count = await links.count();
+    const forms = page.locator("form");
+    const formCount = await forms.count();
 
     console.log(
-      "リンク数:",
-      count
+      "フォーム数:",
+      formCount
     );
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < formCount; i++) {
 
-      const link = links.nth(i);
+      const form = forms.nth(i);
 
-      const linkText = (
-        await link.innerText().catch(() => "")
-      ).trim();
+      console.log(
+        "FORM",
+        i
+      );
 
-      const linkHref =
-        await link.getAttribute("href");
+      console.log(
+        "action:",
+        await form.getAttribute("action")
+      );
 
-      if (
-        linkText &&
-        linkHref
-      ) {
+      console.log(
+        "method:",
+        await form.getAttribute("method")
+      );
+
+      console.log(
+        await form.innerText().catch(() => "")
+      );
+    }
+
+    // ==========================================
+    // INPUT
+    // ==========================================
+
+    console.log("================");
+    console.log("INPUT");
+
+    const inputs = page.locator("input");
+    const inputCount = await inputs.count();
+
+    console.log(
+      "input数:",
+      inputCount
+    );
+
+    for (let i = 0; i < inputCount; i++) {
+
+      const input = inputs.nth(i);
+
+      console.log(
+        "INPUT",
+        i,
+        "type=",
+        await input.getAttribute("type"),
+        "name=",
+        await input.getAttribute("name"),
+        "value=",
+        await input.getAttribute("value"),
+        "id=",
+        await input.getAttribute("id"),
+        "class=",
+        await input.getAttribute("class")
+      );
+    }
+
+    // ==========================================
+    // BUTTON
+    // ==========================================
+
+    console.log("================");
+    console.log("BUTTON");
+
+    const buttons = page.locator("button");
+    const buttonCount = await buttons.count();
+
+    console.log(
+      "button数:",
+      buttonCount
+    );
+
+    for (let i = 0; i < buttonCount; i++) {
+
+      const button = buttons.nth(i);
+
+      console.log(
+        "BUTTON",
+        i,
+        "text=",
+        (
+          await button.innerText().catch(() => "")
+        ).trim(),
+        "type=",
+        await button.getAttribute("type"),
+        "name=",
+        await button.getAttribute("name"),
+        "value=",
+        await button.getAttribute("value"),
+        "id=",
+        await button.getAttribute("id")
+      );
+    }
+
+    // ==========================================
+    // SELECT
+    // ==========================================
+
+    console.log("================");
+    console.log("SELECT");
+
+    const selects = page.locator("select");
+    const selectCount = await selects.count();
+
+    console.log(
+      "select数:",
+      selectCount
+    );
+
+    for (let i = 0; i < selectCount; i++) {
+
+      const select = selects.nth(i);
+
+      console.log(
+        "SELECT",
+        i,
+        "name=",
+        await select.getAttribute("name"),
+        "id=",
+        await select.getAttribute("id")
+      );
+
+      const options =
+        select.locator("option");
+
+      const optionCount =
+        await options.count();
+
+      for (let j = 0; j < optionCount; j++) {
+
+        const option =
+          options.nth(j);
+
         console.log(
-          "TEXT:",
-          linkText
-        );
-
-        console.log(
-          "HREF:",
-          linkHref
-        );
-
-        console.log(
-          "----------------"
+          "  OPTION:",
+          (
+            await option.innerText().catch(() => "")
+          ).trim(),
+          "value=",
+          await option.getAttribute("value")
         );
       }
     }
+
+    // ==========================================
+    // ページ内HTMLの先頭部分
+    // ==========================================
+
+    console.log("================");
+    console.log("HTML確認");
+
+    const html =
+      await page.content();
+
+    console.log(
+      html.slice(0, 20000)
+    );
 
   } catch (error) {
 
