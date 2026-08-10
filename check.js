@@ -40,12 +40,8 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(2000);
 
-    console.log("================");
-    console.log("施設選択ページ:");
-    console.log(page.url());
-
     // ==========================================
-    // ラビスタ富士河口湖のリンク取得
+    // ラビスタ富士河口湖
     // ==========================================
 
     const facilityLink = page.locator(
@@ -63,25 +59,17 @@ const { chromium } = require("playwright");
     const href =
       await facilityLink.getAttribute("href");
 
-    console.log("================");
-    console.log("ラビスタ富士河口湖 HREF:");
-    console.log(href);
-
     if (!href) {
       throw new Error(
-        "施設ページのリンクが取得できませんでした"
+        "ラビスタ富士河口湖のリンクが取得できませんでした"
       );
     }
-
-    // ==========================================
-    // 施設ページへ直接移動
-    // ==========================================
 
     const facilityUrl =
       new URL(href, page.url()).href;
 
     console.log("================");
-    console.log("施設ページへ移動:");
+    console.log("施設ページ:");
     console.log(facilityUrl);
 
     await page.goto(facilityUrl, {
@@ -91,25 +79,9 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(3000);
 
-    // ==========================================
-    // ページ情報
-    // ==========================================
-
     console.log("================");
-    console.log("実際のURL:");
-    console.log(page.url());
-
-    console.log("================");
-    console.log("タイトル:");
+    console.log("施設ページタイトル:");
     console.log(await page.title());
-
-    console.log("================");
-    console.log("HTML length:");
-    console.log((await page.content()).length);
-
-    // ==========================================
-    // ページ本文
-    // ==========================================
 
     console.log("================");
     console.log("ページ内容:");
@@ -117,65 +89,53 @@ const { chromium } = require("playwright");
     const text =
       await page.locator("body").innerText();
 
-    console.log(text.slice(0, 15000));
+    console.log(text.slice(0, 10000));
 
     // ==========================================
-    // カレンダー関連の要素を調査
+    // 申込対象サービスのリンクを調査
     // ==========================================
 
     console.log("================");
-    console.log("カレンダー候補");
+    console.log("申込対象サービスのリンク");
 
-    const calendars =
-      page.locator('[id^="tcb"]');
+    const links = page.locator("a");
+    const count = await links.count();
 
     console.log(
-      "tcb要素数:",
-      await calendars.count()
+      "リンク数:",
+      count
     );
 
-    for (
-      let i = 0;
-      i < await calendars.count();
-      i++
-    ) {
-      const calendar =
-        calendars.nth(i);
+    for (let i = 0; i < count; i++) {
 
-      console.log(
-        "ID:",
-        await calendar.getAttribute("id")
-      );
+      const link = links.nth(i);
 
-      console.log(
-        "表示:",
-        await calendar.isVisible().catch(() => false)
-      );
+      const linkText = (
+        await link.innerText().catch(() => "")
+      ).trim();
+
+      const linkHref =
+        await link.getAttribute("href");
+
+      if (
+        linkText &&
+        linkHref
+      ) {
+        console.log(
+          "TEXT:",
+          linkText
+        );
+
+        console.log(
+          "HREF:",
+          linkHref
+        );
+
+        console.log(
+          "----------------"
+        );
+      }
     }
-
-    // ==========================================
-    // ○ △ × を探す
-    // ==========================================
-
-    console.log("================");
-    console.log("空き状況記号");
-
-    const bodyText = text;
-
-    console.log(
-      "○ の数:",
-      (bodyText.match(/○/g) || []).length
-    );
-
-    console.log(
-      "△ の数:",
-      (bodyText.match(/△/g) || []).length
-    );
-
-    console.log(
-      "× の数:",
-      (bodyText.match(/×/g) || []).length
-    );
 
   } catch (error) {
 
