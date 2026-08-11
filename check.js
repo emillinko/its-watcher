@@ -18,7 +18,12 @@ const { chromium } = require("playwright");
   try {
 
     console.log("================");
-    console.log("ITS健保へアクセス");
+    console.log("ITS_KENPO_URL:");
+
+    console.log(url);
+
+    console.log("================");
+    console.log("アクセス開始");
 
     await page.goto(url, {
       waitUntil: "domcontentloaded",
@@ -27,128 +32,116 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(3000);
 
-    console.log(
-      "現在URL:",
-      page.url()
-    );
+    console.log("================");
+    console.log("実際のURL:");
 
-    console.log(
-      "タイトル:",
-      await page.title()
-    );
+    console.log(page.url());
 
-    // ==========================================
-    // ページ内容
-    // ==========================================
+    console.log("================");
+    console.log("タイトル:");
 
-    const text =
+    console.log(await page.title());
+
+    console.log("================");
+    console.log("HTML length:");
+
+    const html =
+      await page.content();
+
+    console.log(html.length);
+
+    console.log("================");
+    console.log("body:");
+
+    const body =
       await page.locator("body").innerText();
 
-    console.log("================");
-    console.log("ページ内容:");
-
     console.log(
-      text.slice(0, 10000)
+      body.slice(0, 15000)
     );
 
-    // ==========================================
-    // 施設名を探す
-    // ==========================================
+    console.log("================");
+    console.log("施設名検索:");
 
-    const hotels = [
+    const names = [
       "フルーツパーク富士屋ホテル",
-      "ラビスタ富士河口湖"
+      "ラビスタ富士河口湖",
+      "草津温泉　ホテルヴィレッジ"
     ];
 
-    console.log("================");
-    console.log("指定施設チェック");
-
-    for (const hotel of hotels) {
-
-      const count =
-        await page.getByText(
-          hotel,
-          {
-            exact: true
-          }
-        ).count();
+    for (const name of names) {
 
       console.log(
-        hotel,
+        name,
         "=>",
-        count
+        html.includes(name)
       );
     }
 
-    // ==========================================
-    // すべてのリンクを調査
-    // ==========================================
-
     console.log("================");
-    console.log("リンク調査");
+    console.log("リンク数:");
 
     const links =
       page.locator("a");
 
-    const linkCount =
-      await links.count();
+    console.log(
+      await links.count()
+    );
+
+    console.log("================");
+    console.log(
+      "href に apply_service を含むリンク:"
+    );
+
+    const applyLinks =
+      page.locator(
+        'a[href*="apply_service"]'
+      );
+
+    const applyCount =
+      await applyLinks.count();
 
     console.log(
-      "リンク数:",
-      linkCount
+      "件数:",
+      applyCount
     );
 
     for (
       let i = 0;
-      i < linkCount;
+      i < applyCount;
       i++
     ) {
 
       const link =
-        links.nth(i);
+        applyLinks.nth(i);
 
-      const linkText = (
-        await link.innerText()
-          .catch(() => "")
-      ).trim();
+      console.log(
+        "TEXT:",
+        (
+          await link.innerText()
+            .catch(() => "")
+        ).trim()
+      );
 
-      const href =
-        await link.getAttribute("href");
+      console.log(
+        "HREF:",
+        await link.getAttribute(
+          "href"
+        )
+      );
 
-      if (
-        linkText.includes("ホテル") ||
-        linkText.includes("ラビスタ") ||
-        linkText.includes("富士") ||
-        linkText.includes("ヴィレッジ")
-      ) {
-
-        console.log(
-          "TEXT:",
-          linkText
-        );
-
-        console.log(
-          "HREF:",
-          href
-        );
-
-        console.log(
-          "----------------"
-        );
-      }
+      console.log(
+        "----------------"
+      );
     }
 
     console.log("================");
-    console.log(
-      "施設リンク調査終了"
-    );
+    console.log("調査終了");
 
   } catch (error) {
 
     console.error("================");
-    console.error(
-      "★★ エラー発生 ★★"
-    );
+    console.error("エラー:");
 
     console.error(
       error.message
