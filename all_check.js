@@ -1,23 +1,12 @@
 const { chromium } = require("playwright");
 
 (async () => {
-
-  const browser = await chromium.launch({
-    headless: true
-  });
-
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({
-    viewport: {
-      width: 1400,
-      height: 1200
-    }
+    viewport: { width: 1400, height: 1200 }
   });
 
   const url = process.env.ITS_KENPO_URL;
-
-  // ==========================================
-  // 監視する全施設
-  // ==========================================
 
   const facilities = [
     "トスラブ箱根ビオーレ",
@@ -62,511 +51,120 @@ const { chromium } = require("playwright");
     "フルーツパーク富士屋ホテル"
   ];
 
-  const allEmpty = [];
+  const now = new Date();
+  const results = [];
 
-  // ==========================================
-  // 今月を含めて3ヶ月
-  // ==========================================
+  const months = [...Array(3)].map((_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    return `${d.getFullYear()}年${String(d.getMonth() + 1).padStart(2, "0")}月`;
+  });
 
-  const today = new Date();
-
-  const targetMonths = [];
-
-  for (let i = 0; i < 3; i++) {
-
-    const date = new Date(
-      today.getFullYear(),
-      today.getMonth() + i,
-      1
-    );
-
-    targetMonths.push({
-      year: date.getFullYear(),
-      month: date.getMonth() + 1
-    });
-  }
-
-  console.log("================");
-  console.log("ITS健保 全施設チェック");
-  console.log("================");
-
-  console.log("チェック対象月:");
-
-  for (const item of targetMonths) {
-    console.log(
-      item.year +
-      "年" +
-      String(item.month).padStart(2, "0") +
-      "月"
-    );
-  }
+  console.log("ITS健保 全施設チェック開始");
 
   try {
-
-    // ==========================================
-    // 施設ごとにチェック
-    // ==========================================
-
     for (const facility of facilities) {
-
-      console.log("================");
-      console.log("施設:", facility);
-
-      // 毎回、最初のカレンダーページに戻る
       await page.goto(url, {
         waitUntil: "domcontentloaded",
         timeout: 60000
       });
 
-      await page.waitForTimeout(1500);
+      const link = page.getByText(facility, { exact: true }).first();
 
-      // ========================================
-      // 施設名をクリック
-      // ========================================
-
-      const facilityLink =
-        page.getByText(
-          facility,
-          {
-            exact: true
-          }
-        ).first();
-
-      try {
-
-        await facilityLink.waitFor({
-          state: "visible",
-          timeout: 10000
-        });
-
-      } catch (error) {
-
-        console.log(
-          "施設名が見つかりません:",
-          facility
-        );
-
+      if (!await link.isVisible().catch(() => false)) {
         continue;
       }
 
-      await facilityLink.click();
+      await link.click();
+      await page.waitForTimeout(500);
 
-      await page.waitForTimeout(1000);
+      for (let m = 0; m < 3; m++) {
+        const calendar = page.locator('[id^="tcb"]:visible').first();
 
-      // ========================================
-      // カレンダー取得
-      // ========================================
+        if (!await calendar.count()) break;
 
-      const calendar =
-        page.locator(
-          '[id^="tcb"]:visible'
-        ).first();
+        const cells = calendar.locator("td[data-join-time]");
 
-      try {
+        for (let i = 0; i < await cells.count(); i++) {
+          const cell = cells.nth(i);
+          const date = await cell.getAttribute("data-join-time");
+          const status = await cell.locator(".icon").first().textContent().catch(() => "");
 
-        await calendar.waitFor({
-          state: "visible",
-          timeout: 10000
-        });
-
-      } catch (error) {
-
-        console.log(
-          "カレンダーが見つかりません:",
-          facility
-        );
-
-        continue;
-      }
-
-      // ========================================
-      // 表示月取得
-      // ========================================
-
-      const getVisibleMonth = async () => {
-
-        const visibleCalendar =
-          page.locator(
-            '[id^="tcb"]:visible'
-          ).first();
-
-        if (
-          await visibleCalendar.count() === 0
-        ) {
-          return null;
-        }
-
-        const monthElement =
-          visibleCalendar
-            .locator(".month")
-            .first();
-
-        if (
-          await monthElement.count() === 0
-        ) {
-          return null;
-        }
-
-        const text =
-          await monthElement.textContent();
-
-        return text
-          ? text.trim()
-          : null;
-      };
-
-      let currentMonth =
-        await getVisibleMonth();
-
-      console.log(
-        "最初の表示月:",
-        currentMonth
-      );
-
-      // ========================================
-      // 最初の対象月へ移動
-      // ========================================
-
-      const firstTarget =
-        targetMonths[0];
-
-      const firstTargetText =
-        firstTarget.year +
-        "年" +
-        String(firstTarget.month)
-          .padStart(2, "0") +
-        "月";
-
-      let safety = 0;
-
-      while (
-        currentMonth &&
-        !currentMonth.includes(firstTargetText) &&
-        safety < 12
-      ) {
-
-        const nextButton =
-          page.locator(
-            'input.next-month:visible'
-          ).first();
-
-        try {
-
-          await nextButton.waitFor({
-            state: "visible",
-            timeout: 5000
-          });
-
-          await nextButton.click();
-
-          await page.waitForTimeout(500);
-
-          currentMonth =
-            await getVisibleMonth();
-
-          console.log(
-            "移動後:",
-            currentMonth
-          );
-
-        } catch (error) {
-
-          console.log(
-            "次月ボタンが見つかりません"
-          );
-
-          break;
-        }
-
-        safety++;
-      }
-
-      // ========================================
-      // 3ヶ月チェック
-      // ========================================
-
-      for (
-        let monthIndex = 0;
-        monthIndex < 3;
-        monthIndex++
-      ) {
-
-        const target =
-          targetMonths[monthIndex];
-
-        console.log("----------------");
-
-        console.log(
-          facility +
-          " / " +
-          target.year +
-          "年" +
-          String(target.month)
-            .padStart(2, "0") +
-          "月"
-        );
-
-        const visibleCalendar =
-          page.locator(
-            '[id^="tcb"]:visible'
-          ).first();
-
-        await visibleCalendar.waitFor({
-          state: "visible",
-          timeout: 10000
-        });
-
-        const monthElement =
-          visibleCalendar
-            .locator(".month")
-            .first();
-
-        const monthText =
-          await monthElement
-            .textContent()
-            .catch(() => "");
-
-        console.log(
-          "表示月:",
-          monthText
-            ? monthText.trim()
-            : "不明"
-        );
-
-        // ======================================
-        // 日付セル
-        // ======================================
-
-        const cells =
-          visibleCalendar.locator(
-            'td[data-join-time]'
-          );
-
-        const cellCount =
-          await cells.count();
-
-        console.log(
-          "日付セル数:",
-          cellCount
-        );
-
-        for (
-          let i = 0;
-          i < cellCount;
-          i++
-        ) {
-
-          const cell =
-            cells.nth(i);
-
-          const date =
-            await cell.getAttribute(
-              "data-join-time"
-            );
-
-          const statusElement =
-            cell.locator(".icon").first();
-
-          if (
-            !date ||
-            await statusElement.count() === 0
-          ) {
-            continue;
-          }
-
-          const status =
-            await statusElement
-              .textContent();
-
-          if (!status) {
-            continue;
-          }
-
-          const cleanStatus =
-            status.trim();
-
-          // ○ と △ だけ表示
-          if (
-            cleanStatus === "○" ||
-            cleanStatus === "△"
-          ) {
-
-            console.log(
-              "★★ 空き発見 ★★"
-            );
-
-            console.log(
+          if (date && ["○", "△"].includes(status?.trim())) {
+            results.push({
               facility,
               date,
-              cleanStatus
-            );
-
-            allEmpty.push({
-              facility: facility,
-              date: date,
-              status: cleanStatus
+              status: status.trim()
             });
           }
         }
 
-        // ======================================
-        // 次の月へ
-        // ======================================
+        if (m < 2) {
+          const next = page.locator('input.next-month:visible').first();
 
-        if (monthIndex < 2) {
+          if (!await next.count()) break;
 
-          const nextButton =
-            page.locator(
-              'input.next-month:visible'
-            ).first();
-
-          try {
-
-            await nextButton.waitFor({
-              state: "visible",
-              timeout: 5000
-            });
-
-            await nextButton.click();
-
-            await page.waitForTimeout(500);
-
-          } catch (error) {
-
-            console.log(
-              "次の月へ移動できません"
-            );
-
-            break;
-          }
+          await next.click();
+          await page.waitForTimeout(300);
         }
       }
     }
-
-    // ==========================================
-    // 最終結果
-    // ==========================================
 
     console.log("================");
-    console.log("最終結果");
 
-    if (allEmpty.length === 0) {
-
-      console.log(
-        "3ヶ月間、全施設に空きなし"
-      );
-
-    } else {
-
-      console.log(
-        "★★★ 空き発見 ★★★"
-      );
-
-      for (const item of allEmpty) {
-
-        console.log(
-          "🏨",
-          item.facility
-        );
-
-        console.log(
-          "📅",
-          item.date
-        );
-
-        console.log(
-          "空き状況:",
-          item.status
-        );
-
-        console.log("----------------");
-      }
-
-      // ========================================
-      // Discord通知
-      // ========================================
-
-      const webhookUrl =
-        process.env.DISCORD_WEBHOOK_URL;
-
-      if (!webhookUrl) {
-
-        console.log(
-          "DISCORD_WEBHOOK_URL が設定されていません"
-        );
-
-      } else {
-
-        let message =
-          "🚨 **ITS健保 全施設 空き発見！**\n\n";
-
-        for (const item of allEmpty) {
-
-          message +=
-            "🏨 " +
-            item.facility +
-            "\n" +
-            "📅 " +
-            item.date +
-            "\n" +
-            "空き状況: " +
-            item.status +
-            "\n\n";
-        }
-
-        message +=
-          "○ = 空きあり\n" +
-          "△ = 残りわずか\n\n" +
-          "🔗 予約サイト\n" +
-          url;
-
-        const response =
-          await fetch(
-            webhookUrl,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-              body: JSON.stringify({
-                content: message
-              })
-            }
-          );
-
-        if (response.ok) {
-
-          console.log(
-            "Discord通知成功！"
-          );
-
-        } else {
-
-          console.log(
-            "Discord通知失敗:",
-            response.status
-          );
-        }
-      }
+    if (!results.length) {
+      console.log("3ヶ月間、空きなし");
+      return;
     }
 
+    console.log("★★ 空き発見 ★★");
+
+    let message = "🚨 **ITS健保 空き発見！**\n\n";
+
+    for (const item of results) {
+      console.log(
+        item.facility,
+        item.date,
+        item.status
+      );
+
+      message +=
+        `🏨 ${item.facility}\n` +
+        `📅 ${item.date}\n` +
+        `空き状況: ${item.status}\n\n`;
+    }
+
+    message +=
+      "○ = 空きあり\n" +
+      "△ = 残りわずか\n\n" +
+      "🔗 " + url;
+
+    const webhook = process.env.DISCORD_WEBHOOK_URL;
+
+    if (!webhook) {
+      console.log("Discord Webhook未設定");
+      return;
+    }
+
+    const response = await fetch(webhook, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        content: message
+      })
+    });
+
+    console.log(
+      response.ok
+        ? "Discord通知成功！"
+        : `Discord通知失敗: ${response.status}`
+    );
+
   } catch (error) {
-
-    console.error("================");
-    console.error(
-      "★★ エラー発生 ★★"
-    );
-
-    console.error(
-      error.message
-    );
-
+    console.error("エラー:", error.message);
     process.exitCode = 1;
-
   } finally {
-
     await browser.close();
   }
-
 })();
