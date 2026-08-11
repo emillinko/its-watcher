@@ -1,3 +1,38 @@
+
+(async () => {
+
+  const url = process.env.ITS_KENPO_URL;
+
+  console.log("================");
+  console.log("ITS健保チェック開始");
+
+  console.log(
+    "URL設定あり:",
+    !!url
+  );
+
+  if (!url) {
+
+    console.error("================");
+    console.error(
+      "★★ ITS_KENPO_URL が設定されていません ★★"
+    );
+
+    console.error(
+      "GitHub Actions の Secrets を確認してください"
+    );
+
+    process.exit(1);
+  }
+
+  console.log(
+    "URL設定OK"
+  );
+
+  const browser = await chromium.launch({
+    headless: true
+  });
+
 const { chromium } = require("playwright");
 
 (async () => {
