@@ -24,6 +24,7 @@ jobs:
 
       - name: Run vacancy check
         env:
-          ITS_KENPO_URL: ${{ secrets.ITS_KENPO_URL }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ITS_KENPO_URL: ${{ secrets.ITS_KENPO_URL }}
+          ITS_KENPO_URL_2: ${{ secrets.ITS_KENPO_URL_2 }}
         run: node check.js
