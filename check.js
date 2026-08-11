@@ -1,3 +1,5 @@
+```javascript
+const { chromium } = require("playwright");
 
 (async () => {
 
@@ -12,12 +14,10 @@
   );
 
   if (!url) {
-
     console.error("================");
     console.error(
       "★★ ITS_KENPO_URL が設定されていません ★★"
     );
-
     console.error(
       "GitHub Actions の Secrets を確認してください"
     );
@@ -25,17 +25,7 @@
     process.exit(1);
   }
 
-  console.log(
-    "URL設定OK"
-  );
-
-  const browser = await chromium.launch({
-    headless: true
-  });
-
-const { chromium } = require("playwright");
-
-(async () => {
+  console.log("URL設定OK");
 
   const browser = await chromium.launch({
     headless: true
@@ -48,19 +38,18 @@ const { chromium } = require("playwright");
     }
   });
 
-  const url = process.env.ITS_KENPO_URL;
-
   const hotels = [
-    "ラビスタ富士河口湖",
-    "フルーツパーク富士屋ホテル"
+    "フルーツパーク富士屋ホテル",
+    "ラビスタ富士河口湖"
   ];
 
-  const emptyDays = [];
+  const allEmpty = [];
 
   try {
 
     console.log("================");
-    console.log("ITS健保チェック開始");
+    console.log("アクセス先:");
+    console.log(url);
 
     await page.goto(url, {
       waitUntil: "domcontentloaded",
@@ -69,8 +58,13 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(2000);
 
-    console.log("現在URL:");
+    console.log("================");
+    console.log("実際のURL:");
     console.log(page.url());
+
+    console.log("================");
+    console.log("ページタイトル:");
+    console.log(await page.title());
 
     // ==========================================
     // 施設ごとにチェック
@@ -81,7 +75,7 @@ const { chromium } = require("playwright");
       console.log("================");
       console.log("施設:", hotel);
 
-      // いったん元ページへ戻る
+      // 元ページへ戻る
       await page.goto(url, {
         waitUntil: "domcontentloaded",
         timeout: 60000
@@ -89,23 +83,21 @@ const { chromium } = require("playwright");
 
       await page.waitForTimeout(1500);
 
-      // apply_service のリンクから施設を探す
-      const links =
-        page.locator(
-          'a[href*="/apply_service/index"]'
-        );
+      // 施設リンクを探す
+      const links = page.locator(
+        'a[href*="/apply_service/index"]'
+      );
 
-      const count =
-        await links.count();
+      const linkCount = await links.count();
 
       console.log(
         "施設リンク数:",
-        count
+        linkCount
       );
 
-      let targetLink = null;
+      let facilityUrl = null;
 
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < linkCount; i++) {
 
         const link = links.nth(i);
 
@@ -116,12 +108,22 @@ const { chromium } = require("playwright");
 
         if (text === hotel) {
 
-          targetLink = link;
+          const href =
+            await link.getAttribute("href");
+
+          if (href) {
+            facilityUrl =
+              new URL(
+                href,
+                page.url()
+              ).href;
+          }
+
           break;
         }
       }
 
-      if (!targetLink) {
+      if (!facilityUrl) {
 
         console.log(
           "施設リンクが見つかりません:",
@@ -130,24 +132,6 @@ const { chromium } = require("playwright");
 
         continue;
       }
-
-      const href =
-        await targetLink.getAttribute("href");
-
-      console.log(
-        "施設リンク:",
-        href
-      );
-
-      if (!href) {
-        continue;
-      }
-
-      const facilityUrl =
-        new URL(
-          href,
-          page.url()
-        ).href;
 
       console.log(
         "施設URL:",
@@ -166,120 +150,159 @@ const { chromium } = require("playwright");
       await page.waitForTimeout(2500);
 
       console.log(
-        "施設ページ:",
+        "施設ページURL:",
         page.url()
       );
 
-      const body =
-        await page.locator("body").innerText();
-
-      console.log(
-        body.slice(0, 5000)
-      );
-
       // ==========================================
-      // 空き記号を探す
+      // カレンダー取得
       // ==========================================
 
-      const circles =
-        await page
-          .locator("text=○")
-          .count()
-          .catch(() => 0);
-
-      const triangles =
-        await page
-          .locator("text=△")
-          .count()
-          .catch(() => 0);
-
-      console.log(
-        "○:",
-        circles,
-        "△:",
-        triangles
-      );
-
-      // ==========================================
-      // カレンダーの日付セル
-      // ==========================================
-
-      const cells =
+      const calendar =
         page.locator(
-          'td[data-join-time]'
-        );
+          '[id^="tcb"]:visible'
+        ).first();
 
-      const cellCount =
-        await cells.count();
+      const calendarExists =
+        await calendar.count();
 
       console.log(
-        "日付セル数:",
-        cellCount
+        "カレンダー:",
+        calendarExists > 0
+          ? "あり"
+          : "なし"
       );
+
+      if (calendarExists === 0) {
+        console.log(
+          "カレンダーが見つからないためスキップ"
+        );
+        continue;
+      }
+
+      // ==========================================
+      // 今月を含む3ヶ月
+      // ==========================================
 
       for (
-        let i = 0;
-        i < cellCount;
-        i++
+        let monthIndex = 0;
+        monthIndex < 3;
+        monthIndex++
       ) {
 
-        const cell =
-          cells.nth(i);
+        console.log("----------------");
 
-        const date =
-          await cell.getAttribute(
-            "data-join-time"
+        const monthText =
+          await calendar
+            .locator(".month")
+            .first()
+            .textContent()
+            .catch(() => "");
+
+        console.log(
+          "チェック月:",
+          monthText
+            ? monthText.trim()
+            : "不明"
+        );
+
+        const cells =
+          calendar.locator(
+            'td[data-join-time]'
           );
 
-        if (!date) {
-          continue;
-        }
+        const cellCount =
+          await cells.count();
 
-        const icon =
-          cell.locator(".icon").first();
+        console.log(
+          "日付セル数:",
+          cellCount
+        );
 
-        if (
-          await icon.count() === 0
+        for (
+          let i = 0;
+          i < cellCount;
+          i++
         ) {
-          continue;
-        }
 
-        const status =
-          (
+          const cell =
+            cells.nth(i);
+
+          const date =
+            await cell.getAttribute(
+              "data-join-time"
+            );
+
+          const icon =
+            cell.locator(".icon").first();
+
+          if (
+            !date ||
+            await icon.count() === 0
+          ) {
+            continue;
+          }
+
+          const status = (
             await icon.innerText()
               .catch(() => "")
           ).trim();
 
-        console.log(
-          date,
-          status
-        );
-
-        if (
-          status === "○" ||
-          status === "△"
-        ) {
-
-          emptyDays.push({
-            hotel,
+          console.log(
             date,
             status
-          });
+          );
+
+          if (
+            status === "○" ||
+            status === "△"
+          ) {
+
+            allEmpty.push({
+              hotel: hotel,
+              date: date,
+              status: status
+            });
+          }
+        }
+
+        // 次の月へ
+        if (monthIndex < 2) {
+
+          const nextButton =
+            page.locator(
+              'input.next-month:visible'
+            ).first();
+
+          if (
+            await nextButton.count() === 0
+          ) {
+
+            console.log(
+              "次月ボタンが見つかりません"
+            );
+
+            break;
+          }
+
+          await nextButton.click();
+
+          await page.waitForTimeout(700);
         }
       }
     }
 
     // ==========================================
-    // 結果
+    // 最終結果
     // ==========================================
 
     console.log("================");
     console.log("最終結果");
 
-    if (emptyDays.length === 0) {
+    if (allEmpty.length === 0) {
 
       console.log(
-        "空きなし"
+        "3ヶ月間、空きなし"
       );
 
     } else {
@@ -288,13 +311,85 @@ const { chromium } = require("playwright");
         "★★ 空き発見 ★★"
       );
 
-      for (const item of emptyDays) {
+      for (const item of allEmpty) {
 
         console.log(
           item.hotel,
           item.date,
           item.status
         );
+      }
+
+      // ========================================
+      // Discord通知
+      // ========================================
+
+      const webhookUrl =
+        process.env.DISCORD_WEBHOOK_URL;
+
+      if (!webhookUrl) {
+
+        console.log(
+          "DISCORD_WEBHOOK_URL が設定されていません"
+        );
+
+      } else {
+
+        let message =
+          "🚨 **ITS健保 空き発見！**\n\n";
+
+        for (const item of allEmpty) {
+
+          message +=
+            "🏨 " +
+            item.hotel +
+            "\n" +
+            "📅 " +
+            item.date +
+            "\n" +
+            "空き状況: " +
+            item.status +
+            "\n\n";
+        }
+
+        message +=
+          "○ = 空きあり\n" +
+          "△ = 残りわずか\n\n" +
+          "🔗 予約サイト:\n" +
+          url;
+
+        const response =
+          await fetch(
+            webhookUrl,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                content: message
+              })
+            }
+          );
+
+        if (response.ok) {
+
+          console.log(
+            "Discord通知成功！"
+          );
+
+        } else {
+
+          console.log(
+            "Discord通知失敗:",
+            response.status
+          );
+
+          console.log(
+            await response.text()
+          );
+        }
       }
     }
 
@@ -317,3 +412,4 @@ const { chromium } = require("playwright");
   }
 
 })();
+```
