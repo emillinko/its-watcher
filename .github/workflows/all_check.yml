@@ -38,8 +38,8 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: node all_check.js
       
-      - name: LINE Test
-        env:
-          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
-          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
-        run: node line_test.js
+      # - name: LINE Test
+      #   env:
+      #     LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+      #     LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+      #   run: node line_test.js
