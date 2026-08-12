@@ -1,4 +1,3 @@
-```javascript
 const { chromium } = require("playwright");
 
 (async () => {
@@ -255,4 +254,3 @@ const { chromium } = require("playwright");
     await browser.close();
   }
 })();
-```
