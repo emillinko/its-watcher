@@ -1,0 +1,36 @@
+name: ITS Kenpo All Check Fast 3
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      # GitHubのファイルを取得
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # npmパッケージ
+      - name: Install dependencies
+        run: npm install
+
+      # PlaywrightのChromium
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      # ITS健保チェック
+      - name: Run fast3 vacancy check
+        env:
+          ITS_KENPO_URL: ${{ secrets.ITS_KENPO_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+        run: node all_check_fast3.js
