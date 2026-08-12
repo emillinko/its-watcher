@@ -1,7 +1,9 @@
+```javascript
 const { chromium } = require("playwright");
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
+
   const page = await browser.newPage({
     viewport: { width: 1400, height: 1200 }
   });
@@ -51,13 +53,7 @@ const { chromium } = require("playwright");
     "フルーツパーク富士屋ホテル"
   ];
 
-  const now = new Date();
   const results = [];
-
-  const months = [...Array(3)].map((_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-    return `${d.getFullYear()}年${String(d.getMonth() + 1).padStart(2, "0")}月`;
-  });
 
   console.log("ITS健保 全施設チェック開始");
 
@@ -68,7 +64,9 @@ const { chromium } = require("playwright");
         timeout: 60000
       });
 
-      const link = page.getByText(facility, { exact: true }).first();
+      const link = page
+        .getByText(facility, { exact: true })
+        .first();
 
       if (!await link.isVisible().catch(() => false)) {
         continue;
@@ -78,30 +76,55 @@ const { chromium } = require("playwright");
       await page.waitForTimeout(500);
 
       for (let m = 0; m < 3; m++) {
-        const calendar = page.locator('[id^="tcb"]:visible').first();
+        const calendar = page
+          .locator('[id^="tcb"]:visible')
+          .first();
 
-        if (!await calendar.count()) break;
+        if (!await calendar.count()) {
+          break;
+        }
 
-        const cells = calendar.locator("td[data-join-time]");
+        const cells = calendar.locator(
+          "td[data-join-time]"
+        );
 
-        for (let i = 0; i < await cells.count(); i++) {
+        const cellCount = await cells.count();
+
+        for (let i = 0; i < cellCount; i++) {
           const cell = cells.nth(i);
-          const date = await cell.getAttribute("data-join-time");
-          const status = await cell.locator(".icon").first().textContent().catch(() => "");
 
-          if (date && ["○", "△"].includes(status?.trim())) {
+          const date = await cell.getAttribute(
+            "data-join-time"
+          );
+
+          const status = await cell
+            .locator(".icon")
+            .first()
+            .textContent()
+            .catch(() => "");
+
+          const cleanStatus = status?.trim();
+
+          if (
+            date &&
+            ["○", "△"].includes(cleanStatus)
+          ) {
             results.push({
               facility,
               date,
-              status: status.trim()
+              status: cleanStatus
             });
           }
         }
 
         if (m < 2) {
-          const next = page.locator('input.next-month:visible').first();
+          const next = page
+            .locator('input.next-month:visible')
+            .first();
 
-          if (!await next.count()) break;
+          if (!await next.count()) {
+            break;
+          }
 
           await next.click();
           await page.waitForTimeout(300);
@@ -118,7 +141,12 @@ const { chromium } = require("playwright");
 
     console.log("★★ 空き発見 ★★");
 
-    let message = "🚨 **ITS健保 空き発見！**\n\n";
+    // ==========================================
+    // 通知メッセージ作成
+    // ==========================================
+
+    let message =
+      "🚨 ITS健保 空き発見！\n\n";
 
     for (const item of results) {
       console.log(
@@ -138,33 +166,93 @@ const { chromium } = require("playwright");
       "△ = 残りわずか\n\n" +
       "🔗 " + url;
 
-    const webhook = process.env.DISCORD_WEBHOOK_URL;
+    // ==========================================
+    // Discord通知
+    // ==========================================
+
+    const webhook =
+      process.env.DISCORD_WEBHOOK_URL;
 
     if (!webhook) {
       console.log("Discord Webhook未設定");
-      return;
+    } else {
+      const response = await fetch(webhook, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: message
+        })
+      });
+
+      console.log(
+        response.ok
+          ? "Discord通知成功！"
+          : `Discord通知失敗: ${response.status}`
+      );
     }
 
-    const response = await fetch(webhook, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        content: message
-      })
-    });
+    // ==========================================
+    // LINE通知
+    // ==========================================
 
-    console.log(
-      response.ok
-        ? "Discord通知成功！"
-        : `Discord通知失敗: ${response.status}`
-    );
+    const lineToken =
+      process.env.LINE_CHANNEL_ACCESS_TOKEN;
+
+    const lineUserId =
+      process.env.LINE_USER_ID;
+
+    if (!lineToken || !lineUserId) {
+      console.log(
+        "LINE通知設定がありません"
+      );
+    } else {
+      const lineResponse = await fetch(
+        "https://api.line.me/v2/bot/message/push",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization":
+              `Bearer ${lineToken}`
+          },
+          body: JSON.stringify({
+            to: lineUserId,
+            messages: [
+              {
+                type: "text",
+                text: message
+              }
+            ]
+          })
+        }
+      );
+
+      if (lineResponse.ok) {
+        console.log("LINE通知成功！");
+      } else {
+        console.log(
+          "LINE通知失敗:",
+          lineResponse.status
+        );
+
+        console.log(
+          await lineResponse.text()
+        );
+      }
+    }
 
   } catch (error) {
-    console.error("エラー:", error.message);
+    console.error(
+      "エラー:",
+      error.message
+    );
+
     process.exitCode = 1;
+
   } finally {
     await browser.close();
   }
 })();
+```
