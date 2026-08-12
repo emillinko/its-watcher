@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const fs = require("fs");
 
 (async () => {
   const browser = await chromium.launch({
@@ -52,11 +53,32 @@ const { chromium } = require("playwright");
 
   const results = [];
 
-  // ★同時に処理する数
   const CONCURRENCY = 3;
+
+  // ==========================================
+  // 通知済みデータ読み込み
+  // ==========================================
+
+  const notifiedFile = "notified.json";
+
+  let notified = {};
+
+  try {
+    if (fs.existsSync(notifiedFile)) {
+      notified = JSON.parse(
+        fs.readFileSync(notifiedFile, "utf8")
+      );
+    }
+  } catch (error) {
+    console.log("⚠ notified.json 読み込み失敗");
+    notified = {};
+  }
 
   console.log("ITS健保 高速チェック4開始");
   console.log(`同時チェック: ${CONCURRENCY}施設`);
+  console.log(
+    `通知済みデータ: ${Object.keys(notified).length}件`
+  );
 
   async function checkFacility(facility) {
     const page = await browser.newPage({
@@ -126,9 +148,7 @@ const { chromium } = require("playwright");
 
           if (
             date &&
-            ["○", "△"].includes(
-              cleanStatus
-            )
+            ["○", "△"].includes(cleanStatus)
           ) {
             results.push({
               facility,
@@ -211,10 +231,45 @@ const { chromium } = require("playwright");
     console.log("================");
 
     // ==========================================
+    // 現在空きがあるキー
+    // ==========================================
+
+    const currentKeys = new Set();
+
+    for (const item of results) {
+
+      const key =
+        `${item.facility}|${item.date}`;
+
+      currentKeys.add(key);
+    }
+
+    // ==========================================
+    // ×になったものを通知済みから削除
+    // ==========================================
+
+    for (const key of Object.keys(notified)) {
+
+      if (!currentKeys.has(key)) {
+        delete notified[key];
+
+        console.log(
+          `↩ 空き終了: ${key}`
+        );
+      }
+    }
+
+    // ==========================================
     // 空きなし
     // ==========================================
 
     if (!results.length) {
+
+      fs.writeFileSync(
+        notifiedFile,
+        JSON.stringify(notified, null, 2),
+        "utf8"
+      );
 
       console.log(
         "3ヶ月間、空きなし"
@@ -224,14 +279,62 @@ const { chromium } = require("playwright");
     }
 
     // ==========================================
-    // 空き発見
+    // 新しい空きだけ抽出
+    // ==========================================
+
+    const newResults = [];
+
+    for (const item of results) {
+
+      const key =
+        `${item.facility}|${item.date}`;
+
+      if (!notified[key]) {
+
+        notified[key] = {
+          discord: false,
+          line: false,
+          status: item.status
+        };
+
+        newResults.push(item);
+
+      } else {
+
+        console.log(
+          `既通知: ${item.facility} ${item.date} ${item.status}`
+        );
+      }
+    }
+
+    // ==========================================
+    // 新しい空きなし
+    // ==========================================
+
+    if (!newResults.length) {
+
+      fs.writeFileSync(
+        notifiedFile,
+        JSON.stringify(notified, null, 2),
+        "utf8"
+      );
+
+      console.log(
+        "新しい空きなし → 通知しません"
+      );
+
+      return;
+    }
+
+    // ==========================================
+    // 新しい空き発見
     // ==========================================
 
     console.log(
-      "★★ 空き発見 ★★"
+      "★★ 新しい空き発見 ★★"
     );
 
-    results.sort(
+    newResults.sort(
       (a, b) =>
         a.date.localeCompare(
           b.date
@@ -239,9 +342,9 @@ const { chromium } = require("playwright");
     );
 
     let message =
-      "🚨 ITS健保 空き発見！\n\n";
+      "🚨 ITS健保 新しい空き発見！\n\n";
 
-    for (const item of results) {
+    for (const item of newResults) {
 
       console.log(
         item.facility,
@@ -275,26 +378,54 @@ const { chromium } = require("playwright");
 
     } else {
 
-      const response =
-        await fetch(
-          webhook,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-            body: JSON.stringify({
-              content: message
-            })
-          }
-        );
+      // Discord未通知のものだけ送る
+      const discordResults =
+        newResults.filter(item => {
 
-      console.log(
-        response.ok
-          ? "Discord通知成功！"
-          : `Discord通知失敗: ${response.status}`
-      );
+          const key =
+            `${item.facility}|${item.date}`;
+
+          return !notified[key].discord;
+        });
+
+      if (discordResults.length) {
+
+        const response =
+          await fetch(
+            webhook,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                content: message
+              })
+            }
+          );
+
+        if (response.ok) {
+
+          console.log(
+            "Discord通知成功！"
+          );
+
+          for (const item of discordResults) {
+
+            const key =
+              `${item.facility}|${item.date}`;
+
+            notified[key].discord = true;
+          }
+
+        } else {
+
+          console.log(
+            `Discord通知失敗: ${response.status}`
+          );
+        }
+      }
     }
 
     // ==========================================
@@ -315,41 +446,80 @@ const { chromium } = require("playwright");
 
     } else {
 
-      const lineResponse =
-        await fetch(
-          "https://api.line.me/v2/bot/message/push",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json",
-              "Authorization":
-                `Bearer ${lineToken}`
-            },
-            body: JSON.stringify({
-              to: lineUserId,
-              messages: [
-                {
-                  type: "text",
-                  text: message
-                }
-              ]
-            })
+      const lineResults =
+        newResults.filter(item => {
+
+          const key =
+            `${item.facility}|${item.date}`;
+
+          return !notified[key].line;
+        });
+
+      if (lineResults.length) {
+
+        const lineResponse =
+          await fetch(
+            "https://api.line.me/v2/bot/message/push",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+                "Authorization":
+                  `Bearer ${lineToken}`
+              },
+              body: JSON.stringify({
+                to: lineUserId,
+                messages: [
+                  {
+                    type: "text",
+                    text: message
+                  }
+                ]
+              })
+            }
+          );
+
+        if (lineResponse.ok) {
+
+          console.log(
+            "LINE通知成功！"
+          );
+
+          for (const item of lineResults) {
+
+            const key =
+              `${item.facility}|${item.date}`;
+
+            notified[key].line = true;
           }
-        );
 
-      console.log(
-        lineResponse.ok
-          ? "LINE通知成功！"
-          : `LINE通知失敗: ${lineResponse.status}`
-      );
+        } else {
 
-      if (!lineResponse.ok) {
-        console.log(
-          await lineResponse.text()
-        );
+          console.log(
+            `LINE通知失敗: ${lineResponse.status}`
+          );
+
+          console.log(
+            await lineResponse.text()
+          );
+        }
       }
     }
+
+    // ==========================================
+    // 通知済み保存
+    // ==========================================
+
+    fs.writeFileSync(
+      notifiedFile,
+      JSON.stringify(notified, null, 2),
+      "utf8"
+    );
+
+    console.log(
+      `通知済みデータ保存: ${Object.keys(notified).length}件`
+    );
 
   } catch (error) {
 
