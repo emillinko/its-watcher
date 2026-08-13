@@ -1,1 +1,72 @@
-{}
+{
+  "ホテルハーヴェスト斑尾|2026-08-24": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-08-24": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-08-26": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-08-31": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト伊東|2026-09-03": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-09-04": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ホテル琵琶レイクオーツカ|2026-09-06": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-09-24": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ホテル琵琶レイクオーツカ|2026-09-28": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ホテル日航プリンセス京都|2026-08-26": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ホテル日航プリンセス京都|2026-08-27": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-08-24": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト浜名湖|2026-09-28": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  },
+  "NASPAニューオータニ|2026-08-26": {
+    "discord": true,
+    "line": true,
+    "status": "△"
+  }
+}
