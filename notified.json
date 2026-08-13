@@ -1,9 +1,4 @@
 {
-  "ホテルハーヴェスト斑尾|2026-08-25": {
-    "discord": true,
-    "line": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-08-26": {
     "discord": true,
     "line": true,
@@ -14,27 +9,12 @@
     "line": true,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-08-23": {
-    "discord": true,
-    "line": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-08-23": {
-    "discord": true,
-    "line": true,
-    "status": "△"
-  },
   "ゆふいん山水館|2026-09-07": {
     "discord": true,
     "line": true,
     "status": "△"
   },
   "ゆふいん山水館|2026-09-09": {
-    "discord": true,
-    "line": true,
-    "status": "△"
-  },
-  "定山渓 ゆらく草庵|2026-08-31": {
     "discord": true,
     "line": true,
     "status": "△"
