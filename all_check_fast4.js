@@ -52,7 +52,6 @@ const fs = require("fs");
   ];
 
   const results = [];
-
   const CONCURRENCY = 3;
 
   // ==========================================
@@ -151,7 +150,6 @@ const fs = require("fs");
           const cleanStatus =
             status?.trim();
 
-          // ○ または △ のみ取得
           if (
             date &&
             ["○", "△"].includes(cleanStatus)
@@ -356,6 +354,21 @@ const fs = require("fs");
         )
     );
 
+    // ==========================================
+    // Discordメッセージ作成
+    // 曜日を追加
+    // ==========================================
+
+    const weekdays = [
+      "日",
+      "月",
+      "火",
+      "水",
+      "木",
+      "金",
+      "土"
+    ];
+
     let message =
       "🚨 ITS健保 新しい空き発見！\n\n";
 
@@ -367,9 +380,15 @@ const fs = require("fs");
         item.status
       );
 
+      const dateObj =
+        new Date(`${item.date}T00:00:00`);
+
+      const weekday =
+        weekdays[dateObj.getDay()];
+
       message +=
         `🏨 ${item.facility}\n` +
-        `📅 ${item.date}\n` +
+        `📅 ${item.date}（${weekday}）\n` +
         `空き状況: ${item.status}\n\n`;
     }
 
@@ -393,7 +412,6 @@ const fs = require("fs");
 
     } else {
 
-      // Discord未通知のものだけ送る
       const discordResults =
         newResults.filter(item => {
 
