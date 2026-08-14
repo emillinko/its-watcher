@@ -252,7 +252,7 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // 空きがなくなったものを通知済みから削除
+    // 空きがなくなったものを削除
     // ==========================================
 
     for (const key of Object.keys(notified)) {
@@ -305,7 +305,6 @@ const fs = require("fs");
 
         notified[key] = {
           discord: false,
-          line: false,
           status: item.status
         };
 
@@ -394,6 +393,7 @@ const fs = require("fs");
 
     } else {
 
+      // Discord未通知のものだけ送る
       const discordResults =
         newResults.filter(item => {
 
@@ -439,85 +439,9 @@ const fs = require("fs");
           console.log(
             `Discord通知失敗: ${response.status}`
           );
-        }
-      }
-    }
-
-    // ==========================================
-    // LINE 一斉送信
-    // ==========================================
-
-    const lineToken =
-      process.env.LINE_CHANNEL_ACCESS_TOKEN;
-
-    if (!lineToken) {
-
-      console.log(
-        "LINE_CHANNEL_ACCESS_TOKEN が設定されていません"
-      );
-
-    } else {
-
-      // LINE未通知の新しい空きだけ対象
-      const lineResults =
-        newResults.filter(item => {
-
-          const key =
-            `${item.facility}|${item.date}`;
-
-          return !notified[key].line;
-        });
-
-      if (lineResults.length) {
-
-        console.log(
-          "LINE友だち全員へ一斉送信します"
-        );
-
-        const lineResponse =
-          await fetch(
-            "https://api.line.me/v2/bot/message/broadcast",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json",
-                "Authorization":
-                  `Bearer ${lineToken}`
-              },
-              body: JSON.stringify({
-                messages: [
-                  {
-                    type: "text",
-                    text: message
-                  }
-                ]
-              })
-            }
-          );
-
-        if (lineResponse.ok) {
 
           console.log(
-            "LINE一斉通知成功！"
-          );
-
-          for (const item of lineResults) {
-
-            const key =
-              `${item.facility}|${item.date}`;
-
-            notified[key].line = true;
-          }
-
-        } else {
-
-          console.log(
-            `LINE一斉通知失敗: ${lineResponse.status}`
-          );
-
-          console.log(
-            await lineResponse.text()
+            await response.text()
           );
         }
       }
