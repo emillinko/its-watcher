@@ -80,6 +80,10 @@ const fs = require("fs");
     `通知済みデータ: ${Object.keys(notified).length}件`
   );
 
+  // ==========================================
+  // 施設チェック
+  // ==========================================
+
   async function checkFacility(facility) {
     const page = await browser.newPage({
       viewport: {
@@ -111,6 +115,7 @@ const fs = require("fs");
 
       await page.waitForTimeout(500);
 
+      // 3ヶ月チェック
       for (let m = 0; m < 3; m++) {
 
         const calendar = page
@@ -146,6 +151,7 @@ const fs = require("fs");
           const cleanStatus =
             status?.trim();
 
+          // ○ または △ のみ取得
           if (
             date &&
             ["○", "△"].includes(cleanStatus)
@@ -158,6 +164,7 @@ const fs = require("fs");
           }
         }
 
+        // 次の月へ
         if (m < 2) {
 
           const next = page
@@ -245,12 +252,13 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // ×になったものを通知済みから削除
+    // 空きがなくなったものを通知済みから削除
     // ==========================================
 
     for (const key of Object.keys(notified)) {
 
       if (!currentKeys.has(key)) {
+
         delete notified[key];
 
         console.log(
@@ -267,7 +275,11 @@ const fs = require("fs");
 
       fs.writeFileSync(
         notifiedFile,
-        JSON.stringify(notified, null, 2),
+        JSON.stringify(
+          notified,
+          null,
+          2
+        ),
         "utf8"
       );
 
@@ -315,7 +327,11 @@ const fs = require("fs");
 
       fs.writeFileSync(
         notifiedFile,
-        JSON.stringify(notified, null, 2),
+        JSON.stringify(
+          notified,
+          null,
+          2
+        ),
         "utf8"
       );
 
@@ -364,7 +380,7 @@ const fs = require("fs");
       "🔗 " + url;
 
     // ==========================================
-    // Discord
+    // Discord通知
     // ==========================================
 
     const webhook =
@@ -378,7 +394,6 @@ const fs = require("fs");
 
     } else {
 
-      // Discord未通知のものだけ送る
       const discordResults =
         newResults.filter(item => {
 
@@ -429,23 +444,21 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // LINE
+    // LINE 一斉送信
     // ==========================================
 
     const lineToken =
       process.env.LINE_CHANNEL_ACCESS_TOKEN;
 
-    const lineUserId =
-      process.env.LINE_USER_ID;
-
-    if (!lineToken || !lineUserId) {
+    if (!lineToken) {
 
       console.log(
-        "LINE通知設定がありません"
+        "LINE_CHANNEL_ACCESS_TOKEN が設定されていません"
       );
 
     } else {
 
+      // LINE未通知の新しい空きだけ対象
       const lineResults =
         newResults.filter(item => {
 
@@ -457,9 +470,13 @@ const fs = require("fs");
 
       if (lineResults.length) {
 
+        console.log(
+          "LINE友だち全員へ一斉送信します"
+        );
+
         const lineResponse =
           await fetch(
-            "https://api.line.me/v2/bot/message/push",
+            "https://api.line.me/v2/bot/message/broadcast",
             {
               method: "POST",
               headers: {
@@ -469,7 +486,6 @@ const fs = require("fs");
                   `Bearer ${lineToken}`
               },
               body: JSON.stringify({
-                to: lineUserId,
                 messages: [
                   {
                     type: "text",
@@ -483,7 +499,7 @@ const fs = require("fs");
         if (lineResponse.ok) {
 
           console.log(
-            "LINE通知成功！"
+            "LINE一斉通知成功！"
           );
 
           for (const item of lineResults) {
@@ -497,7 +513,7 @@ const fs = require("fs");
         } else {
 
           console.log(
-            `LINE通知失敗: ${lineResponse.status}`
+            `LINE一斉通知失敗: ${lineResponse.status}`
           );
 
           console.log(
@@ -513,7 +529,11 @@ const fs = require("fs");
 
     fs.writeFileSync(
       notifiedFile,
-      JSON.stringify(notified, null, 2),
+      JSON.stringify(
+        notified,
+        null,
+        2
+      ),
       "utf8"
     );
 
