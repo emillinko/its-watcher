@@ -338,11 +338,11 @@ const { chromium } = require("playwright");
       // ========================================
 
       const webhookUrl =
-        process.env.DISCORD_WEBHOOK_URL;
+        process.env.DISCORD_WEBHOOK_URL_HARAYAMA;
 
       if (!webhookUrl) {
         console.log(
-          "DISCORD_WEBHOOK_URL が設定されていません"
+          "DISCORD_WEBHOOK_URL_HARAYAMA が設定されていません"
         );
       } else {
         let message =
