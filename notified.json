@@ -1,8 +1,4 @@
 {
-  "ホテルハーヴェスト斑尾|2026-09-09": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-08-27": {
     "discord": true,
     "status": "△"
@@ -15,14 +11,6 @@
     "discord": true,
     "status": "△"
   },
-  "トスラブ箱根和奏林|2026-08-26": {
-    "discord": true,
-    "status": "△"
-  },
-  "トスラブ館山ルアーナ|2026-08-27": {
-    "discord": true,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-08-26": {
     "discord": true,
     "status": "△"
@@ -31,15 +19,11 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト伊東|2026-09-10": {
-    "discord": true,
-    "status": "△"
-  },
-  "高山グリーンホテル|2026-08-26": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテル日航アリビラ|2026-08-25": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト那須|2026-09-07": {
     "discord": true,
     "status": "△"
   }
