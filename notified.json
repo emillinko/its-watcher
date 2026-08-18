@@ -3,10 +3,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-08-31": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-09-04": {
     "discord": true,
     "status": "△"
@@ -28,6 +24,14 @@
     "status": "△"
   },
   "ブルーベリーヒル勝浦|2026-09-16": {
+    "discord": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-08-28": {
+    "discord": true,
+    "status": "△"
+  },
+  "高山グリーンホテル|2026-08-26": {
     "discord": true,
     "status": "△"
   }
