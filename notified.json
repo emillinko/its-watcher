@@ -7,10 +7,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-01": {
-    "discord": true,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-09-01": {
     "discord": true,
     "status": "△"
@@ -36,6 +32,10 @@
     "status": "△"
   },
   "草津温泉　ホテルヴィレッジ|2026-09-03": {
+    "discord": true,
+    "status": "△"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-09-10": {
     "discord": true,
     "status": "△"
   }
