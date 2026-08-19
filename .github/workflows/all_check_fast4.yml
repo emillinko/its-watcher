@@ -3,6 +3,11 @@ name: ITS Kenpo All Check Fast 4
 on:
   workflow_dispatch:
 
+# 同じワークフローが同時に走るのを防ぐ
+concurrency:
+  group: its-kenpo-check
+  cancel-in-progress: false
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -11,20 +16,37 @@ jobs:
       contents: write
 
     steps:
+      # ==========================================
+      # GitHubからコード取得
+      # ==========================================
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # ==========================================
+      # Node.js
+      # ==========================================
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      # ==========================================
+      # npm
+      # ==========================================
       - name: Install dependencies
         run: npm install
 
+      # ==========================================
+      # Playwright
+      # ==========================================
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
 
+      # ==========================================
+      # ITS健保 空きチェック
+      # ==========================================
       - name: Run fast4 vacancy check
         env:
           ITS_KENPO_URL: ${{ secrets.ITS_KENPO_URL }}
@@ -33,16 +55,31 @@ jobs:
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
         run: node all_check_fast4.js
 
+      # ==========================================
+      # 通知履歴をGitHubへ保存
+      # ==========================================
       - name: Save notification history
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # 通知履歴をステージング
           git add notified.json
 
+          # 変更がなければ終了
           if git diff --cached --quiet; then
             echo "通知履歴に変更なし"
-          else
-            git commit -m "Update vacancy notification history"
-            git push
+            exit 0
           fi
+
+          # コミット
+          git commit -m "Update vacancy notification history"
+
+          # GitHub側の最新状態を取得
+          git fetch origin main
+
+          # GitHub側に新しいコミットがあれば取り込む
+          git rebase origin/main
+
+          # GitHubへpush
+          git push origin HEAD:main
