@@ -27,14 +27,6 @@
     "discord": true,
     "status": "△"
   },
-  "草津温泉　ホテルヴィレッジ|2026-09-16": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-08-31": {
-    "discord": true,
-    "status": "△"
-  },
   "ゆふいん山水館|2026-08-31": {
     "discord": true,
     "status": "△"
@@ -44,6 +36,10 @@
     "status": "△"
   },
   "高山グリーンホテル|2026-08-26": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト伊東|2026-09-01": {
     "discord": true,
     "status": "△"
   }
