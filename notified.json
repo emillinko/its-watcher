@@ -63,10 +63,6 @@
     "discord": true,
     "status": "△"
   },
-  "ブルーベリーヒル勝浦|2026-09-13": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテル日航プリンセス京都|2026-09-01": {
     "discord": true,
     "status": "△"
@@ -76,6 +72,18 @@
     "status": "△"
   },
   "NASPAニューオータニ|2026-09-02": {
+    "discord": true,
+    "status": "△"
+  },
+  "トスラブ箱根和奏林|2026-08-31": {
+    "discord": true,
+    "status": "△"
+  },
+  "トスラブ館山ルアーナ|2026-09-03": {
+    "discord": true,
+    "status": "△"
+  },
+  "伊香保温泉 ホテル天坊|2026-09-02": {
     "discord": true,
     "status": "△"
   }
