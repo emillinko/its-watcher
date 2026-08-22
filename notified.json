@@ -67,10 +67,6 @@
     "discord": true,
     "status": "△"
   },
-  "草津温泉　ホテルヴィレッジ|2026-09-02": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテル日航プリンセス京都|2026-09-03": {
     "discord": true,
     "status": "△"
@@ -88,6 +84,10 @@
     "status": "△"
   },
   "グランドメルキュール伊勢志摩|2026-09-01": {
+    "discord": true,
+    "status": "△"
+  },
+  "トスラブ館山ルアーナ|2026-09-02": {
     "discord": true,
     "status": "△"
   }
