@@ -255,10 +255,6 @@
     "discord": true,
     "status": "△"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-14": {
-    "discord": true,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-09-18": {
     "discord": true,
     "status": "△"
@@ -272,6 +268,18 @@
     "status": "△"
   },
   "ブルーベリーヒル勝浦|2026-09-13": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト伊東|2026-09-07": {
+    "discord": true,
+    "status": "△"
+  },
+  "日光千姫物語|2026-09-08": {
+    "discord": true,
+    "status": "△"
+  },
+  "NAGU 勝浦|2026-09-10": {
     "discord": true,
     "status": "△"
   }
