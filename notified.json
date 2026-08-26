@@ -87,10 +87,6 @@
     "discord": false,
     "status": "○"
   },
-  "ブルーベリーヒル勝浦|2026-10-04": {
-    "discord": false,
-    "status": "○"
-  },
   "ブルーベリーヒル勝浦|2026-10-05": {
     "discord": false,
     "status": "○"
@@ -284,14 +280,6 @@
     "status": "△"
   },
   "ホテル琵琶レイクオーツカ|2026-10-07": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテル日航プリンセス京都|2026-10-05": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-09-17": {
     "discord": true,
     "status": "△"
   }
