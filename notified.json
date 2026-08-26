@@ -191,10 +191,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト斑尾|2026-09-28": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-09-29": {
     "discord": true,
     "status": "△"
@@ -219,19 +215,7 @@
     "discord": false,
     "status": "△"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-01": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-09": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-08": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-19": {
     "discord": false,
     "status": "△"
   },
@@ -247,25 +231,9 @@
     "discord": false,
     "status": "△"
   },
-  "ホテル琵琶レイクオーツカ|2026-10-07": {
-    "discord": false,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-10-02": {
     "discord": false,
     "status": "○"
-  },
-  "ホテルハーヴェスト伊東|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-07": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-13": {
-    "discord": false,
-    "status": "△"
   },
   "ブルーベリーヒル勝浦|2026-10-18": {
     "discord": false,
@@ -287,14 +255,6 @@
     "discord": false,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-10-05": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテル日航プリンセス京都|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-02": {
     "discord": false,
     "status": "△"
@@ -303,23 +263,7 @@
     "discord": false,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-10-08": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-04": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテル日航プリンセス京都|2026-10-14": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-12": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-16": {
     "discord": false,
     "status": "△"
   },
@@ -337,6 +281,14 @@
   },
   "ゆふいん山水館|2026-10-01": {
     "discord": false,
+    "status": "△"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-09-10": {
+    "discord": true,
+    "status": "△"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-09-28": {
+    "discord": true,
     "status": "△"
   }
 }
