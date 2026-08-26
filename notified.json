@@ -247,10 +247,6 @@
     "discord": true,
     "status": "△"
   },
-  "ブルーベリーヒル勝浦|2026-09-13": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト伊東|2026-09-08": {
     "discord": true,
     "status": "△"
@@ -267,7 +263,19 @@
     "discord": true,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-10-22": {
+  "トスラブ箱根和奏林|2026-10-13": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト伊東|2026-09-07": {
+    "discord": true,
+    "status": "△"
+  },
+  "日光千姫物語|2026-09-08": {
+    "discord": true,
+    "status": "△"
+  },
+  "NAGU 勝浦|2026-09-10": {
     "discord": true,
     "status": "△"
   }
