@@ -27,14 +27,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-15": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-09-06": {
-    "discord": true,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-08-31": {
     "discord": true,
     "status": "○"
@@ -43,71 +35,7 @@
     "discord": true,
     "status": "△"
   },
-  "トスラブ箱根和奏林|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ館山ルアーナ|2026-10-01": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ箱根和奏林|2026-10-13": {
-    "discord": false,
-    "status": "○"
-  },
-  "トスラブ館山ルアーナ|2026-10-05": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ館山ルアーナ|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ館山ルアーナ|2026-10-07": {
-    "discord": false,
-    "status": "○"
-  },
-  "トスラブ館山ルアーナ|2026-10-08": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ箱根和奏林|2026-10-20": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ館山ルアーナ|2026-10-13": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ箱根和奏林|2026-10-21": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ館山ルアーナ|2026-10-14": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ館山ルアーナ|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ箱根和奏林|2026-10-27": {
-    "discord": false,
-    "status": "△"
-  },
-  "トスラブ箱根和奏林|2026-10-28": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-01": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-02": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-04": {
     "discord": false,
     "status": "△"
   },
@@ -127,14 +55,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト斑尾|2026-10-09": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-12": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-13": {
     "discord": false,
     "status": "○"
@@ -144,14 +64,6 @@
     "status": "○"
   },
   "ホテルハーヴェスト斑尾|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-16": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-18": {
     "discord": false,
     "status": "△"
   },
@@ -167,95 +79,7 @@
     "discord": false,
     "status": "△"
   },
-  "ホテルハーヴェスト斑尾|2026-10-23": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-25": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-26": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-27": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-28": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-29": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-30": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-01": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-05": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-07": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-08": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-13": {
-    "discord": false,
-    "status": "○"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-14": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-19": {
-    "discord": false,
-    "status": "○"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-20": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-21": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-22": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-26": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-27": {
-    "discord": false,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-29": {
-    "discord": false,
-    "status": "△"
-  },
-  "ブルーベリーヒル勝浦|2026-09-06": {
     "discord": false,
     "status": "△"
   },
@@ -263,55 +87,7 @@
     "discord": false,
     "status": "△"
   },
-  "ホテルハーヴェスト伊東|2026-10-01": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト伊東|2026-10-05": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-07": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト伊東|2026-10-08": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト伊東|2026-10-13": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-14": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト伊東|2026-10-15": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト伊東|2026-10-19": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-21": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-22": {
-    "discord": false,
-    "status": "○"
-  },
   "ブルーベリーヒル勝浦|2026-10-01": {
-    "discord": false,
-    "status": "○"
-  },
-  "ブルーベリーヒル勝浦|2026-10-02": {
     "discord": false,
     "status": "○"
   },
@@ -319,63 +95,19 @@
     "discord": false,
     "status": "○"
   },
-  "ホテル琵琶レイクオーツカ|2026-10-05": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト伊東|2026-10-26": {
-    "discord": false,
-    "status": "○"
-  },
   "ブルーベリーヒル勝浦|2026-10-05": {
     "discord": false,
     "status": "○"
-  },
-  "ホテル琵琶レイクオーツカ|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテル琵琶レイクオーツカ|2026-10-07": {
-    "discord": false,
-    "status": "△"
   },
   "ブルーベリーヒル勝浦|2026-10-06": {
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト伊東|2026-10-28": {
-    "discord": false,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-10-07": {
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト伊東|2026-10-29": {
-    "discord": false,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-10-08": {
-    "discord": false,
-    "status": "○"
-  },
-  "ブルーベリーヒル勝浦|2026-10-09": {
-    "discord": false,
-    "status": "△"
-  },
-  "ブルーベリーヒル勝浦|2026-10-16": {
-    "discord": false,
-    "status": "△"
-  },
-  "ブルーベリーヒル勝浦|2026-10-18": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテル琵琶レイクオーツカ|2026-10-21": {
-    "discord": false,
-    "status": "△"
-  },
-  "ブルーベリーヒル勝浦|2026-10-25": {
     "discord": false,
     "status": "○"
   },
@@ -395,15 +127,7 @@
     "discord": false,
     "status": "○"
   },
-  "ブルーベリーヒル勝浦|2026-10-30": {
-    "discord": false,
-    "status": "○"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-01": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-02": {
     "discord": false,
     "status": "○"
   },
@@ -423,18 +147,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-09": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-12": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテル日航プリンセス京都|2026-10-07": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-13": {
     "discord": false,
     "status": "○"
@@ -447,19 +159,7 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-16": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-18": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-19": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテル日航プリンセス京都|2026-10-14": {
     "discord": false,
     "status": "△"
   },
@@ -467,23 +167,11 @@
     "discord": false,
     "status": "○"
   },
-  "ホテル日航プリンセス京都|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-21": {
     "discord": false,
     "status": "○"
   },
   "ホテルハーヴェスト南紀田辺|2026-10-22": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-23": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-25": {
     "discord": false,
     "status": "△"
   },
@@ -495,10 +183,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテル日航プリンセス京都|2026-10-22": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-28": {
     "discord": false,
     "status": "○"
@@ -507,84 +191,24 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-30": {
-    "discord": false,
-    "status": "○"
-  },
-  "伊香保温泉 ホテル天坊|2026-10-01": {
-    "discord": false,
+  "ホテルハーヴェスト斑尾|2026-09-28": {
+    "discord": true,
     "status": "△"
   },
-  "伊香保温泉 ホテル天坊|2026-10-05": {
-    "discord": false,
+  "ホテルハーヴェスト斑尾|2026-09-29": {
+    "discord": true,
     "status": "△"
   },
-  "伊香保温泉 ホテル天坊|2026-10-06": {
-    "discord": false,
+  "ブルーベリーヒル勝浦|2026-09-03": {
+    "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト浜名湖|2026-09-30": {
-    "discord": false,
+  "ホテルハーヴェスト南紀田辺|2026-09-06": {
+    "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト浜名湖|2026-10-05": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-07": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-13": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-19": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-26": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-27": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-28": {
-    "discord": false,
-    "status": "△"
-  },
-  "ゆふいん山水館|2026-10-01": {
-    "discord": false,
-    "status": "△"
-  },
-  "ゆふいん山水館|2026-10-05": {
-    "discord": false,
-    "status": "△"
-  },
-  "ゆふいん山水館|2026-10-06": {
-    "discord": false,
-    "status": "△"
-  },
-  "ゆふいん山水館|2026-10-07": {
-    "discord": false,
-    "status": "△"
-  },
-  "ゆふいん山水館|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
-  "ゆふいん山水館|2026-10-20": {
-    "discord": false,
-    "status": "△"
-  },
-  "ゆふいん山水館|2026-10-21": {
-    "discord": false,
+  "ホテルハーヴェスト南紀田辺|2026-09-28": {
+    "discord": true,
     "status": "△"
   }
 }
