@@ -287,10 +287,6 @@
     "discord": true,
     "status": "△"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-14": {
-    "discord": true,
-    "status": "△"
-  },
   "草津温泉　ホテルヴィレッジ|2026-10-20": {
     "discord": true,
     "status": "△"
@@ -303,10 +299,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-09-11": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテル日航プリンセス京都|2026-10-07": {
     "discord": true,
     "status": "△"
@@ -315,7 +307,11 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト浜名湖|2026-10-21": {
+  "トスラブ箱根和奏林|2026-10-13": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト伊東|2026-10-14": {
     "discord": true,
     "status": "△"
   }
