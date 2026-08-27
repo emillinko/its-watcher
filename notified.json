@@ -51,10 +51,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト斑尾|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-19": {
     "discord": false,
     "status": "△"
@@ -236,6 +232,10 @@
     "status": "△"
   },
   "ホテル日航プリンセス京都|2026-09-30": {
+    "discord": true,
+    "status": "△"
+  },
+  "グランドメルキュール伊勢志摩|2026-09-01": {
     "discord": true,
     "status": "△"
   }
