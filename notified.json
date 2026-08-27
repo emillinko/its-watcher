@@ -147,10 +147,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-19": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-20": {
     "discord": false,
     "status": "○"
@@ -216,6 +212,10 @@
     "status": "△"
   },
   "ホテル日航プリンセス京都|2026-09-09": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-09-29": {
     "discord": true,
     "status": "△"
   }
