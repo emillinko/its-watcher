@@ -43,10 +43,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト斑尾|2026-10-08": {
-    "discord": false,
-    "status": "○"
-  },
   "ホテルハーヴェスト斑尾|2026-10-13": {
     "discord": false,
     "status": "○"
@@ -232,6 +228,10 @@
     "status": "△"
   },
   "ブルーベリーヒル勝浦|2026-09-27": {
+    "discord": true,
+    "status": "△"
+  },
+  "NAGU 勝浦|2026-09-07": {
     "discord": true,
     "status": "△"
   }
