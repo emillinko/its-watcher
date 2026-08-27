@@ -167,15 +167,7 @@
     "discord": false,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-09-09": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-09-15": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテル日航プリンセス京都|2026-09-16": {
     "discord": false,
     "status": "△"
   },
@@ -257,6 +249,26 @@
   },
   "グランドメルキュール伊勢志摩|2026-09-01": {
     "discord": false,
+    "status": "△"
+  },
+  "ホテルハーヴェスト伊東|2026-09-07": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテル日航プリンセス京都|2026-09-30": {
+    "discord": true,
+    "status": "△"
+  },
+  "NASPAニューオータニ|2026-09-07": {
+    "discord": true,
+    "status": "△"
+  },
+  "NAGU 勝浦|2026-09-10": {
+    "discord": true,
+    "status": "△"
+  },
+  "高山グリーンホテル|2026-09-06": {
+    "discord": true,
     "status": "△"
   }
 }
