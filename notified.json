@@ -51,10 +51,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト斑尾|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-19": {
     "discord": false,
     "status": "△"
@@ -228,6 +224,14 @@
     "status": "△"
   },
   "ホテルハーヴェスト有馬六彩|2026-09-08": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト浜名湖|2026-10-06": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト浜名湖|2026-10-07": {
     "discord": true,
     "status": "△"
   }
