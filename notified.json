@@ -187,10 +187,6 @@
     "discord": false,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-14": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-29": {
     "discord": true,
     "status": "△"
@@ -247,15 +243,7 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-01": {
-    "discord": true,
-    "status": "△"
-  },
   "グランドメルキュール伊勢志摩|2026-09-01": {
-    "discord": true,
-    "status": "△"
-  },
-  "ブルーベリーヒル勝浦|2026-10-25": {
     "discord": true,
     "status": "△"
   }
