@@ -215,10 +215,6 @@
     "discord": true,
     "status": "△"
   },
-  "NASPAニューオータニ|2026-09-07": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-09-29": {
     "discord": true,
     "status": "△"
@@ -228,6 +224,14 @@
     "status": "△"
   },
   "ブルーベリーヒル勝浦|2026-09-18": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト京都鷹峯|2026-09-09": {
+    "discord": true,
+    "status": "△"
+  },
+  "鳴子温泉　湯元　吉祥|2026-09-15": {
     "discord": true,
     "status": "△"
   }
