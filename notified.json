@@ -11,10 +11,6 @@
     "discord": false,
     "status": "△"
   },
-  "ホテルハーヴェスト斑尾|2026-09-14": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-09-16": {
     "discord": false,
     "status": "△"
@@ -244,6 +240,22 @@
     "status": "△"
   },
   "ホテル日航プリンセス京都|2026-09-16": {
+    "discord": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-09-13": {
+    "discord": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-09-14": {
+    "discord": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-09-17": {
+    "discord": true,
+    "status": "△"
+  },
+  "ブルーベリーヒル勝浦|2026-09-18": {
     "discord": true,
     "status": "△"
   }
