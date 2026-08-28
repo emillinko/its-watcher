@@ -247,10 +247,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-01": {
-    "discord": true,
-    "status": "△"
-  },
   "鳴子温泉　湯元　吉祥|2026-09-15": {
     "discord": true,
     "status": "△"
@@ -260,6 +256,10 @@
     "status": "△"
   },
   "グランドメルキュール伊勢志摩|2026-09-01": {
+    "discord": true,
+    "status": "△"
+  },
+  "鳴子温泉　湯元　吉祥|2026-09-09": {
     "discord": true,
     "status": "△"
   }
