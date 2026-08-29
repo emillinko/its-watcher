@@ -183,14 +183,6 @@
     "discord": true,
     "status": "○"
   },
-  "ホテルハーヴェスト斑尾|2026-10-26": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-27": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-09-29": {
     "discord": true,
     "status": "△"
@@ -224,6 +216,10 @@
     "status": "△"
   },
   "NASPAニューオータニ|2026-09-09": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト浜名湖|2026-09-28": {
     "discord": true,
     "status": "△"
   }
