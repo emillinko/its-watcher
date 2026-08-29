@@ -11,10 +11,6 @@
     "discord": false,
     "status": "△"
   },
-  "ブルーベリーヒル勝浦|2026-09-02": {
-    "discord": false,
-    "status": "○"
-  },
   "ブルーベリーヒル勝浦|2026-09-03": {
     "discord": false,
     "status": "△"
@@ -139,10 +135,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト斑尾|2026-09-08": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-22": {
     "discord": true,
     "status": "△"
@@ -187,10 +179,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト伊東|2026-09-08": {
-    "discord": true,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-10-01": {
     "discord": true,
     "status": "○"
@@ -211,10 +199,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-09-08": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-09-29": {
     "discord": true,
     "status": "△"
@@ -227,11 +211,23 @@
     "discord": true,
     "status": "△"
   },
-  "グランドメルキュール伊勢志摩|2026-09-10": {
+  "トスラブ館山ルアーナ|2026-09-10": {
     "discord": true,
     "status": "△"
   },
-  "ホテル日航プリンセス京都|2026-09-10": {
+  "草津温泉　ホテルヴィレッジ|2026-09-14": {
+    "discord": true,
+    "status": "△"
+  },
+  "NASPAニューオータニ|2026-09-08": {
+    "discord": true,
+    "status": "△"
+  },
+  "NASPAニューオータニ|2026-09-09": {
+    "discord": true,
+    "status": "△"
+  },
+  "NAGU 勝浦|2026-09-14": {
     "discord": true,
     "status": "△"
   }
