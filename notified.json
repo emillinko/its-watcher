@@ -207,23 +207,7 @@
     "discord": true,
     "status": "△"
   },
-  "トスラブ館山ルアーナ|2026-09-10": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト伊東|2026-09-10": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-09-29": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-09-30": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-01": {
     "discord": true,
     "status": "△"
   },
@@ -232,6 +216,10 @@
     "status": "△"
   },
   "NASPAニューオータニ|2026-09-09": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト浜名湖|2026-10-26": {
     "discord": true,
     "status": "△"
   }
