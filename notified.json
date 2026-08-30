@@ -139,10 +139,6 @@
     "discord": true,
     "status": "○"
   },
-  "ゆふいん山水館|2026-09-09": {
-    "discord": true,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-09-28": {
     "discord": true,
     "status": "△"
@@ -179,10 +175,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト斑尾|2026-10-19": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-21": {
     "discord": true,
     "status": "△"
@@ -204,6 +196,10 @@
     "status": "△"
   },
   "ホテルハーヴェスト南紀田辺|2026-09-14": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト斑尾|2026-10-26": {
     "discord": true,
     "status": "△"
   }
