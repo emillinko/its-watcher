@@ -3,10 +3,6 @@
     "discord": false,
     "status": "△"
   },
-  "ホテルハーヴェスト斑尾|2026-09-17": {
-    "discord": false,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-09-03": {
     "discord": false,
     "status": "△"
@@ -67,59 +63,7 @@
     "discord": false,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-05": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-06": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-07": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-08": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-14": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-15": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-20": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-21": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-26": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-27": {
-    "discord": false,
-    "status": "○"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-28": {
-    "discord": false,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-29": {
-    "discord": false,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-09-14": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-22": {
     "discord": true,
     "status": "△"
   },
@@ -136,10 +80,6 @@
     "status": "○"
   },
   "ブルーベリーヒル勝浦|2026-09-28": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト斑尾|2026-09-16": {
     "discord": true,
     "status": "△"
   },
@@ -183,15 +123,7 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-14": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-10-26": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-09-13": {
     "discord": true,
     "status": "△"
   },
@@ -208,26 +140,6 @@
     "status": "△"
   },
   "NASPAニューオータニ|2026-09-08": {
-    "discord": true,
-    "status": "△"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-21": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト有馬六彩|2026-09-09": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテルハーヴェスト有馬六彩|2026-09-10": {
-    "discord": true,
-    "status": "△"
-  },
-  "NAGU 勝浦|2026-09-14": {
-    "discord": true,
-    "status": "△"
-  },
-  "ホテル日航アリビラ|2026-09-10": {
     "discord": true,
     "status": "△"
   }
