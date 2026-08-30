@@ -83,10 +83,6 @@
     "discord": false,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-13": {
-    "discord": false,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-14": {
     "discord": false,
     "status": "△"
@@ -204,6 +200,10 @@
     "status": "△"
   },
   "伊香保温泉 ホテル天坊|2026-09-10": {
+    "discord": true,
+    "status": "△"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-09-13": {
     "discord": true,
     "status": "△"
   }
