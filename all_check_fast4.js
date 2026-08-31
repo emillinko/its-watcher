@@ -428,13 +428,10 @@ const fs = require("fs");
 
         normalMessage +=
           `🏨 ${item.facility}\n` +
-          `📅 ${item.date}（${weekday}）\n` +
-          `空き状況: ${item.status}\n\n`;
+          `📅 ${item.date}（${weekday}） 空き状況: ${item.status}\n\n`;
       }
 
       normalMessage +=
-        "○ = 空きあり\n" +
-        "△ = 残りわずか\n\n" +
         `[🔗 予約サイトはこちら](${url})`;
 
       const webhook =
