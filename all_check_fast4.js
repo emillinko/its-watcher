@@ -530,8 +530,7 @@ const fs = require("fs");
 
         message +=
           `🏨 ${item.facility}\n` +
-          `📅 ${item.date}（${weekday}） 空き状況: ${item.status}\n\n` +
-          ``;
+          `📅 ${item.date}（${weekday}） 空き状況: ${item.status}\n\n`;
       }
 
       const response =
