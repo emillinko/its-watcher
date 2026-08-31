@@ -8,6 +8,10 @@ const fs = require("fs");
 
   const url = process.env.ITS_KENPO_URL;
 
+  // ==========================================
+  // チェックする全施設
+  // ==========================================
+
   const facilities = [
     "トスラブ箱根ビオーレ",
     "トスラブ箱根和奏林",
@@ -135,6 +139,7 @@ const fs = require("fs");
       // ========================================
 
       for (let m = 0; m < 3; m++) {
+
         const calendar = page
           .locator('[id^="tcb"]:visible')
           .first();
@@ -150,6 +155,7 @@ const fs = require("fs");
         const cellCount = await cells.count();
 
         for (let i = 0; i < cellCount; i++) {
+
           const cell = cells.nth(i);
 
           const date =
@@ -184,6 +190,7 @@ const fs = require("fs");
         // ======================================
 
         if (m < 2) {
+
           const next = page
             .locator(
               'input.next-month:visible'
@@ -208,12 +215,14 @@ const fs = require("fs");
       );
 
     } catch (error) {
+
       console.log(
         `✕ ${facility}: ${error.message}`
       );
 
     } finally {
-      await page.close();
+
+      await page.close().catch(() => {});
     }
   }
 
@@ -228,6 +237,7 @@ const fs = require("fs");
       i < facilities.length;
       i += CONCURRENCY
     ) {
+
       const batch =
         facilities.slice(
           i,
@@ -258,6 +268,7 @@ const fs = require("fs");
     const currentKeys = new Set();
 
     for (const item of results) {
+
       const key =
         `${item.facility}|${item.date}`;
 
@@ -269,7 +280,9 @@ const fs = require("fs");
     // ==========================================
 
     for (const key of Object.keys(notified)) {
+
       if (!currentKeys.has(key)) {
+
         delete notified[key];
 
         console.log(
@@ -285,14 +298,11 @@ const fs = require("fs");
     const newResults = [];
 
     for (const item of results) {
+
       const key =
         `${item.facility}|${item.date}`;
 
       if (!notified[key]) {
-
-        notified[key] = {
-          status: item.status
-        };
 
         newResults.push(item);
 
@@ -305,7 +315,7 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // 空きなし
+    // 新しい空きなし
     // ==========================================
 
     if (!newResults.length) {
@@ -328,21 +338,6 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // 新しい空き発見
-    // ==========================================
-
-    console.log(
-      "★★ 新しい空き発見 ★★"
-    );
-
-    newResults.sort(
-      (a, b) =>
-        a.date.localeCompare(
-          b.date
-        )
-    );
-
-    // ==========================================
     // 曜日
     // ==========================================
 
@@ -357,9 +352,7 @@ const fs = require("fs");
     ];
 
     // ==========================================
-    // プライベート通知対象を分離
-    //
-    // 指定4施設 AND 金土日
+    // PRIVATE / 通常 に分離
     // ==========================================
 
     const privateResults = [];
@@ -383,12 +376,16 @@ const fs = require("fs");
           item.facility
         );
 
+      // 指定4施設 AND 金土日
       if (
         isPrivateFacility &&
         isWeekend
       ) {
+
         privateResults.push(item);
+
       } else {
+
         normalResults.push(item);
       }
     }
@@ -411,8 +408,10 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // 通常Discordメッセージ
+    // 通常Discord通知
     // ==========================================
+
+    let normalSuccess = true;
 
     if (normalResults.length > 0) {
 
@@ -438,58 +437,71 @@ const fs = require("fs");
         "△ = 残りわずか\n\n" +
         `[🔗 予約サイトはこちら](${url})`;
 
-      // ========================================
-      // 通常Discord
-      // ========================================
-
       const webhook =
         process.env.DISCORD_WEBHOOK_URL;
 
       if (!webhook) {
 
         console.log(
-          "Discord Webhook未設定"
+          "通常Discord Webhook未設定"
         );
+
+        normalSuccess = false;
 
       } else {
 
-        const response =
-          await fetch(
-            webhook,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-              body: JSON.stringify({
-                content: normalMessage
-              })
-            }
-          );
+        try {
 
-        if (response.ok) {
+          const response =
+            await fetch(
+              webhook,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                  content: normalMessage
+                })
+              }
+            );
+
+          if (response.ok) {
+
+            console.log(
+              "Discord通常通知成功！"
+            );
+
+          } else {
+
+            normalSuccess = false;
+
+            console.log(
+              `Discord通常通知失敗: ${response.status}`
+            );
+
+            console.log(
+              await response.text()
+            );
+          }
+
+        } catch (error) {
+
+          normalSuccess = false;
 
           console.log(
-            "Discord通常通知成功！"
-          );
-
-        } else {
-
-          console.log(
-            `Discord通常通知失敗: ${response.status}`
-          );
-
-          console.log(
-            await response.text()
+            `Discord通常通知エラー: ${error.message}`
           );
         }
       }
     }
 
     // ==========================================
-    // プライベートDiscordメッセージ
+    // プライベートDiscord通知
     // ==========================================
+
+    let privateSuccess = true;
 
     if (privateResults.length > 0) {
 
@@ -515,10 +527,6 @@ const fs = require("fs");
         "△ = 残りわずか\n\n" +
         `[🔗 予約サイトはこちら](${url})`;
 
-      // ========================================
-      // プライベートDiscord
-      // ========================================
-
       const privateWebhook =
         process.env.DISCORD_WEBHOOK_URL_PRIVATE;
 
@@ -528,40 +536,89 @@ const fs = require("fs");
           "プライベートDiscord Webhook未設定"
         );
 
+        privateSuccess = false;
+
       } else {
 
-        const response =
-          await fetch(
-            privateWebhook,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-              body: JSON.stringify({
-                content: privateMessage
-              })
-            }
-          );
+        try {
 
-        if (response.ok) {
+          const response =
+            await fetch(
+              privateWebhook,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                  content: privateMessage
+                })
+              }
+            );
+
+          if (response.ok) {
+
+            console.log(
+              "Discordプライベート通知成功！"
+            );
+
+          } else {
+
+            privateSuccess = false;
+
+            console.log(
+              `Discordプライベート通知失敗: ${response.status}`
+            );
+
+            console.log(
+              await response.text()
+            );
+          }
+
+        } catch (error) {
+
+          privateSuccess = false;
 
           console.log(
-            "Discordプライベート通知成功！"
-          );
-
-        } else {
-
-          console.log(
-            `Discordプライベート通知失敗: ${response.status}`
-          );
-
-          console.log(
-            await response.text()
+            `Discordプライベート通知エラー: ${error.message}`
           );
         }
       }
+    }
+
+    // ==========================================
+    // 通知成功したものだけ履歴へ保存
+    // ==========================================
+
+    for (const item of normalResults) {
+
+      if (!normalSuccess) {
+        continue;
+      }
+
+      const key =
+        `${item.facility}|${item.date}`;
+
+      notified[key] = {
+        status: item.status,
+        channel: "normal"
+      };
+    }
+
+    for (const item of privateResults) {
+
+      if (!privateSuccess) {
+        continue;
+      }
+
+      const key =
+        `${item.facility}|${item.date}`;
+
+      notified[key] = {
+        status: item.status,
+        channel: "private"
+      };
     }
 
     // ==========================================
@@ -593,6 +650,7 @@ const fs = require("fs");
 
   } finally {
 
-    await browser.close();
+    await browser.close().catch(() => {});
   }
+
 })();
