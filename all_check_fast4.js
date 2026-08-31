@@ -8,10 +8,6 @@ const fs = require("fs");
 
   const url = process.env.ITS_KENPO_URL;
 
-  // ==========================================
-  // 監視する施設
-  // ==========================================
-
   const facilities = [
     "トスラブ箱根ビオーレ",
     "トスラブ箱根和奏林",
@@ -56,15 +52,15 @@ const fs = require("fs");
   ];
 
   // ==========================================
-  // Discordプライベート通知対象ホテル
+  // プライベートDiscord通知対象施設
   // ==========================================
 
-  const DISCORD_FACILITIES = [
+  const privateFacilities = new Set([
     "ラビスタ富士河口湖",
     "ラビスタ熱海テラス",
     "軽井沢マリオットホテル",
     "プレジャーリゾート伊豆赤沢温泉　赤沢温泉ホテル"
-  ];
+  ]);
 
   // ==========================================
   // 同時チェック数
@@ -72,10 +68,8 @@ const fs = require("fs");
 
   const CONCURRENCY = 3;
 
-  const results = [];
-
   // ==========================================
-  // 通知済みデータ
+  // 通知履歴
   // ==========================================
 
   const notifiedFile = "notified.json";
@@ -85,52 +79,27 @@ const fs = require("fs");
   try {
     if (fs.existsSync(notifiedFile)) {
       notified = JSON.parse(
-        fs.readFileSync(
-          notifiedFile,
-          "utf8"
-        )
+        fs.readFileSync(notifiedFile, "utf8")
       );
     }
   } catch (error) {
-    console.log(
-      "⚠ notified.json 読み込み失敗"
-    );
-
+    console.log("⚠ notified.json 読み込み失敗");
     notified = {};
   }
 
-  console.log(
-    "ITS健保 高速チェック4開始"
-  );
-
-  console.log(
-    `同時チェック: ${CONCURRENCY}施設`
-  );
-
+  console.log("ITS健保 高速チェック4開始");
+  console.log(`同時チェック: ${CONCURRENCY}施設`);
   console.log(
     `通知済みデータ: ${Object.keys(notified).length}件`
   );
 
-  console.log(
-    "Discord通知対象ホテル:"
-  );
-
-  for (const facility of DISCORD_FACILITIES) {
-    console.log(
-      `  ・${facility}`
-    );
-  }
-
-  console.log(
-    "Discord通知対象曜日: 金・土・日"
-  );
+  const results = [];
 
   // ==========================================
   // 施設チェック
   // ==========================================
 
   async function checkFacility(facility) {
-
     const page = await browser.newPage({
       viewport: {
         width: 1400,
@@ -141,34 +110,19 @@ const fs = require("fs");
     const start = Date.now();
 
     try {
-
-      await page.goto(
-        url,
-        {
-          waitUntil: "domcontentloaded",
-          timeout: 60000
-        }
-      );
+      await page.goto(url, {
+        waitUntil: "domcontentloaded",
+        timeout: 60000
+      });
 
       const link = page
-        .getByText(
-          facility,
-          {
-            exact: true
-          }
-        )
+        .getByText(facility, {
+          exact: true
+        })
         .first();
 
-      if (
-        !await link
-          .isVisible()
-          .catch(() => false)
-      ) {
-
-        console.log(
-          `⚠ 施設なし: ${facility}`
-        );
-
+      if (!await link.isVisible().catch(() => false)) {
+        console.log(`⚠ 施設なし: ${facility}`);
         return;
       }
 
@@ -181,35 +135,22 @@ const fs = require("fs");
       // ========================================
 
       for (let m = 0; m < 3; m++) {
-
         const calendar = page
-          .locator(
-            '[id^="tcb"]:visible'
-          )
+          .locator('[id^="tcb"]:visible')
           .first();
 
-        if (
-          !await calendar.count()
-        ) {
+        if (!await calendar.count()) {
           break;
         }
 
-        const cells =
-          calendar.locator(
-            "td[data-join-time]"
-          );
+        const cells = calendar.locator(
+          "td[data-join-time]"
+        );
 
-        const cellCount =
-          await cells.count();
+        const cellCount = await cells.count();
 
-        for (
-          let i = 0;
-          i < cellCount;
-          i++
-        ) {
-
-          const cell =
-            cells.nth(i);
+        for (let i = 0; i < cellCount; i++) {
+          const cell = cells.nth(i);
 
           const date =
             await cell.getAttribute(
@@ -226,20 +167,15 @@ const fs = require("fs");
           const cleanStatus =
             status?.trim();
 
-          // ○ と △ を取得
           if (
             date &&
-            ["○", "△"].includes(
-              cleanStatus
-            )
+            ["○", "△"].includes(cleanStatus)
           ) {
-
             results.push({
               facility,
               date,
               status: cleanStatus
             });
-
           }
         }
 
@@ -248,17 +184,13 @@ const fs = require("fs");
         // ======================================
 
         if (m < 2) {
+          const next = page
+            .locator(
+              'input.next-month:visible'
+            )
+            .first();
 
-          const next =
-            page
-              .locator(
-                'input.next-month:visible'
-              )
-              .first();
-
-          if (
-            !await next.count()
-          ) {
+          if (!await next.count()) {
             break;
           }
 
@@ -276,13 +208,11 @@ const fs = require("fs");
       );
 
     } catch (error) {
-
       console.log(
         `✕ ${facility}: ${error.message}`
       );
 
     } finally {
-
       await page.close();
     }
   }
@@ -298,7 +228,6 @@ const fs = require("fs");
       i < facilities.length;
       i += CONCURRENCY
     ) {
-
       const batch =
         facilities.slice(
           i,
@@ -320,19 +249,15 @@ const fs = require("fs");
       );
     }
 
-    console.log(
-      "================"
-    );
+    console.log("================");
 
     // ==========================================
     // 現在空きがあるキー
     // ==========================================
 
-    const currentKeys =
-      new Set();
+    const currentKeys = new Set();
 
     for (const item of results) {
-
       const key =
         `${item.facility}|${item.date}`;
 
@@ -340,17 +265,11 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // 空きがなくなったものを削除
+    // 空きがなくなったものを履歴から削除
     // ==========================================
 
-    for (
-      const key of Object.keys(notified)
-    ) {
-
-      if (
-        !currentKeys.has(key)
-      ) {
-
+    for (const key of Object.keys(notified)) {
+      if (!currentKeys.has(key)) {
         delete notified[key];
 
         console.log(
@@ -366,7 +285,6 @@ const fs = require("fs");
     const newResults = [];
 
     for (const item of results) {
-
       const key =
         `${item.facility}|${item.date}`;
 
@@ -387,12 +305,10 @@ const fs = require("fs");
     }
 
     // ==========================================
-    // 新しい空きなし
+    // 空きなし
     // ==========================================
 
-    if (
-      !newResults.length
-    ) {
+    if (!newResults.length) {
 
       fs.writeFileSync(
         notifiedFile,
@@ -441,134 +357,215 @@ const fs = require("fs");
     ];
 
     // ==========================================
-    // Discord用フィルター
+    // プライベート通知対象を分離
     //
-    // ・指定4ホテル
-    // ・金曜日
-    // ・土曜日
-    // ・日曜日
+    // 指定4施設 AND 金土日
     // ==========================================
 
-    const privateResults =
-      newResults.filter(item => {
+    const privateResults = [];
+    const normalResults = [];
 
-        // 指定ホテル以外は除外
-        if (
-          !DISCORD_FACILITIES.includes(
-            item.facility
-          )
-        ) {
-          return false;
-        }
+    for (const item of newResults) {
 
-        const dateObj =
-          new Date(
-            `${item.date}T00:00:00`
-          );
+      const dateObj =
+        new Date(`${item.date}T00:00:00`);
 
-        const day =
-          dateObj.getDay();
+      const day =
+        dateObj.getDay();
 
-        // 金=5
-        // 土=6
-        // 日=0
-        return [
-          0,
-          5,
-          6
-        ].includes(day);
-      });
+      const isWeekend =
+        day === 5 ||
+        day === 6 ||
+        day === 0;
 
-    // ==========================================
-    // Discordプライベート通知
-    // ==========================================
+      const isPrivateFacility =
+        privateFacilities.has(
+          item.facility
+        );
 
-    const privateWebhook =
-      process.env
-        .DISCORD_WEBHOOK_URL_PRIVATE;
-
-    if (!privateWebhook) {
-
-      console.log(
-        "DISCORD_WEBHOOK_URL_PRIVATE 未設定"
-      );
-
-    } else if (
-      !privateResults.length
-    ) {
-
-      console.log(
-        "Discordプライベート通知対象の新しい空きなし"
-      );
-
-    } else {
-
-      console.log(
-        "★★ Discordプライベート通知 ★★"
-      );
-
-      let message =
-        "🚨 ITS健保 新しい空き！\n\n";
-
-      for (
-        const item of privateResults
+      if (
+        isPrivateFacility &&
+        isWeekend
       ) {
-
-        const dateObj =
-          new Date(
-            `${item.date}T00:00:00`
-          );
-
-        const weekday =
-          weekdays[
-            dateObj.getDay()
-          ];
-
-        console.log(
-          `Discord: ${item.facility} ${item.date}（${weekday}） ${item.status}`
-        );
-
-        message +=
-          `🏨 ${item.facility}\n` +
-          `📅 ${item.date}（${weekday}） 空き状況: ${item.status}\n\n` +
-          `🔗 [予約サイトはこちら](" + url + ")`;
-      }
-
-      const response =
-        await fetch(
-          privateWebhook,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-            body: JSON.stringify({
-              content: message
-            })
-          }
-        );
-
-      if (response.ok) {
-
-        console.log(
-          "Discordプライベート通知成功！"
-        );
-
+        privateResults.push(item);
       } else {
-
-        console.log(
-          `Discordプライベート通知失敗: ${response.status}`
-        );
-
-        console.log(
-          await response.text()
-        );
+        normalResults.push(item);
       }
     }
 
     // ==========================================
-    // 通知済みデータ保存
+    // コンソール表示
+    // ==========================================
+
+    for (const item of newResults) {
+
+      const dateObj =
+        new Date(`${item.date}T00:00:00`);
+
+      const weekday =
+        weekdays[dateObj.getDay()];
+
+      console.log(
+        `${item.facility} ${item.date}（${weekday}） ${item.status}`
+      );
+    }
+
+    // ==========================================
+    // 通常Discordメッセージ
+    // ==========================================
+
+    if (normalResults.length > 0) {
+
+      let normalMessage =
+        "🚨 ITS健保 新しい空き発見！\n\n";
+
+      for (const item of normalResults) {
+
+        const dateObj =
+          new Date(`${item.date}T00:00:00`);
+
+        const weekday =
+          weekdays[dateObj.getDay()];
+
+        normalMessage +=
+          `🏨 ${item.facility}\n` +
+          `📅 ${item.date}（${weekday}）\n` +
+          `空き状況: ${item.status}\n\n`;
+      }
+
+      normalMessage +=
+        "○ = 空きあり\n" +
+        "△ = 残りわずか\n\n" +
+        `[🔗 予約サイトはこちら](${url})`;
+
+      // ========================================
+      // 通常Discord
+      // ========================================
+
+      const webhook =
+        process.env.DISCORD_WEBHOOK_URL;
+
+      if (!webhook) {
+
+        console.log(
+          "Discord Webhook未設定"
+        );
+
+      } else {
+
+        const response =
+          await fetch(
+            webhook,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                content: normalMessage
+              })
+            }
+          );
+
+        if (response.ok) {
+
+          console.log(
+            "Discord通常通知成功！"
+          );
+
+        } else {
+
+          console.log(
+            `Discord通常通知失敗: ${response.status}`
+          );
+
+          console.log(
+            await response.text()
+          );
+        }
+      }
+    }
+
+    // ==========================================
+    // プライベートDiscordメッセージ
+    // ==========================================
+
+    if (privateResults.length > 0) {
+
+      let privateMessage =
+        "🔔 ITS健保 希望施設に空き！\n\n";
+
+      for (const item of privateResults) {
+
+        const dateObj =
+          new Date(`${item.date}T00:00:00`);
+
+        const weekday =
+          weekdays[dateObj.getDay()];
+
+        privateMessage +=
+          `🏨 ${item.facility}\n` +
+          `📅 ${item.date}（${weekday}）\n` +
+          `空き状況: ${item.status}\n\n`;
+      }
+
+      privateMessage +=
+        "○ = 空きあり\n" +
+        "△ = 残りわずか\n\n" +
+        `[🔗 予約サイトはこちら](${url})`;
+
+      // ========================================
+      // プライベートDiscord
+      // ========================================
+
+      const privateWebhook =
+        process.env.DISCORD_WEBHOOK_URL_PRIVATE;
+
+      if (!privateWebhook) {
+
+        console.log(
+          "プライベートDiscord Webhook未設定"
+        );
+
+      } else {
+
+        const response =
+          await fetch(
+            privateWebhook,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                content: privateMessage
+              })
+            }
+          );
+
+        if (response.ok) {
+
+          console.log(
+            "Discordプライベート通知成功！"
+          );
+
+        } else {
+
+          console.log(
+            `Discordプライベート通知失敗: ${response.status}`
+          );
+
+          console.log(
+            await response.text()
+          );
+        }
+      }
+    }
+
+    // ==========================================
+    // 通知履歴保存
     // ==========================================
 
     fs.writeFileSync(
@@ -598,5 +595,4 @@ const fs = require("fs");
 
     await browser.close();
   }
-
 })();
