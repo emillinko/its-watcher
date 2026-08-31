@@ -530,13 +530,9 @@ const fs = require("fs");
 
         message +=
           `🏨 ${item.facility}\n` +
-          `📅 ${item.date}（${weekday}）\n` +
-          `空き状況: ${item.status}\n\n`;
+          `📅 ${item.date}（${weekday}） 空き状況: ${item.status}\n\n` +
+          ``;
       }
-
-      message +=
-        "○ = 空きあり\n" +
-        "△ = 残りわずか";
 
       const response =
         await fetch(
