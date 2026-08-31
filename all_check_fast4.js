@@ -8,6 +8,10 @@ const fs = require("fs");
 
   const url = process.env.ITS_KENPO_URL;
 
+  // ==========================================
+  // 監視する施設
+  // ==========================================
+
   const facilities = [
     "トスラブ箱根ビオーレ",
     "トスラブ箱根和奏林",
@@ -51,11 +55,27 @@ const fs = require("fs");
     "フルーツパーク富士屋ホテル"
   ];
 
-  const results = [];
-  const CONCURRENCY = 3;
+  // ==========================================
+  // Discordプライベート通知対象ホテル
+  // ==========================================
+
+  const DISCORD_FACILITIES = [
+    "ラビスタ富士河口湖",
+    "ラビスタ熱海テラス",
+    "軽井沢マリオットホテル",
+    "プレジャーリゾート伊豆赤沢温泉　赤沢温泉ホテル"
+  ];
 
   // ==========================================
-  // 通知済みデータ読み込み
+  // 同時チェック数
+  // ==========================================
+
+  const CONCURRENCY = 3;
+
+  const results = [];
+
+  // ==========================================
+  // 通知済みデータ
   // ==========================================
 
   const notifiedFile = "notified.json";
@@ -65,18 +85,44 @@ const fs = require("fs");
   try {
     if (fs.existsSync(notifiedFile)) {
       notified = JSON.parse(
-        fs.readFileSync(notifiedFile, "utf8")
+        fs.readFileSync(
+          notifiedFile,
+          "utf8"
+        )
       );
     }
   } catch (error) {
-    console.log("⚠ notified.json 読み込み失敗");
+    console.log(
+      "⚠ notified.json 読み込み失敗"
+    );
+
     notified = {};
   }
 
-  console.log("ITS健保 高速チェック4開始");
-  console.log(`同時チェック: ${CONCURRENCY}施設`);
+  console.log(
+    "ITS健保 高速チェック4開始"
+  );
+
+  console.log(
+    `同時チェック: ${CONCURRENCY}施設`
+  );
+
   console.log(
     `通知済みデータ: ${Object.keys(notified).length}件`
+  );
+
+  console.log(
+    "Discord通知対象ホテル:"
+  );
+
+  for (const facility of DISCORD_FACILITIES) {
+    console.log(
+      `  ・${facility}`
+    );
+  }
+
+  console.log(
+    "Discord通知対象曜日: 金・土・日"
   );
 
   // ==========================================
@@ -84,6 +130,7 @@ const fs = require("fs");
   // ==========================================
 
   async function checkFacility(facility) {
+
     const page = await browser.newPage({
       viewport: {
         width: 1400,
@@ -94,19 +141,34 @@ const fs = require("fs");
     const start = Date.now();
 
     try {
-      await page.goto(url, {
-        waitUntil: "domcontentloaded",
-        timeout: 60000
-      });
+
+      await page.goto(
+        url,
+        {
+          waitUntil: "domcontentloaded",
+          timeout: 60000
+        }
+      );
 
       const link = page
-        .getByText(facility, {
-          exact: true
-        })
+        .getByText(
+          facility,
+          {
+            exact: true
+          }
+        )
         .first();
 
-      if (!await link.isVisible().catch(() => false)) {
-        console.log(`⚠ 施設なし: ${facility}`);
+      if (
+        !await link
+          .isVisible()
+          .catch(() => false)
+      ) {
+
+        console.log(
+          `⚠ 施設なし: ${facility}`
+        );
+
         return;
       }
 
@@ -114,26 +176,40 @@ const fs = require("fs");
 
       await page.waitForTimeout(500);
 
+      // ========================================
       // 3ヶ月チェック
+      // ========================================
+
       for (let m = 0; m < 3; m++) {
 
         const calendar = page
-          .locator('[id^="tcb"]:visible')
+          .locator(
+            '[id^="tcb"]:visible'
+          )
           .first();
 
-        if (!await calendar.count()) {
+        if (
+          !await calendar.count()
+        ) {
           break;
         }
 
-        const cells = calendar.locator(
-          "td[data-join-time]"
-        );
+        const cells =
+          calendar.locator(
+            "td[data-join-time]"
+          );
 
-        const cellCount = await cells.count();
+        const cellCount =
+          await cells.count();
 
-        for (let i = 0; i < cellCount; i++) {
+        for (
+          let i = 0;
+          i < cellCount;
+          i++
+        ) {
 
-          const cell = cells.nth(i);
+          const cell =
+            cells.nth(i);
 
           const date =
             await cell.getAttribute(
@@ -150,28 +226,39 @@ const fs = require("fs");
           const cleanStatus =
             status?.trim();
 
+          // ○ と △ を取得
           if (
             date &&
-            ["○", "△"].includes(cleanStatus)
+            ["○", "△"].includes(
+              cleanStatus
+            )
           ) {
+
             results.push({
               facility,
               date,
               status: cleanStatus
             });
+
           }
         }
 
-        // 次の月へ
+        // ======================================
+        // 次の月
+        // ======================================
+
         if (m < 2) {
 
-          const next = page
-            .locator(
-              'input.next-month:visible'
-            )
-            .first();
+          const next =
+            page
+              .locator(
+                'input.next-month:visible'
+              )
+              .first();
 
-          if (!await next.count()) {
+          if (
+            !await next.count()
+          ) {
             break;
           }
 
@@ -233,13 +320,16 @@ const fs = require("fs");
       );
     }
 
-    console.log("================");
+    console.log(
+      "================"
+    );
 
     // ==========================================
     // 現在空きがあるキー
     // ==========================================
 
-    const currentKeys = new Set();
+    const currentKeys =
+      new Set();
 
     for (const item of results) {
 
@@ -253,9 +343,13 @@ const fs = require("fs");
     // 空きがなくなったものを削除
     // ==========================================
 
-    for (const key of Object.keys(notified)) {
+    for (
+      const key of Object.keys(notified)
+    ) {
 
-      if (!currentKeys.has(key)) {
+      if (
+        !currentKeys.has(key)
+      ) {
 
         delete notified[key];
 
@@ -263,29 +357,6 @@ const fs = require("fs");
           `↩ 空き終了: ${key}`
         );
       }
-    }
-
-    // ==========================================
-    // 空きなし
-    // ==========================================
-
-    if (!results.length) {
-
-      fs.writeFileSync(
-        notifiedFile,
-        JSON.stringify(
-          notified,
-          null,
-          2
-        ),
-        "utf8"
-      );
-
-      console.log(
-        "3ヶ月間、空きなし"
-      );
-
-      return;
     }
 
     // ==========================================
@@ -302,7 +373,6 @@ const fs = require("fs");
       if (!notified[key]) {
 
         notified[key] = {
-          discord: false,
           status: item.status
         };
 
@@ -320,7 +390,9 @@ const fs = require("fs");
     // 新しい空きなし
     // ==========================================
 
-    if (!newResults.length) {
+    if (
+      !newResults.length
+    ) {
 
       fs.writeFileSync(
         notifiedFile,
@@ -355,8 +427,7 @@ const fs = require("fs");
     );
 
     // ==========================================
-    // Discordメッセージ作成
-    // 曜日を追加
+    // 曜日
     // ==========================================
 
     const weekdays = [
@@ -369,104 +440,139 @@ const fs = require("fs");
       "土"
     ];
 
-    let message =
-      "🚨 ITS健保 新しい空き発見！\n\n";
+    // ==========================================
+    // Discord用フィルター
+    //
+    // ・指定4ホテル
+    // ・金曜日
+    // ・土曜日
+    // ・日曜日
+    // ==========================================
 
-    for (const item of newResults) {
+    const privateResults =
+      newResults.filter(item => {
+
+        // 指定ホテル以外は除外
+        if (
+          !DISCORD_FACILITIES.includes(
+            item.facility
+          )
+        ) {
+          return false;
+        }
+
+        const dateObj =
+          new Date(
+            `${item.date}T00:00:00`
+          );
+
+        const day =
+          dateObj.getDay();
+
+        // 金=5
+        // 土=6
+        // 日=0
+        return [
+          0,
+          5,
+          6
+        ].includes(day);
+      });
+
+    // ==========================================
+    // Discordプライベート通知
+    // ==========================================
+
+    const privateWebhook =
+      process.env
+        .DISCORD_WEBHOOK_URL_PRIVATE;
+
+    if (!privateWebhook) {
 
       console.log(
-        item.facility,
-        item.date,
-        item.status
+        "DISCORD_WEBHOOK_URL_PRIVATE 未設定"
       );
 
-      const dateObj =
-        new Date(`${item.date}T00:00:00`);
-
-      const weekday =
-        weekdays[dateObj.getDay()];
-
-      message +=
-        `🏨 ${item.facility}\n` +
-        `📅 ${item.date}（${weekday}）\n` +
-        `空き状況: ${item.status}\n\n`;
-    }
-
-    message +=
-      "○ = 空きあり\n" +
-      "△ = 残りわずか\n\n" +
-      "🔗 " + url;
-
-    // ==========================================
-    // Discord通知
-    // ==========================================
-
-    const webhook =
-      process.env.DISCORD_WEBHOOK_URL;
-
-    if (!webhook) {
+    } else if (
+      !privateResults.length
+    ) {
 
       console.log(
-        "Discord Webhook未設定"
+        "Discordプライベート通知対象の新しい空きなし"
       );
 
     } else {
 
-      const discordResults =
-        newResults.filter(item => {
+      console.log(
+        "★★ Discordプライベート通知 ★★"
+      );
 
-          const key =
-            `${item.facility}|${item.date}`;
+      let message =
+        "🚨 ITS健保 新しい空き！\n\n";
 
-          return !notified[key].discord;
-        });
+      for (
+        const item of privateResults
+      ) {
 
-      if (discordResults.length) {
-
-        const response =
-          await fetch(
-            webhook,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-              body: JSON.stringify({
-                content: message
-              })
-            }
+        const dateObj =
+          new Date(
+            `${item.date}T00:00:00`
           );
 
-        if (response.ok) {
+        const weekday =
+          weekdays[
+            dateObj.getDay()
+          ];
 
-          console.log(
-            "Discord通知成功！"
-          );
+        console.log(
+          `Discord: ${item.facility} ${item.date}（${weekday}） ${item.status}`
+        );
 
-          for (const item of discordResults) {
+        message +=
+          `🏨 ${item.facility}\n` +
+          `📅 ${item.date}（${weekday}）\n` +
+          `空き状況: ${item.status}\n\n`;
+      }
 
-            const key =
-              `${item.facility}|${item.date}`;
+      message +=
+        "○ = 空きあり\n" +
+        "△ = 残りわずか";
 
-            notified[key].discord = true;
+      const response =
+        await fetch(
+          privateWebhook,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+            body: JSON.stringify({
+              content: message
+            })
           }
+        );
 
-        } else {
+      if (response.ok) {
 
-          console.log(
-            `Discord通知失敗: ${response.status}`
-          );
+        console.log(
+          "Discordプライベート通知成功！"
+        );
 
-          console.log(
-            await response.text()
-          );
-        }
+      } else {
+
+        console.log(
+          `Discordプライベート通知失敗: ${response.status}`
+        );
+
+        console.log(
+          await response.text()
+        );
       }
     }
 
     // ==========================================
-    // 通知済み保存
+    // 通知済みデータ保存
     // ==========================================
 
     fs.writeFileSync(
@@ -496,4 +602,5 @@ const fs = require("fs");
 
     await browser.close();
   }
+
 })();
