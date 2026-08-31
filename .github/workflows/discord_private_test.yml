@@ -1,0 +1,27 @@
+name: Discord Private Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send test notification
+        env:
+          DISCORD_WEBHOOK_URL_PRIVATE: ${{ secrets.DISCORD_WEBHOOK_URL_PRIVATE }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL_PRIVATE" ]; then
+            echo "❌ DISCORD_WEBHOOK_URL_PRIVATE が設定されていません"
+            exit 1
+          fi
+
+          curl -X POST "$DISCORD_WEBHOOK_URL_PRIVATE" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "🔔 テスト通知\n\nITS健保のプライベート通知テストです！\nこのチャンネルに届けば設定成功です 👍"
+            }'
+
+          echo ""
+          echo "✅ Discord Private Webhookへ送信しました"
