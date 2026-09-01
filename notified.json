@@ -7,10 +7,6 @@
     "discord": false,
     "status": "△"
   },
-  "ブルーベリーヒル勝浦|2026-09-09": {
-    "discord": false,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-09-15": {
     "discord": false,
     "status": "△"
@@ -197,10 +193,6 @@
     "channel": "normal"
   },
   "ホテル日航プリンセス京都|2026-09-14": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "トスラブ箱根ビオーレ|2026-09-11": {
     "status": "△",
     "channel": "normal"
   }
