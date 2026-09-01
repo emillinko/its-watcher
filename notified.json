@@ -131,10 +131,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-26": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-27": {
     "discord": true,
     "status": "△"
@@ -202,10 +198,6 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト南紀田辺|2026-09-13": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ゆふいん山水館|2026-09-11": {
     "status": "△",
     "channel": "normal"
   }
