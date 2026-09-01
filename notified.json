@@ -160,10 +160,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-26": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-09": {
     "status": "△",
     "channel": "normal"
@@ -197,6 +193,10 @@
     "channel": "normal"
   },
   "グランドメルキュール伊勢志摩|2026-09-10": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-09-16": {
     "status": "△",
     "channel": "normal"
   }
