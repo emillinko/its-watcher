@@ -198,10 +198,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-09-18": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-19": {
     "status": "△",
     "channel": "normal"
@@ -210,7 +206,23 @@
     "status": "△",
     "channel": "normal"
   },
-  "ゆふいん山水館|2026-09-18": {
+  "トスラブ館山ルアーナ|2026-09-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト那須|2026-09-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-09-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-09-13": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "鳴子温泉　湯元　吉祥|2026-09-15": {
     "status": "△",
     "channel": "normal"
   }
