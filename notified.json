@@ -159,15 +159,7 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-24": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-09-25": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "トスラブ館山ルアーナ|2026-09-14": {
     "status": "△",
     "channel": "normal"
   },
@@ -215,7 +207,11 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-09-17": {
+  "ホテルハーヴェスト那須|2026-09-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2026-09-18": {
     "status": "△",
     "channel": "normal"
   }
