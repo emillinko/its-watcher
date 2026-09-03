@@ -67,10 +67,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-27": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-09-16": {
     "discord": true,
     "status": "△"
@@ -139,30 +135,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-13": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-14": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-15": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-20": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-21": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-22": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-09-17": {
     "status": "△",
     "channel": "normal"
@@ -171,15 +143,7 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-29": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-09-28": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-28": {
     "status": "△",
     "channel": "normal"
   },
@@ -196,10 +160,6 @@
     "channel": "normal"
   },
   "草津温泉　ホテルヴィレッジ|2026-09-15": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト那須|2026-09-14": {
     "status": "△",
     "channel": "normal"
   },
@@ -223,23 +183,11 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-09-25": {
-    "status": "△",
-    "channel": "normal"
-  },
   "鳴子温泉　湯元　吉祥|2026-09-14": {
     "status": "△",
     "channel": "normal"
   },
-  "リソルの森|2026-09-16": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-09-14": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテル日航アリビラ|2026-09-21": {
     "status": "△",
     "channel": "normal"
   }
