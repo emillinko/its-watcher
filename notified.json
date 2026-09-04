@@ -59,10 +59,6 @@
     "discord": true,
     "status": "△"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-14": {
-    "discord": true,
-    "status": "△"
-  },
   "ホテルハーヴェスト斑尾|2026-09-16": {
     "discord": true,
     "status": "△"
@@ -100,10 +96,6 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト南紀田辺|2026-09-16": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ブルーベリーヒル勝浦|2026-09-08": {
     "status": "△",
     "channel": "normal"
   },
@@ -183,10 +175,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-09-14": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-19": {
     "status": "△",
     "channel": "normal"
@@ -203,11 +191,19 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル日航プリンセス京都|2026-09-14": {
+  "トスラブ館山ルアーナ|2026-09-14": {
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-09-14": {
+  "ホテル日航プリンセス京都|2026-09-30": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "NAGU 勝浦|2026-09-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "アオアヲナルトリゾート|2026-09-14": {
     "status": "△",
     "channel": "normal"
   }
