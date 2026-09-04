@@ -207,19 +207,27 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル日航プリンセス京都|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト浜名湖|2026-09-24": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-09-14": {
     "status": "△",
     "channel": "normal"
   },
-  "高山グリーンホテル|2026-09-18": {
+  "ホテルハーヴェスト斑尾|2026-09-18": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-09-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-09-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-09-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-09-16": {
     "status": "△",
     "channel": "normal"
   }
