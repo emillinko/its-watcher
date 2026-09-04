@@ -183,10 +183,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ゆふいん山水館|2026-09-16": {
-    "status": "△",
-    "channel": "normal"
-  },
   "草津温泉　ホテルヴィレッジ|2026-09-15": {
     "status": "△",
     "channel": "normal"
@@ -200,6 +196,10 @@
     "channel": "normal"
   },
   "ホテル日航プリンセス京都|2026-09-30": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト有馬六彩|2026-09-17": {
     "status": "△",
     "channel": "normal"
   }
