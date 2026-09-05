@@ -159,10 +159,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-18": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-01": {
     "status": "△",
     "channel": "normal"
@@ -196,6 +192,18 @@
     "channel": "normal"
   },
   "草津温泉　ホテルヴィレッジ|2026-09-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-09-25": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-09-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "リソルの森|2026-10-13": {
     "status": "△",
     "channel": "normal"
   }
