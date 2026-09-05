@@ -35,10 +35,6 @@
     "discord": true,
     "status": "△"
   },
-  "ブルーベリーヒル勝浦|2026-10-01": {
-    "discord": true,
-    "status": "○"
-  },
   "ブルーベリーヒル勝浦|2026-10-05": {
     "discord": true,
     "status": "○"
@@ -220,10 +216,6 @@
     "channel": "normal"
   },
   "トスラブ館山ルアーナ|2026-09-15": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "草津温泉　ホテルヴィレッジ|2026-10-14": {
     "status": "△",
     "channel": "normal"
   },
