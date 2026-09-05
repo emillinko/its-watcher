@@ -211,15 +211,7 @@
     "status": "△",
     "channel": "normal"
   },
-  "NAGU 勝浦|2026-09-14": {
-    "status": "△",
-    "channel": "normal"
-  },
   "アオアヲナルトリゾート|2026-09-14": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "トスラブ館山ルアーナ|2026-09-15": {
     "status": "△",
     "channel": "normal"
   },
@@ -227,11 +219,27 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル日航プリンセス京都|2026-09-16": {
+  "ホテルハーヴェスト斑尾|2026-10-12": {
     "status": "△",
     "channel": "normal"
   },
-  "リソルの森|2026-09-16": {
+  "ホテル日航プリンセス京都|2026-09-17": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト旧軽井沢|2026-09-17": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-09-30": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト有馬六彩|2026-09-27": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ラビスタ富士河口湖|2026-09-16": {
     "status": "△",
     "channel": "normal"
   }
