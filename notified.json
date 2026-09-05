@@ -187,10 +187,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル琵琶レイクオーツカ|2026-09-15": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-13": {
     "status": "△",
     "channel": "normal"
@@ -208,6 +204,14 @@
     "channel": "normal"
   },
   "NAGU 勝浦|2026-09-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-09-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-09-30": {
     "status": "△",
     "channel": "normal"
   }
