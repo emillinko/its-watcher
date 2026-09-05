@@ -187,10 +187,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-09-13": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-09-18": {
     "status": "△",
     "channel": "normal"
@@ -215,7 +211,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "アオアヲナルトリゾート|2026-09-14": {
+  "トスラブ箱根ビオーレ|2026-09-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-09-18": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-09-29": {
     "status": "△",
     "channel": "normal"
   }
