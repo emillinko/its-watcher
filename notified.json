@@ -183,10 +183,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-09-17": {
-    "status": "△",
-    "channel": "normal"
-  },
   "グランドメルキュール伊勢志摩|2026-09-15": {
     "status": "△",
     "channel": "normal"
@@ -204,6 +200,10 @@
     "channel": "normal"
   },
   "伊香保温泉 ホテル天坊|2026-09-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-09-25": {
     "status": "△",
     "channel": "normal"
   }
