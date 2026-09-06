@@ -167,10 +167,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "グランドメルキュール伊勢志摩|2026-09-15": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-30": {
     "status": "△",
     "channel": "normal"
@@ -195,19 +191,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ館山ルアーナ|2026-09-17": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト斑尾|2026-10-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-24": {
     "status": "△",
     "channel": "normal"
   },
   "ホテル日航プリンセス京都|2026-09-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-09-17": {
     "status": "△",
     "channel": "normal"
   }
