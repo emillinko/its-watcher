@@ -176,10 +176,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "NAGU 勝浦|2026-09-14": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-01": {
     "status": "△",
     "channel": "normal"
@@ -205,6 +201,30 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-10-02": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-09-17": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-09-28": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-09-30": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "熱海後楽園ホテル|2026-09-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "蓼科東急ホテル|2026-09-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "フルーツパーク富士屋ホテル|2026-09-16": {
     "status": "△",
     "channel": "normal"
   }
