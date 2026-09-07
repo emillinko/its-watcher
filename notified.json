@@ -7,14 +7,6 @@
     "discord": false,
     "status": "△"
   },
-  "ブルーベリーヒル勝浦|2026-10-07": {
-    "discord": false,
-    "status": "○"
-  },
-  "ブルーベリーヒル勝浦|2026-10-08": {
-    "discord": false,
-    "status": "○"
-  },
   "ブルーベリーヒル勝浦|2026-10-26": {
     "discord": false,
     "status": "○"
@@ -34,14 +26,6 @@
   "ブルーベリーヒル勝浦|2026-09-14": {
     "discord": true,
     "status": "△"
-  },
-  "ブルーベリーヒル勝浦|2026-10-05": {
-    "discord": true,
-    "status": "○"
-  },
-  "ブルーベリーヒル勝浦|2026-10-06": {
-    "discord": true,
-    "status": "○"
   },
   "ブルーベリーヒル勝浦|2026-09-17": {
     "discord": true,
@@ -120,10 +104,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-10-01": {
-    "status": "○",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-29": {
     "status": "△",
     "channel": "normal"
@@ -145,10 +125,6 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-09-18": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト浜名湖|2026-09-17": {
     "status": "△",
     "channel": "normal"
   },
