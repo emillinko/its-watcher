@@ -123,10 +123,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-10-19": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-05": {
     "status": "△",
     "channel": "normal"
@@ -176,14 +172,6 @@
     "channel": "normal"
   },
   "グランドメルキュール伊勢志摩|2026-09-17": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテル日航アリビラ|2026-09-17": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテル日航アリビラ|2026-09-19": {
     "status": "△",
     "channel": "normal"
   }
