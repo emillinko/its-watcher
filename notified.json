@@ -43,10 +43,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-22": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-28": {
     "status": "△",
     "channel": "normal"
@@ -168,6 +164,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト南紀田辺|2026-09-24": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-10-26": {
     "status": "△",
     "channel": "normal"
   }
