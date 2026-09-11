@@ -167,10 +167,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-09-25": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-27": {
     "status": "△",
     "channel": "normal"
@@ -184,6 +180,18 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト斑尾|2026-10-02": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-10-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-10-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "グランドメルキュール伊勢志摩|2026-09-30": {
     "status": "△",
     "channel": "normal"
   }
