@@ -1,8 +1,4 @@
 {
-  "ブルーベリーヒル勝浦|2026-09-16": {
-    "discord": false,
-    "status": "△"
-  },
   "ブルーベリーヒル勝浦|2026-10-26": {
     "discord": false,
     "status": "○"
@@ -168,6 +164,10 @@
     "channel": "normal"
   },
   "ホテル日航アリビラ|2026-09-17": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-09-25": {
     "status": "△",
     "channel": "normal"
   }
