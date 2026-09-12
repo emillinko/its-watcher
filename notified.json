@@ -166,5 +166,13 @@
   "ホテルハーヴェスト南紀田辺|2026-10-02": {
     "status": "△",
     "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-09-24": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "NASPAニューオータニ|2026-09-28": {
+    "status": "△",
+    "channel": "normal"
   }
 }
