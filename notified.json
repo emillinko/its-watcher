@@ -159,10 +159,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル日航プリンセス京都|2026-09-24": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-27": {
     "status": "△",
     "channel": "normal"
@@ -172,6 +168,26 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト伊東|2026-09-29": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-01": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-09-28": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-02": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-09-27": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航アリビラ|2026-09-24": {
     "status": "△",
     "channel": "normal"
   }
