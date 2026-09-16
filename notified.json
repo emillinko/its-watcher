@@ -179,15 +179,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル日航プリンセス京都|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-26": {
     "status": "△",
     "channel": "normal"
   },
   "ホテル日航アリビラ|2026-09-21": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト鬼怒川|2026-09-30": {
     "status": "△",
     "channel": "normal"
   }
