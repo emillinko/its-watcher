@@ -182,5 +182,29 @@
   "ホテル日航アリビラ|2026-09-21": {
     "status": "△",
     "channel": "normal"
+  },
+  "トスラブ箱根ビオーレ|2026-09-25": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-09-26": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-09-27": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルオークラ東京ベイ|2026-09-28": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "NAGU 勝浦|2026-09-27": {
+    "status": "△",
+    "channel": "normal"
   }
 }
