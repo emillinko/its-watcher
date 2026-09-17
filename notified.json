@@ -171,10 +171,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-09-28": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテル琵琶レイクオーツカ|2026-09-29": {
     "status": "△",
     "channel": "normal"
@@ -196,6 +192,10 @@
     "channel": "normal"
   },
   "ホテル日航アリビラ|2026-09-24": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-10-07": {
     "status": "△",
     "channel": "normal"
   }
