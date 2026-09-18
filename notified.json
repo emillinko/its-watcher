@@ -179,10 +179,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテル日航アリビラ|2026-09-24": {
     "status": "△",
     "channel": "normal"
@@ -192,6 +188,10 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-10-09": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "スパリゾートハワイアンズモノリスタワー|2026-09-29": {
     "status": "△",
     "channel": "normal"
   }
