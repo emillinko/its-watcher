@@ -175,19 +175,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-20": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "リソルの森|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-10-04": {
     "status": "△",
     "channel": "normal"
   },
   "ゆふいん山水館|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-09-30": {
     "status": "△",
     "channel": "normal"
   }
