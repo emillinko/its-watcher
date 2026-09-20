@@ -15,10 +15,6 @@
     "discord": false,
     "status": "○"
   },
-  "ホテルハーヴェスト南紀田辺|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-20": {
     "status": "△",
     "channel": "normal"
@@ -32,10 +28,6 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-09-29": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ブルーベリーヒル勝浦|2026-09-24": {
     "status": "△",
     "channel": "normal"
   },
@@ -107,10 +99,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-07": {
     "status": "○",
     "channel": "normal"
@@ -143,14 +131,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテル日航プリンセス京都|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-09-30": {
     "status": "△",
     "channel": "normal"
@@ -179,19 +159,19 @@
     "status": "△",
     "channel": "normal"
   },
-  "伊香保温泉 ホテル天坊|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-10-20": {
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト那須|2026-09-30": {
+  "トスラブ箱根和奏林|2026-09-30": {
     "status": "△",
     "channel": "normal"
   },
-  "リソルの森|2026-09-30": {
+  "草津温泉　ホテルヴィレッジ|2026-10-01": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-09": {
     "status": "△",
     "channel": "normal"
   }
