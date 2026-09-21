@@ -151,10 +151,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-01": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-10-09": {
     "status": "△",
     "channel": "normal"
@@ -164,6 +160,14 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-10-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-09-30": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-05": {
     "status": "△",
     "channel": "normal"
   }
