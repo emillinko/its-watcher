@@ -147,10 +147,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-10-01": {
-    "status": "△",
-    "channel": "normal"
-  },
   "リソルの森|2026-10-01": {
     "status": "△",
     "channel": "normal"
@@ -160,6 +156,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト浜名湖|2026-10-01": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-10-05": {
     "status": "△",
     "channel": "normal"
   }
