@@ -127,10 +127,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-07": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-16": {
     "status": "△",
     "channel": "normal"
@@ -148,6 +144,10 @@
     "channel": "normal"
   },
   "ゆふいん山水館|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-10-04": {
     "status": "△",
     "channel": "normal"
   }
