@@ -103,10 +103,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-02": {
-    "status": "△",
-    "channel": "normal"
-  },
   "NASPAニューオータニ|2026-09-29": {
     "status": "△",
     "channel": "normal"
@@ -147,11 +143,31 @@
     "status": "△",
     "channel": "normal"
   },
-  "ゆふいん山水館|2026-10-02": {
+  "グランドメルキュール伊勢志摩|2026-09-30": {
     "status": "△",
     "channel": "normal"
   },
-  "グランドメルキュール伊勢志摩|2026-09-30": {
+  "トスラブ館山ルアーナ|2026-10-02": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-10-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト那須|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-10-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-10-07": {
     "status": "△",
     "channel": "normal"
   }
