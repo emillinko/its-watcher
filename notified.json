@@ -123,10 +123,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "グランドメルキュール伊勢志摩|2026-09-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-05": {
     "status": "△",
     "channel": "normal"
@@ -140,6 +136,10 @@
     "channel": "normal"
   },
   "ゆふいん山水館|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト那須|2026-10-08": {
     "status": "△",
     "channel": "normal"
   }
