@@ -55,10 +55,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-09-27": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-26": {
     "status": "△",
     "channel": "normal"
@@ -148,6 +144,14 @@
     "channel": "normal"
   },
   "NASPAニューオータニ|2026-09-29": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-10-04": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-10-05": {
     "status": "△",
     "channel": "normal"
   }
