@@ -103,10 +103,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-09-28": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-10-01": {
     "status": "○",
     "channel": "normal"
@@ -115,19 +111,11 @@
     "status": "△",
     "channel": "normal"
   },
-  "ゆふいん山水館|2026-10-04": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-10-05": {
     "status": "△",
     "channel": "normal"
   },
   "鳴子温泉　湯元　吉祥|2026-10-05": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-10-04": {
     "status": "△",
     "channel": "normal"
   },
@@ -152,6 +140,18 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト浜名湖|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-10-08": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト有馬六彩|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "NASPAニューオータニ|2026-09-29": {
     "status": "△",
     "channel": "normal"
   }
