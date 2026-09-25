@@ -123,10 +123,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-06": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト浜名湖|2026-10-05": {
     "status": "△",
     "channel": "normal"
@@ -148,6 +144,38 @@
     "channel": "normal"
   },
   "ホテル琵琶レイクオーツカ|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根ビオーレ|2026-10-04": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-10-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト那須|2026-10-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-09": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "鳴子温泉　湯元　吉祥|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "NASPAニューオータニ|2026-09-29": {
     "status": "△",
     "channel": "normal"
   }
