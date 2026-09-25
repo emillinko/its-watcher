@@ -143,10 +143,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "NASPAニューオータニ|2026-09-29": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-10-07": {
     "status": "△",
     "channel": "normal"
@@ -160,6 +156,30 @@
     "channel": "normal"
   },
   "ホテル琵琶レイクオーツカ|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根ビオーレ|2026-10-04": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-10-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-05": {
     "status": "△",
     "channel": "normal"
   }
