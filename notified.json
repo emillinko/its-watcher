@@ -119,10 +119,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-10-30": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-10-07": {
     "status": "△",
     "channel": "normal"
@@ -152,6 +148,10 @@
     "channel": "normal"
   },
   "リソルの森|2026-10-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-15": {
     "status": "△",
     "channel": "normal"
   }
