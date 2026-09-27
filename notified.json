@@ -275,10 +275,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ箱根和奏林|2026-10-07": {
-    "status": "△",
-    "channel": "normal"
-  },
   "草津温泉　ホテルヴィレッジ|2026-10-15": {
     "status": "△",
     "channel": "normal"
@@ -287,15 +283,23 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ箱根和奏林|2026-10-08": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-11-03": {
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-13": {
+  "トスラブ箱根和奏林|2026-10-21": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2026-11-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-10": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-19": {
     "status": "△",
     "channel": "normal"
   }
