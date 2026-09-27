@@ -271,15 +271,35 @@
     "status": "○",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-10-14": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト斑尾|2026-11-03": {
-    "status": "△",
-    "channel": "normal"
-  },
   "草津温泉　ホテルヴィレッジ|2026-10-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-10-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2026-10-18": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2026-11-13": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2026-11-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル琵琶レイクオーツカ|2026-10-08": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "日光千姫物語|2026-11-30": {
     "status": "△",
     "channel": "normal"
   }
