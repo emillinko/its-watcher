@@ -275,10 +275,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-03": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト伊東|2026-10-08": {
     "status": "△",
     "channel": "normal"
@@ -292,6 +288,30 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト斑尾|2026-11-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-10-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-25": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-20": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-29": {
     "status": "△",
     "channel": "normal"
   }
