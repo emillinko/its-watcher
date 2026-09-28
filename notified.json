@@ -279,10 +279,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル琵琶レイクオーツカ|2026-11-17": {
-    "status": "△",
-    "channel": "normal"
-  },
   "トスラブ館山ルアーナ|2026-10-13": {
     "status": "△",
     "channel": "normal"
@@ -292,6 +288,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト斑尾|2026-11-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-11-26": {
     "status": "△",
     "channel": "normal"
   }
