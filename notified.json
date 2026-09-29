@@ -271,15 +271,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-11-17": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト伊東|2026-10-19": {
     "status": "△",
     "channel": "normal"
   },
   "ホテルハーヴェスト伊東|2026-10-28": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-10-09": {
     "status": "△",
     "channel": "normal"
   }
