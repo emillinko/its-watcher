@@ -243,10 +243,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-10-18": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-11-20": {
     "status": "△",
     "channel": "normal"
@@ -256,6 +252,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト伊東|2026-11-18": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根ビオーレ|2026-10-21": {
     "status": "△",
     "channel": "normal"
   }
