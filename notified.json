@@ -194,5 +194,65 @@
   "ホテル日航プリンセス京都|2026-10-14": {
     "status": "△",
     "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-03": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-04": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-05": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-08": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-09": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-10": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-16": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-17": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-18": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-19": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-24": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-25": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-26": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-29": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-30": {
+    "status": "○",
+    "channel": "normal"
   }
 }
