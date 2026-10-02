@@ -239,10 +239,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-13": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-15": {
     "status": "△",
     "channel": "normal"
@@ -260,6 +256,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト浜名湖|2026-10-26": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2026-10-20": {
     "status": "△",
     "channel": "normal"
   }
