@@ -255,10 +255,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル日航プリンセス京都|2026-10-22": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-11-06": {
     "status": "△",
     "channel": "normal"
@@ -268,6 +264,10 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-11-01": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルオークラ東京ベイ|2026-10-14": {
     "status": "△",
     "channel": "normal"
   }
