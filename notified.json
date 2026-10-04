@@ -195,10 +195,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "伊香保温泉 ホテル天坊|2026-10-14": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-10-18": {
     "status": "△",
     "channel": "normal"
@@ -268,6 +264,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト伊東|2026-10-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-10-14": {
     "status": "△",
     "channel": "normal"
   }
