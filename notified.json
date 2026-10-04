@@ -271,19 +271,11 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ館山ルアーナ|2026-10-13": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "トスラブ館山ルアーナ|2026-11-24": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト那須|2026-10-26": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルオークラ東京ベイ|2026-10-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-14": {
     "status": "△",
     "channel": "normal"
   }
