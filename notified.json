@@ -135,10 +135,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテル琵琶レイクオーツカ|2026-10-21": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-11-08": {
     "status": "△",
     "channel": "normal"
@@ -252,6 +248,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト伊東|2026-10-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-19": {
     "status": "△",
     "channel": "normal"
   }
