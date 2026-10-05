@@ -171,10 +171,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-15": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-11-03": {
     "status": "△",
     "channel": "normal"
@@ -244,6 +240,22 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト南紀田辺|2026-10-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根ビオーレ|2026-10-15": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-10-13": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-18": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト鬼怒川|2026-10-15": {
     "status": "△",
     "channel": "normal"
   }
