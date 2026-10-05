@@ -175,10 +175,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-10-15": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-11-03": {
     "status": "△",
     "channel": "normal"
@@ -248,6 +244,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト南紀田辺|2026-10-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-11-03": {
     "status": "△",
     "channel": "normal"
   }
