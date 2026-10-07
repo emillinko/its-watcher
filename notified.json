@@ -251,15 +251,31 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-06": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト伊東|2026-10-22": {
     "status": "△",
     "channel": "normal"
   },
   "ホテルハーヴェスト浜名湖|2026-10-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-10-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト那須|2026-10-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-10-17": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-20": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-21": {
     "status": "△",
     "channel": "normal"
   }
