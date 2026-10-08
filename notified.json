@@ -255,10 +255,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-10-22": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-11-06": {
     "status": "△",
     "channel": "normal"
@@ -272,6 +268,10 @@
     "channel": "normal"
   },
   "草津温泉　ホテルヴィレッジ|2026-10-21": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-28": {
     "status": "△",
     "channel": "normal"
   }
