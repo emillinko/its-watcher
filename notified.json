@@ -194,5 +194,77 @@
   "ホテル琵琶レイクオーツカ|2026-10-19": {
     "status": "△",
     "channel": "normal"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-10-21": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-03": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-04": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-05": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-06": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-08": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-09": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-10": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-11": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-12": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-16": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-17": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-18": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-19": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-24": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-25": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-26": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-30": {
+    "status": "○",
+    "channel": "normal"
   }
 }
