@@ -255,19 +255,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-03": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト斑尾|2026-11-06": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテル琵琶レイクオーツカ|2026-10-20": {
     "status": "△",
     "channel": "normal"
   },
   "ホテルハーヴェスト伊東|2026-10-22": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト伊東|2026-10-20": {
     "status": "△",
     "channel": "normal"
   }
