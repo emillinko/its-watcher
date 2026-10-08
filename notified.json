@@ -255,10 +255,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ箱根ビオーレ|2026-10-28": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-11-03": {
     "status": "△",
     "channel": "normal"
@@ -267,15 +263,11 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-10-17": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト伊東|2026-10-19": {
-    "status": "△",
-    "channel": "normal"
-  },
   "リソルの森|2026-10-20": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル琵琶レイクオーツカ|2026-10-20": {
     "status": "△",
     "channel": "normal"
   }
