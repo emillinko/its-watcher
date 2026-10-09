@@ -247,10 +247,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-10-21": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト伊東|2026-10-22": {
     "status": "△",
     "channel": "normal"
@@ -260,6 +256,10 @@
     "channel": "normal"
   },
   "ホテル琵琶レイクオーツカ|2026-10-21": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "伊香保温泉 ホテル天坊|2026-10-19": {
     "status": "△",
     "channel": "normal"
   }
