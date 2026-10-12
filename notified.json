@@ -15,10 +15,6 @@
     "discord": false,
     "status": "○"
   },
-  "ブルーベリーヒル勝浦|2026-10-16": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-11-05": {
     "status": "△",
     "channel": "normal"
@@ -131,10 +127,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-10-22": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-10-26": {
     "status": "△",
     "channel": "normal"
@@ -231,10 +223,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-10-22": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-10-23": {
     "status": "△",
     "channel": "normal"
@@ -247,11 +235,7 @@
     "status": "△",
     "channel": "normal"
   },
-  "リソルの森|2026-10-22": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト浜名湖|2026-10-22": {
+  "トスラブ箱根ビオーレ|2026-10-22": {
     "status": "△",
     "channel": "normal"
   }
