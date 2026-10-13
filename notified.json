@@ -219,10 +219,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-11-29": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-11-13": {
     "status": "△",
     "channel": "normal"
@@ -232,6 +228,10 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-11-27": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ラビスタ横須賀観音崎テラス|2026-10-26": {
     "status": "△",
     "channel": "normal"
   }
