@@ -31,10 +31,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-12": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2026-11-16": {
     "status": "○",
     "channel": "normal"
@@ -220,6 +216,18 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-10-25": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-10-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-11-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-11-01": {
     "status": "△",
     "channel": "normal"
   }
