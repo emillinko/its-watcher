@@ -195,10 +195,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト浜名湖|2026-10-28": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-11-06": {
     "status": "△",
     "channel": "normal"
@@ -220,6 +216,10 @@
     "channel": "normal"
   },
   "ホテル日航プリンセス京都|2026-10-26": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-11-13": {
     "status": "△",
     "channel": "normal"
   }
