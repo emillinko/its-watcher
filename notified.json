@@ -59,10 +59,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-11-16": {
-    "status": "○",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-11-17": {
     "status": "○",
     "channel": "normal"
@@ -184,6 +180,10 @@
     "channel": "normal"
   },
   "鳴子温泉　湯元　吉祥|2026-11-04": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-11-02": {
     "status": "△",
     "channel": "normal"
   }
