@@ -151,10 +151,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-06": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-11-06": {
     "status": "△",
     "channel": "normal"
@@ -172,6 +168,14 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-11-08": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-11-09": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-11-07": {
     "status": "△",
     "channel": "normal"
   }
