@@ -1,12 +1,7 @@
 const { chromium } = require("playwright");
 
-const BASE_URL =
+const URL =
   "https://www.tablecheck.com/ja/shops/paul-yotsuya/reserve";
-
-const PAX = 2;
-
-// 今日から約3か月先まで調査
-const DAYS_TO_CHECK = 100;
 
 (async () => {
   const browser = await chromium.launch({
@@ -18,125 +13,57 @@ const DAYS_TO_CHECK = 100;
     timezoneId: "Asia/Tokyo"
   });
 
-  console.log("====================================");
-  console.log("PAUL 四谷 TableCheck 空席チェック");
-  console.log(`人数: ${PAX}名`);
-  console.log("====================================");
+  try {
+    console.log("PAUL四谷 TableCheck テスト開始");
 
-  const today = new Date();
+    // まず予約ページを開く
+    await page.goto(URL, {
+      waitUntil: "domcontentloaded",
+      timeout: 30000
+    });
 
-  // 土日だけ調査
-  for (let i = 0; i < DAYS_TO_CHECK; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
+    console.log("ページを開きました");
+    console.log("Title:", await page.title());
 
-    const day = date.getDay();
+    // TableCheckのJSが動くのを少し待つ
+    await page.waitForTimeout(5000);
 
-    // 土曜=6、日曜=0
-    if (day !== 0 && day !== 6) {
-      continue;
-    }
-
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-
-    const dateString = `${yyyy}-${mm}-${dd}`;
-
-    const url =
-      `${BASE_URL}?num_people=${PAX}` +
-      `&start_date=${dateString}`;
+    // ページ全体のテキストを取得
+    const text = await page.locator("body").innerText();
 
     console.log("");
-    console.log("------------------------------------");
-    console.log(`▶ ${dateString}`);
-    console.log(url);
+    console.log("===== PAGE TEXT =====");
+    console.log(text);
+    console.log("=====================");
+    console.log("");
 
-    try {
-      await page.goto(url, {
-        waitUntil: "domcontentloaded",
-        timeout: 30000
-      });
+    // ボタン一覧
+    const buttons = await page.locator("button").evaluateAll(buttons =>
+      buttons.map((button, index) => ({
+        index,
+        text: (button.innerText || "").trim(),
+        ariaLabel: button.getAttribute("aria-label"),
+        disabled: button.disabled
+      }))
+    );
 
-      // TableCheckの動的処理を待つ
-      await page.waitForTimeout(3000);
+    console.log("===== BUTTONS =====");
 
-      const title = await page.title();
-
-      console.log(`Title: ${title}`);
-
-      const bodyText = await page.locator("body").innerText();
-
-      // 8:00 / 8:30周辺の情報を探す
-      const lines = bodyText
-        .split("\n")
-        .map(x => x.trim())
-        .filter(Boolean);
-
-      const relevant = lines.filter(line =>
-        /8[:：]00|8[:：]30|空席|満席|予約|選択する|available|full/i.test(line)
-      );
-
-      if (relevant.length > 0) {
-        console.log("▼ 関連表示");
-
-        // 最大50行まで
-        for (const line of relevant.slice(0, 50)) {
-          console.log(line);
-        }
-      } else {
-        console.log("⚠️ 8:00/8:30や空席情報をテキストから検出できませんでした。");
+    for (const button of buttons) {
+      if (
+        button.text ||
+        button.ariaLabel
+      ) {
+        console.log(JSON.stringify(button));
       }
-
-      // ボタン情報
-      const buttons = await page.locator("button").evaluateAll(btns =>
-        btns.map(btn => ({
-          text: (btn.innerText || "").trim(),
-          disabled: btn.disabled,
-          ariaLabel: btn.getAttribute("aria-label"),
-          className: btn.className
-        }))
-      );
-
-      const usefulButtons = buttons.filter(b =>
-        b.text ||
-        b.ariaLabel
-      );
-
-      if (usefulButtons.length > 0) {
-        console.log("▼ ボタン情報");
-
-        for (const button of usefulButtons.slice(0, 50)) {
-          console.log(
-            JSON.stringify(button, null, 2)
-          );
-        }
-      }
-
-      // 8:00 / 8:30を含むHTML要素を確認
-      const htmlMatches = await page.locator(
-        "text=/8[:：]00|8[:：]30/"
-      ).count();
-
-      console.log(
-        `8:00/8:30を含む要素数: ${htmlMatches}`
-      );
-
-      // デバッグ用スクリーンショット
-      await page.screenshot({
-        path: `paul-${dateString}.png`,
-        fullPage: true
-      });
-
-    } catch (error) {
-      console.log(`❌ エラー: ${error.message}`);
     }
+
+    console.log("===================");
+
+  } catch (error) {
+    console.error("ERROR:", error);
+    process.exitCode = 1;
+  } finally {
+    await browser.close();
   }
-
-  await browser.close();
-
-  console.log("");
-  console.log("====================================");
-  console.log("チェック終了");
-  console.log("====================================");
 })();
