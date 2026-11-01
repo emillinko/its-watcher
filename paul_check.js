@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 空席取得テスト");
+    console.log("PAUL四谷 UI構造調査");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -26,10 +26,7 @@ const URL =
 
     console.log("ページ読み込み完了");
 
-    // --------------------------------------------------
-    // ① 「お店からのお知らせ」の同意
-    // --------------------------------------------------
-
+    // お知らせ同意
     const agreement = page.getByText(
       "「お店からのお知らせ」を読み、内容を理解して同意する",
       { exact: true }
@@ -37,138 +34,192 @@ const URL =
 
     if (await agreement.count() > 0) {
       console.log("▶ お知らせ同意をクリック");
-
       await agreement.first().click();
-
       await page.waitForTimeout(1000);
     }
 
     // --------------------------------------------------
-    // ② 大人2名
+    // 1. 「時間」の周辺HTML
     // --------------------------------------------------
-
-    console.log("▶ 大人2名を選択");
-
-    const adult2 = page.getByText("2", { exact: true });
-
-    console.log(
-      "「2」の候補数:",
-      await adult2.count()
-    );
-
-    // 画面上の「大人」付近を調査
-    const adults = await page.locator("body").innerText();
 
     console.log("");
-    console.log("===== 現在の画面 =====");
-    console.log(adults);
-    console.log("=====================");
-    console.log("");
+    console.log("===== 時間周辺HTML =====");
 
-    // --------------------------------------------------
-    // ③ 「選択する」を探す
-    // --------------------------------------------------
+    const timeInfo = await page.locator("body").evaluate(() => {
+      const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_ELEMENT
+      );
 
-    const selectButtons = page.getByText(
-      "選択する",
-      { exact: true }
-    );
+      const results = [];
 
-    console.log(
-      "「選択する」数:",
-      await selectButtons.count()
-    );
+      while (walker.nextNode()) {
+        const el = walker.currentNode;
 
-    // --------------------------------------------------
-    // ④ HTML上のフォーム要素を調査
-    // --------------------------------------------------
-
-    const inputs = await page.locator("input").evaluateAll(inputs =>
-      inputs.map((input, index) => ({
-        index,
-        type: input.type,
-        name: input.name,
-        value: input.value,
-        placeholder: input.placeholder,
-        id: input.id,
-        ariaLabel: input.getAttribute("aria-label")
-      }))
-    );
-
-    console.log("");
-    console.log("===== INPUTS =====");
-
-    for (const input of inputs) {
-      console.log(JSON.stringify(input));
-    }
-
-    console.log("==================");
-
-    // --------------------------------------------------
-    // ⑤ SELECT要素
-    // --------------------------------------------------
-
-    const selects = await page.locator("select").evaluateAll(selects =>
-      selects.map((select, index) => ({
-        index,
-        name: select.name,
-        id: select.id,
-        value: select.value,
-        options: Array.from(select.options).map(o => ({
-          text: o.text,
-          value: o.value
-        }))
-      }))
-    );
-
-    console.log("");
-    console.log("===== SELECTS =====");
-
-    for (const select of selects) {
-      console.log(JSON.stringify(select, null, 2));
-    }
-
-    console.log("===================");
-
-    // --------------------------------------------------
-    // ⑥ ボタン
-    // --------------------------------------------------
-
-    const buttons = await page.locator("button").evaluateAll(buttons =>
-      buttons.map((button, index) => ({
-        index,
-        text: (button.innerText || "").trim(),
-        type: button.type,
-        disabled: button.disabled,
-        ariaLabel: button.getAttribute("aria-label")
-      }))
-    );
-
-    console.log("");
-    console.log("===== BUTTONS =====");
-
-    for (const button of buttons) {
-      if (
-        button.text ||
-        button.ariaLabel
-      ) {
-        console.log(JSON.stringify(button));
+        if (
+          el.textContent &&
+          el.textContent.trim() === "-- 時間 --"
+        ) {
+          results.push({
+            tag: el.tagName,
+            id: el.id,
+            class: el.className,
+            outerHTML: el.parentElement
+              ? el.parentElement.outerHTML.slice(0, 5000)
+              : el.outerHTML
+          });
+        }
       }
-    }
 
-    console.log("===================");
-
-    // --------------------------------------------------
-    // スクリーンショット
-    // --------------------------------------------------
-
-    await page.screenshot({
-      path: "paul-debug.png",
-      fullPage: true
+      return results;
     });
 
+    console.log(JSON.stringify(timeInfo, null, 2));
+
+    // --------------------------------------------------
+    // 2. 「大人」の周辺HTML
+    // --------------------------------------------------
+
     console.log("");
-    console.log("スクリーンショット保存: paul-debug.png");
+    console.log("===== 大人周辺HTML =====");
+
+    const adultInfo = await page.locator("body").evaluate(() => {
+      const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_ELEMENT
+      );
+
+      const results = [];
+
+      while (walker.nextNode()) {
+        const el = walker.currentNode;
+
+        if (
+          el.textContent &&
+          el.textContent.trim() === "-- 大人 --"
+        ) {
+          results.push({
+            tag: el.tagName,
+            id: el.id,
+            class: el.className,
+            outerHTML: el.parentElement
+              ? el.parentElement.outerHTML.slice(0, 5000)
+              : el.outerHTML
+          });
+        }
+      }
+
+      return results;
+    });
+
+    console.log(JSON.stringify(adultInfo, null, 2));
+
+    // --------------------------------------------------
+    // 3. 「選択する」の周辺HTML
+    // --------------------------------------------------
+
+    console.log("");
+    console.log("===== 選択する周辺HTML =====");
+
+    const chooseInfo = await page.locator("body").evaluate(() => {
+      const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_ELEMENT
+      );
+
+      const results = [];
+
+      while (walker.nextNode()) {
+        const el = walker.currentNode;
+
+        if (
+          el.textContent &&
+          el.textContent.trim() === "選択する"
+        ) {
+          results.push({
+            tag: el.tagName,
+            id: el.id,
+            class: el.className,
+            role: el.getAttribute("role"),
+            dataAttrs: Array.from(el.attributes)
+              .filter(a => a.name.startsWith("data-"))
+              .reduce((obj, a) => {
+                obj[a.name] = a.value;
+                return obj;
+              }, {}),
+            outerHTML: el.parentElement
+              ? el.parentElement.outerHTML.slice(0, 5000)
+              : el.outerHTML
+          });
+        }
+      }
+
+      return results;
+    });
+
+    console.log(JSON.stringify(chooseInfo, null, 2));
+
+    // --------------------------------------------------
+    // 4. role="button" の一覧
+    // --------------------------------------------------
+
+    console.log("");
+    console.log("===== role=button =====");
+
+    const roleButtons = await page.locator('[role="button"]').evaluateAll(
+      elements =>
+        elements.map((el, index) => ({
+          index,
+          tag: el.tagName,
+          text: (el.innerText || "").trim().slice(0, 200),
+          id: el.id,
+          class: el.className,
+          ariaLabel: el.getAttribute("aria-label"),
+          dataAttrs: Array.from(el.attributes)
+            .filter(a => a.name.startsWith("data-"))
+            .reduce((obj, a) => {
+              obj[a.name] = a.value;
+              return obj;
+            }, {})
+        }))
+    );
+
+    for (const item of roleButtons) {
+      console.log(JSON.stringify(item));
+    }
+
+    // --------------------------------------------------
+    // 5. data-* 属性を持つクリック可能そうな要素
+    // --------------------------------------------------
+
+    console.log("");
+    console.log("===== data属性付き要素 =====");
+
+    const dataElements = await page.locator(
+      "[data-action], [data-value], [data-target], [data-testid], [data-date], [data-time]"
+    ).evaluateAll(elements =>
+      elements.map((el, index) => ({
+        index,
+        tag: el.tagName,
+        text: (el.innerText || "").trim().slice(0, 150),
+        id: el.id,
+        class: el.className,
+        dataAttrs: Array.from(el.attributes)
+          .filter(a => a.name.startsWith("data-"))
+          .reduce((obj, a) => {
+            obj[a.name] = a.value;
+            return obj;
+          }, {})
+      }))
+    );
+
+    for (const item of dataElements) {
+      console.log(JSON.stringify(item));
+    }
+
+    console.log("");
+    console.log("==============================");
+    console.log("UI構造調査終了");
 
   } catch (error) {
     console.error("");
