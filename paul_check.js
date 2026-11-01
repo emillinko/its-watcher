@@ -1,4 +1,4 @@
-
+```javascript
 const { chromium } = require("playwright");
 
 const URL =
@@ -15,7 +15,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 週送りカレンダー確認");
+    console.log("PAUL四谷 カレンダー構造調査");
     console.log("================================");
 
     await page.goto(URL, {
@@ -42,10 +42,10 @@ const URL =
       "#reservation_num_people_adult"
     ).selectOption("2");
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(1000);
     console.log("▶ 大人2名");
 
-    // 3,080円のモーニングビュッフェを選択
+    // 現行3,080円メニュー
     const menu = page.locator(
       "#reservation_orders_attributes_1_is_group_order"
     );
@@ -58,84 +58,95 @@ const URL =
       await menu.isChecked()
     );
 
-    // カレンダー情報を取得する関数
-    async function readCalendar(label) {
-      console.log("");
-      console.log("========== " + label + " ==========");
+    // --------------------------------------------------
+    // カレンダー本体
+    // --------------------------------------------------
 
-      const month = await page.locator(
-        "th.month"
-      ).allTextContents();
+    console.log("");
+    console.log("========== カレンダー本体 ==========");
 
-      console.log("表示月:", month);
+    const calendarHtml = await page.locator(
+      "#timetable-body"
+    ).evaluate(el => el.outerHTML);
 
-      const dates = await page.locator(
-        "#timetable-body td.wday"
-      ).evaluateAll(cells =>
-        cells.map((td, index) => ({
-          index,
-          weekday: td.querySelector(
-            ".day-name"
-          )?.textContent.trim(),
-          day: td.querySelector(
-            ".date-num"
-          )?.textContent.trim(),
-          className: td.className
-        }))
-      );
+    console.log(calendarHtml);
 
-      console.log("日付:");
-      console.log(JSON.stringify(dates, null, 2));
+    // --------------------------------------------------
+    // 日付セル
+    // --------------------------------------------------
 
-      const rows = await page.locator(
-        "tr.timetable-row"
-      ).evaluateAll(rows =>
-        rows.map(row => ({
-          className: row.className,
-          time: row.querySelector(
-            "th.time-left"
-          )?.textContent.trim(),
-          cells: Array.from(
-            row.querySelectorAll("td")
-          ).map((td, index) => ({
-            index,
-            className: td.className,
-            text: td.textContent.trim()
-          }))
-        }))
-      );
+    console.log("");
+    console.log("========== 日付セル ==========");
 
-      console.log("時間帯:");
-      console.log(JSON.stringify(rows, null, 2));
+    const dates = await page.locator(
+      "#timetable-body td.wday"
+    ).evaluateAll(cells =>
+      cells.map((td, index) => ({
+        index,
+        text: td.textContent.trim(),
+        html: td.innerHTML,
+        className: td.className
+      }))
+    );
 
-      console.log("時間行数:", rows.length);
-    }
+    console.log(
+      JSON.stringify(dates, null, 2)
+    );
 
-    // 現在の週
-    await readCalendar("現在の週");
+    // --------------------------------------------------
+    // 時間行
+    // --------------------------------------------------
 
-    // 次の週へ移動
-    const nextButton = page.locator(
-      "a.next-week:visible"
+    console.log("");
+    console.log("========== 時間行 ==========");
+
+    const rows = await page.locator(
+      "tr.timetable-row"
+    ).evaluateAll(rows =>
+      rows.map((row, rowIndex) => ({
+        rowIndex,
+        className: row.className,
+        html: row.outerHTML
+      }))
+    );
+
+    console.log(
+      JSON.stringify(rows, null, 2)
+    );
+
+    // --------------------------------------------------
+    // 次週・前週ボタン
+    // --------------------------------------------------
+
+    console.log("");
+    console.log("========== 週送りボタン ==========");
+
+    const buttons = await page.locator(
+      ".next_prev_btn"
+    ).evaluateAll(elements =>
+      elements.map((el, index) => ({
+        index,
+        tag: el.tagName,
+        className: el.className,
+        text: el.textContent.trim(),
+        href: el.getAttribute("href"),
+        data: Array.from(el.attributes).reduce(
+          (obj, attr) => {
+            obj[attr.name] = attr.value;
+            return obj;
+          },
+          {}
+        )
+      }))
+    );
+
+    console.log(
+      JSON.stringify(buttons, null, 2)
     );
 
     console.log("");
-    console.log("次週ボタン数:", await nextButton.count());
-
-    if (await nextButton.count() > 0) {
-      await nextButton.first().click();
-      await page.waitForTimeout(2500);
-
-      // 次の週
-      await readCalendar("次の週");
-
-    } else {
-      console.log("⚠ 次週ボタンが見つかりません");
-    }
-
-    console.log("");
     console.log("================================");
-    console.log("確認終了");
+    console.log("調査終了");
 
   } catch (error) {
     console.error("");
@@ -147,3 +158,4 @@ const URL =
     await browser.close();
   }
 })();
+```
