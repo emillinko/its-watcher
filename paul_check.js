@@ -15,7 +15,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 メニュー選択テスト");
+    console.log("PAUL四谷 メニュー情報確認");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -25,7 +25,6 @@ const URL =
 
     await page.waitForTimeout(4000);
 
-    // お知らせ同意
     const agreement = page.getByText(
       "「お店からのお知らせ」を読み、内容を理解して同意する",
       { exact: true }
@@ -36,80 +35,51 @@ const URL =
       await page.waitForTimeout(1000);
     }
 
-    // 大人2名
     await page.locator(
       "#reservation_num_people_adult"
     ).selectOption("2");
 
     await page.waitForTimeout(2000);
 
-    // メニューの周辺HTMLを確認
-    const menuDetails = await page.locator(
-      "label.order.menu-item-order-btn"
-    ).evaluateAll(labels =>
-      labels.map(label => ({
-        text: label.innerText.trim(),
-        parentHTML: label.parentElement?.parentElement?.outerHTML
+    // メニュー情報を含む要素を取得
+    const menus = await page.locator(
+      "input[id^='reservation_orders_attributes_']"
+    ).evaluateAll(inputs =>
+      inputs.map(input => {
+        let el = input;
+
+        // メニュー情報を含む親要素をたどる
+        for (let i = 0; i < 6 && el.parentElement; i++) {
+          el = el.parentElement;
+        }
+
+        return {
+          id: input.id,
+          parentText: el.innerText,
+          parentHTML: el.outerHTML
+        };
+      })
+    );
+
+    console.log("");
+    console.log("===== メニュー情報 =====");
+    console.log(JSON.stringify(menus, null, 2));
+
+    // 朝食ビュッフェなどの文字を含む要素を探す
+    const buffet = await page.getByText(
+      "モーニングビュッフェ",
+      { exact: false }
+    ).evaluateAll(elements =>
+      elements.map(el => ({
+        tag: el.tagName,
+        className: el.className,
+        text: el.innerText
       }))
     );
 
     console.log("");
-    console.log("===== メニュー詳細 =====");
-    console.log(JSON.stringify(menuDetails, null, 2));
-
-    // 2番目のメニューを選択
-    const secondMenu = page.locator(
-      "#reservation_orders_attributes_1_is_group_order"
-    );
-
-    if (await secondMenu.count() > 0) {
-      await secondMenu.check({ force: true });
-      console.log("");
-      console.log("▶ 2番目のメニューを選択");
-    } else {
-      console.log("2番目のメニューが見つかりません");
-    }
-
-    await page.waitForTimeout(3000);
-
-    // 選択状態
-    console.log(
-      "2番目のメニュー選択状態:",
-      await secondMenu.isChecked()
-    );
-
-    // 日付
-    const dates = await page.locator(
-      "#timetable-body td.wday"
-    ).evaluateAll(cells =>
-      cells.map(td => ({
-        weekday: td.querySelector(".day-name")?.textContent.trim(),
-        day: td.querySelector(".date-num")?.textContent.trim(),
-        className: td.className
-      }))
-    );
-
-    console.log("");
-    console.log("===== 日付 =====");
-    console.log(JSON.stringify(dates, null, 2));
-
-    // 時間行
-    const rows = await page.locator(
-      "tr.timetable-row"
-    ).evaluateAll(rows =>
-      rows.map(row => ({
-        className: row.className,
-        html: row.outerHTML
-      }))
-    );
-
-    console.log("");
-    console.log("===== メニュー選択後の時間行 =====");
-
-    for (const row of rows) {
-      console.log("");
-      console.log(row.html);
-    }
+    console.log("===== ビュッフェ文字検索 =====");
+    console.log(JSON.stringify(buffet, null, 2));
 
     console.log("");
     console.log("==============================");
