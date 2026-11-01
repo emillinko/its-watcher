@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 UI構造調査");
+    console.log("PAUL四谷 日付・時間取得テスト");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -24,8 +24,6 @@ const URL =
 
     await page.waitForTimeout(3000);
 
-    console.log("ページ読み込み完了");
-
     // お知らせ同意
     const agreement = page.getByText(
       "「お店からのお知らせ」を読み、内容を理解して同意する",
@@ -33,193 +31,68 @@ const URL =
     );
 
     if (await agreement.count() > 0) {
-      console.log("▶ お知らせ同意をクリック");
       await agreement.first().click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(500);
     }
 
-    // --------------------------------------------------
-    // 1. 「時間」の周辺HTML
-    // --------------------------------------------------
+    // 大人2名
+    await page.locator("#reservation_num_people_adult")
+      .selectOption("2");
 
-    console.log("");
-    console.log("===== 時間周辺HTML =====");
+    console.log("▶ 大人2名を選択");
 
-    const timeInfo = await page.locator("body").evaluate(() => {
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_ELEMENT
-      );
+    // 日付入力欄
+    const dateInput = page.locator("#reservation_start_date");
 
-      const results = [];
-
-      while (walker.nextNode()) {
-        const el = walker.currentNode;
-
-        if (
-          el.textContent &&
-          el.textContent.trim() === "-- 時間 --"
-        ) {
-          results.push({
-            tag: el.tagName,
-            id: el.id,
-            class: el.className,
-            outerHTML: el.parentElement
-              ? el.parentElement.outerHTML.slice(0, 5000)
-              : el.outerHTML
-          });
-        }
-      }
-
-      return results;
-    });
-
-    console.log(JSON.stringify(timeInfo, null, 2));
-
-    // --------------------------------------------------
-    // 2. 「大人」の周辺HTML
-    // --------------------------------------------------
-
-    console.log("");
-    console.log("===== 大人周辺HTML =====");
-
-    const adultInfo = await page.locator("body").evaluate(() => {
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_ELEMENT
-      );
-
-      const results = [];
-
-      while (walker.nextNode()) {
-        const el = walker.currentNode;
-
-        if (
-          el.textContent &&
-          el.textContent.trim() === "-- 大人 --"
-        ) {
-          results.push({
-            tag: el.tagName,
-            id: el.id,
-            class: el.className,
-            outerHTML: el.parentElement
-              ? el.parentElement.outerHTML.slice(0, 5000)
-              : el.outerHTML
-          });
-        }
-      }
-
-      return results;
-    });
-
-    console.log(JSON.stringify(adultInfo, null, 2));
-
-    // --------------------------------------------------
-    // 3. 「選択する」の周辺HTML
-    // --------------------------------------------------
-
-    console.log("");
-    console.log("===== 選択する周辺HTML =====");
-
-    const chooseInfo = await page.locator("body").evaluate(() => {
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_ELEMENT
-      );
-
-      const results = [];
-
-      while (walker.nextNode()) {
-        const el = walker.currentNode;
-
-        if (
-          el.textContent &&
-          el.textContent.trim() === "選択する"
-        ) {
-          results.push({
-            tag: el.tagName,
-            id: el.id,
-            class: el.className,
-            role: el.getAttribute("role"),
-            dataAttrs: Array.from(el.attributes)
-              .filter(a => a.name.startsWith("data-"))
-              .reduce((obj, a) => {
-                obj[a.name] = a.value;
-                return obj;
-              }, {}),
-            outerHTML: el.parentElement
-              ? el.parentElement.outerHTML.slice(0, 5000)
-              : el.outerHTML
-          });
-        }
-      }
-
-      return results;
-    });
-
-    console.log(JSON.stringify(chooseInfo, null, 2));
-
-    // --------------------------------------------------
-    // 4. role="button" の一覧
-    // --------------------------------------------------
-
-    console.log("");
-    console.log("===== role=button =====");
-
-    const roleButtons = await page.locator('[role="button"]').evaluateAll(
-      elements =>
-        elements.map((el, index) => ({
-          index,
-          tag: el.tagName,
-          text: (el.innerText || "").trim().slice(0, 200),
-          id: el.id,
-          class: el.className,
-          ariaLabel: el.getAttribute("aria-label"),
-          dataAttrs: Array.from(el.attributes)
-            .filter(a => a.name.startsWith("data-"))
-            .reduce((obj, a) => {
-              obj[a.name] = a.value;
-              return obj;
-            }, {})
-        }))
+    console.log(
+      "日付入力欄:",
+      await dateInput.count()
     );
 
-    for (const item of roleButtons) {
-      console.log(JSON.stringify(item));
-    }
-
-    // --------------------------------------------------
-    // 5. data-* 属性を持つクリック可能そうな要素
-    // --------------------------------------------------
-
-    console.log("");
-    console.log("===== data属性付き要素 =====");
-
-    const dataElements = await page.locator(
-      "[data-action], [data-value], [data-target], [data-testid], [data-date], [data-time]"
-    ).evaluateAll(elements =>
-      elements.map((el, index) => ({
-        index,
-        tag: el.tagName,
-        text: (el.innerText || "").trim().slice(0, 150),
-        id: el.id,
-        class: el.className,
-        dataAttrs: Array.from(el.attributes)
-          .filter(a => a.name.startsWith("data-"))
-          .reduce((obj, a) => {
-            obj[a.name] = a.value;
-            return obj;
-          }, {})
-      }))
+    console.log(
+      "現在の日付値:",
+      await dateInput.inputValue()
     );
 
-    for (const item of dataElements) {
-      console.log(JSON.stringify(item));
-    }
+    // まずカレンダーを開く
+    console.log("▶ 日付欄をクリック");
+
+    await dateInput.click();
+
+    await page.waitForTimeout(1000);
 
     console.log("");
-    console.log("==============================");
-    console.log("UI構造調査終了");
+    console.log("===== カレンダー表示後 =====");
+
+    console.log(
+      (await page.locator("body").innerText()).slice(0, 10000)
+    );
+
+    console.log("============================");
+
+    // 時間selectの状態
+    const timeSelect =
+      page.locator("#reservation_start_at_epoch");
+
+    console.log("");
+    console.log("===== 時間候補 =====");
+
+    const options =
+      await timeSelect.locator("option").evaluateAll(
+        options =>
+          options.map(o => ({
+            text: o.textContent.trim(),
+            value: o.value,
+            disabled: o.disabled
+          }))
+      );
+
+    console.log(JSON.stringify(options, null, 2));
+
+    console.log(
+      "時間select disabled:",
+      await timeSelect.isDisabled()
+    );
 
   } catch (error) {
     console.error("");
