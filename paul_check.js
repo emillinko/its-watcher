@@ -15,7 +15,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 カレンダー詳細確認");
+    console.log("PAUL四谷 メニュー確認");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -34,7 +34,6 @@ const URL =
     if (await agreement.count() > 0) {
       await agreement.first().click();
       await page.waitForTimeout(1000);
-      console.log("▶ お知らせ同意");
     }
 
     // 大人2名
@@ -44,53 +43,44 @@ const URL =
 
     await page.waitForTimeout(2000);
 
-    console.log("▶ 大人2名");
+    // メニュー一覧
+    const menus = await page.locator(
+      "label.order.menu-item-order-btn"
+    ).evaluateAll(labels =>
+      labels.map(label => {
+        const checkbox = label.querySelector("input");
 
-    // 日付を取得
-    const dates = await page.locator(
-      "#timetable-body td.wday"
-    ).evaluateAll(cells =>
-      cells.map((td, index) => ({
-        index,
-        weekday: td.querySelector(".day-name")?.textContent.trim(),
-        day: td.querySelector(".date-num")?.textContent.trim(),
-        className: td.className
-      }))
+        return {
+          text: label.innerText.trim(),
+          checkboxId: checkbox?.id,
+          checked: checkbox?.checked,
+          disabled: checkbox?.disabled
+        };
+      })
     );
 
     console.log("");
-    console.log("===== 日付 =====");
-    console.log(JSON.stringify(dates, null, 2));
+    console.log("===== メニュー一覧 =====");
+    console.log(JSON.stringify(menus, null, 2));
 
-    // 時間行のHTMLを取得
+    // 時間行の状態
     const rows = await page.locator(
       "tr.timetable-row"
     ).evaluateAll(rows =>
       rows.map(row => ({
         className: row.className,
+        time: row.querySelector(".time-left")?.textContent.trim(),
+        cellCount: row.querySelectorAll("td").length,
         html: row.outerHTML
       }))
     );
 
     console.log("");
-    console.log("===== 時間行のHTML =====");
-
-    for (const row of rows) {
-      console.log("");
-      console.log("CLASS:", row.className);
-      console.log(row.html);
-    }
-
-    console.log("");
-    console.log("===== 取得件数 =====");
-    console.log("日付:", dates.length);
-    console.log("時間行:", rows.length);
-    console.log("==============================");
+    console.log("===== 時間行 =====");
+    console.log(JSON.stringify(rows, null, 2));
 
   } catch (error) {
-    console.error("");
-    console.error("❌ ERROR");
-    console.error(error);
+    console.error("ERROR:", error);
     process.exitCode = 1;
 
   } finally {
