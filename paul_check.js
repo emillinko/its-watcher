@@ -15,7 +15,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 メニュー確認");
+    console.log("PAUL四谷 メニュー選択テスト");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -43,41 +43,76 @@ const URL =
 
     await page.waitForTimeout(2000);
 
-    // メニュー一覧
-    const menus = await page.locator(
+    // メニューの周辺HTMLを確認
+    const menuDetails = await page.locator(
       "label.order.menu-item-order-btn"
     ).evaluateAll(labels =>
-      labels.map(label => {
-        const checkbox = label.querySelector("input");
-
-        return {
-          text: label.innerText.trim(),
-          checkboxId: checkbox?.id,
-          checked: checkbox?.checked,
-          disabled: checkbox?.disabled
-        };
-      })
+      labels.map(label => ({
+        text: label.innerText.trim(),
+        parentHTML: label.parentElement?.parentElement?.outerHTML
+      }))
     );
 
     console.log("");
-    console.log("===== メニュー一覧 =====");
-    console.log(JSON.stringify(menus, null, 2));
+    console.log("===== メニュー詳細 =====");
+    console.log(JSON.stringify(menuDetails, null, 2));
 
-    // 時間行の状態
+    // 2番目のメニューを選択
+    const secondMenu = page.locator(
+      "#reservation_orders_attributes_1_is_group_order"
+    );
+
+    if (await secondMenu.count() > 0) {
+      await secondMenu.check({ force: true });
+      console.log("");
+      console.log("▶ 2番目のメニューを選択");
+    } else {
+      console.log("2番目のメニューが見つかりません");
+    }
+
+    await page.waitForTimeout(3000);
+
+    // 選択状態
+    console.log(
+      "2番目のメニュー選択状態:",
+      await secondMenu.isChecked()
+    );
+
+    // 日付
+    const dates = await page.locator(
+      "#timetable-body td.wday"
+    ).evaluateAll(cells =>
+      cells.map(td => ({
+        weekday: td.querySelector(".day-name")?.textContent.trim(),
+        day: td.querySelector(".date-num")?.textContent.trim(),
+        className: td.className
+      }))
+    );
+
+    console.log("");
+    console.log("===== 日付 =====");
+    console.log(JSON.stringify(dates, null, 2));
+
+    // 時間行
     const rows = await page.locator(
       "tr.timetable-row"
     ).evaluateAll(rows =>
       rows.map(row => ({
         className: row.className,
-        time: row.querySelector(".time-left")?.textContent.trim(),
-        cellCount: row.querySelectorAll("td").length,
         html: row.outerHTML
       }))
     );
 
     console.log("");
-    console.log("===== 時間行 =====");
-    console.log(JSON.stringify(rows, null, 2));
+    console.log("===== メニュー選択後の時間行 =====");
+
+    for (const row of rows) {
+      console.log("");
+      console.log(row.html);
+    }
+
+    console.log("");
+    console.log("==============================");
 
   } catch (error) {
     console.error("ERROR:", error);
