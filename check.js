@@ -15,7 +15,7 @@ const { chromium } = require("playwright");
   const url = process.env.ITS_KENPO_URL;
 
   const hotels = [
-    "フルーツパーク富士屋ホテル",
+    //"フルーツパーク富士屋ホテル",
     "ラビスタ富士河口湖"
   ];
 
