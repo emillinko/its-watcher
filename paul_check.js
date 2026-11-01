@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 カレンダー確認");
+    console.log("PAUL四谷 カレンダー詳細確認");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -22,10 +22,7 @@ const URL =
       timeout: 30000
     });
 
-    await page.waitForTimeout(5000);
-
-    console.log("URL:", page.url());
-    console.log("タイトル:", await page.title());
+    await page.waitForTimeout(4000);
 
     // お知らせ同意
     const agreement = page.getByText(
@@ -34,63 +31,82 @@ const URL =
     );
 
     if (await agreement.count() > 0) {
-      console.log("▶ お知らせ同意");
       await agreement.first().click();
       await page.waitForTimeout(1000);
     }
 
     // 大人2名
-    const adult = page.locator("#reservation_num_people_adult");
-
-    if (await adult.count() > 0) {
-      await adult.selectOption("2");
-      console.log("▶ 大人2名");
-    } else {
-      console.log("⚠ 大人選択欄が見つかりません");
-    }
+    await page.locator(
+      "#reservation_num_people_adult"
+    ).selectOption("2");
 
     await page.waitForTimeout(2000);
 
-    // カレンダー本体を探す
-    const timetable = page.locator("#timetable-body");
+    // 日付を取得
+    const dates = await page.locator(
+      "#timetable-body td.wday"
+    ).evaluateAll(cells =>
+      cells.map((td, index) => ({
+        index,
+        weekday: td.querySelector(".day-name")?.textContent.trim(),
+        day: td.querySelector(".date-num")?.textContent.trim(),
+        className: td.className
+      }))
+    );
 
     console.log("");
-    console.log("===== カレンダー確認 =====");
-    console.log("#timetable-body 件数:", await timetable.count());
+    console.log("===== 日付 =====");
+    console.log(JSON.stringify(dates, null, 2));
 
-    if (await timetable.count() > 0) {
-      console.log("カレンダー発見！");
+    // 時間ごとの空席状態を取得
+    const rows = await page.locator(
+      "tr.timetable-row"
+    ).evaluateAll(rows =>
+      rows.map(row => {
+        const time = row.querySelector(
+          "th.time-left"
+        )?.textContent.trim();
 
-      console.log(
-        "HTML長:",
-        (await timetable.evaluate(el => el.outerHTML)).length
-      );
+        const cells = Array.from(
+          row.querySelectorAll("td")
+        ).slice(0, 7);
 
+        return {
+          time,
+          cells: cells.map(td => ({
+            className: td.className,
+            text: td.textContent.trim(),
+            html: td.innerHTML
+          }))
+        };
+      })
+    );
+
+    console.log("");
+    console.log("===== 時間ごとの状態 =====");
+
+    for (const row of rows) {
       console.log("");
-      console.log(
-        await timetable.evaluate(el => el.outerHTML)
-      );
+      console.log("時間:", row.time);
 
-    } else {
-      console.log("❌ #timetable-body が見つかりません");
+      row.cells.forEach((cell, index) => {
+        const date = dates[index];
 
-      // timetableという名前を含む要素を探す
-      const candidates = await page.locator(
-        '[id*="timetable"], [class*="timetable"]'
-      ).evaluateAll(elements =>
-        elements.slice(0, 30).map(el => ({
-          tag: el.tagName,
-          id: el.id,
-          class: el.className
-        }))
-      );
+        if (!date) return;
 
-      console.log("");
-      console.log("===== timetable候補 =====");
-      console.log(JSON.stringify(candidates, null, 2));
+        console.log(
+          `${date.day}日(${date.weekday})`,
+          `class=${cell.className}`,
+          `text=${cell.text}`
+        );
+      });
     }
 
-    console.log("==========================");
+    console.log("");
+    console.log("===== 取得件数 =====");
+    console.log("日付:", dates.length);
+    console.log("時間帯:", rows.length);
+    console.log("==============================");
 
   } catch (error) {
     console.error("❌ ERROR");
