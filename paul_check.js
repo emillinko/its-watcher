@@ -1,4 +1,3 @@
-```javascript
 const { chromium } = require("playwright");
 
 const URL =
@@ -65,11 +64,17 @@ const URL =
     console.log("");
     console.log("========== カレンダー本体 ==========");
 
-    const calendarHtml = await page.locator(
-      "#timetable-body"
-    ).evaluate(el => el.outerHTML);
+    const calendar = page.locator("#timetable-body");
 
-    console.log(calendarHtml);
+    if (await calendar.count() === 0) {
+      console.log("⚠ #timetable-body が見つかりません");
+    } else {
+      const calendarHtml = await calendar.evaluate(
+        el => el.outerHTML
+      );
+
+      console.log(calendarHtml);
+    }
 
     // --------------------------------------------------
     // 日付セル
@@ -115,7 +120,7 @@ const URL =
     );
 
     // --------------------------------------------------
-    // 次週・前週ボタン
+    // 週送りボタン
     // --------------------------------------------------
 
     console.log("");
@@ -158,4 +163,3 @@ const URL =
     await browser.close();
   }
 })();
-```
