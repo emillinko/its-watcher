@@ -14,39 +14,137 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 TableCheck テスト開始");
+    console.log("PAUL四谷 空席取得テスト");
+    console.log("==============================");
 
-    // まず予約ページを開く
     await page.goto(URL, {
       waitUntil: "domcontentloaded",
       timeout: 30000
     });
 
-    console.log("ページを開きました");
-    console.log("Title:", await page.title());
+    await page.waitForTimeout(3000);
 
-    // TableCheckのJSが動くのを少し待つ
-    await page.waitForTimeout(5000);
+    console.log("ページ読み込み完了");
 
-    // ページ全体のテキストを取得
-    const text = await page.locator("body").innerText();
+    // --------------------------------------------------
+    // ① 「お店からのお知らせ」の同意
+    // --------------------------------------------------
+
+    const agreement = page.getByText(
+      "「お店からのお知らせ」を読み、内容を理解して同意する",
+      { exact: true }
+    );
+
+    if (await agreement.count() > 0) {
+      console.log("▶ お知らせ同意をクリック");
+
+      await agreement.first().click();
+
+      await page.waitForTimeout(1000);
+    }
+
+    // --------------------------------------------------
+    // ② 大人2名
+    // --------------------------------------------------
+
+    console.log("▶ 大人2名を選択");
+
+    const adult2 = page.getByText("2", { exact: true });
+
+    console.log(
+      "「2」の候補数:",
+      await adult2.count()
+    );
+
+    // 画面上の「大人」付近を調査
+    const adults = await page.locator("body").innerText();
 
     console.log("");
-    console.log("===== PAGE TEXT =====");
-    console.log(text);
+    console.log("===== 現在の画面 =====");
+    console.log(adults);
     console.log("=====================");
     console.log("");
 
-    // ボタン一覧
+    // --------------------------------------------------
+    // ③ 「選択する」を探す
+    // --------------------------------------------------
+
+    const selectButtons = page.getByText(
+      "選択する",
+      { exact: true }
+    );
+
+    console.log(
+      "「選択する」数:",
+      await selectButtons.count()
+    );
+
+    // --------------------------------------------------
+    // ④ HTML上のフォーム要素を調査
+    // --------------------------------------------------
+
+    const inputs = await page.locator("input").evaluateAll(inputs =>
+      inputs.map((input, index) => ({
+        index,
+        type: input.type,
+        name: input.name,
+        value: input.value,
+        placeholder: input.placeholder,
+        id: input.id,
+        ariaLabel: input.getAttribute("aria-label")
+      }))
+    );
+
+    console.log("");
+    console.log("===== INPUTS =====");
+
+    for (const input of inputs) {
+      console.log(JSON.stringify(input));
+    }
+
+    console.log("==================");
+
+    // --------------------------------------------------
+    // ⑤ SELECT要素
+    // --------------------------------------------------
+
+    const selects = await page.locator("select").evaluateAll(selects =>
+      selects.map((select, index) => ({
+        index,
+        name: select.name,
+        id: select.id,
+        value: select.value,
+        options: Array.from(select.options).map(o => ({
+          text: o.text,
+          value: o.value
+        }))
+      }))
+    );
+
+    console.log("");
+    console.log("===== SELECTS =====");
+
+    for (const select of selects) {
+      console.log(JSON.stringify(select, null, 2));
+    }
+
+    console.log("===================");
+
+    // --------------------------------------------------
+    // ⑥ ボタン
+    // --------------------------------------------------
+
     const buttons = await page.locator("button").evaluateAll(buttons =>
       buttons.map((button, index) => ({
         index,
         text: (button.innerText || "").trim(),
-        ariaLabel: button.getAttribute("aria-label"),
-        disabled: button.disabled
+        type: button.type,
+        disabled: button.disabled,
+        ariaLabel: button.getAttribute("aria-label")
       }))
     );
 
+    console.log("");
     console.log("===== BUTTONS =====");
 
     for (const button of buttons) {
@@ -60,9 +158,24 @@ const URL =
 
     console.log("===================");
 
+    // --------------------------------------------------
+    // スクリーンショット
+    // --------------------------------------------------
+
+    await page.screenshot({
+      path: "paul-debug.png",
+      fullPage: true
+    });
+
+    console.log("");
+    console.log("スクリーンショット保存: paul-debug.png");
+
   } catch (error) {
-    console.error("ERROR:", error);
+    console.error("");
+    console.error("❌ ERROR");
+    console.error(error);
     process.exitCode = 1;
+
   } finally {
     await browser.close();
   }
