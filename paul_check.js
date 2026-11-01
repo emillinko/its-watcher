@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 カレンダー構造調査");
+    console.log("PAUL四谷 土日空席チェック");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -39,118 +39,152 @@ const URL =
     await page.locator("#reservation_num_people_adult")
       .selectOption("2");
 
-    // 日付欄
-    await page.locator("#reservation_start_date").click();
-
-    await page.waitForTimeout(1000);
-
-    console.log("▶ カレンダー表示");
-
-    // ------------------------------------------------
-    // カレンダーらしい要素を全部調査
-    // ------------------------------------------------
-
-    const calendarElements = await page.locator(
-      "[class*='calendar'], [class*='datepick'], [class*='datepicker'], [class*='day'], [class*='date']"
-    ).evaluateAll(elements =>
-      elements.map((el, index) => ({
-        index,
-        tag: el.tagName,
-        id: el.id,
-        class: typeof el.className === "string"
-          ? el.className
-          : "",
-        role: el.getAttribute("role"),
-        ariaLabel: el.getAttribute("aria-label"),
-        text: (el.innerText || "").trim().slice(0, 500),
-        html: el.outerHTML.slice(0, 3000)
-      }))
-    );
-
+    console.log("▶ 大人2名");
     console.log("");
-    console.log("===== カレンダー関連要素 =====");
 
-    for (const item of calendarElements) {
-      console.log(JSON.stringify(item, null, 2));
-    }
+    // カレンダーの実データを取得
+    const result = await page.locator("#timetable-body").evaluate(() => {
 
-    console.log("==============================");
-
-    // ------------------------------------------------
-    // 「11月」「1」を含む要素を直接検索
-    // ------------------------------------------------
-
-    const textElements = await page.locator("body *").evaluateAll(elements =>
-      elements
-        .map((el, index) => ({
-          index,
-          tag: el.tagName,
-          id: el.id,
-          class: typeof el.className === "string"
-            ? el.className
-            : "",
-          text: (el.innerText || "").trim()
-        }))
-        .filter(x =>
-          x.text === "11月" ||
-          x.text === "1" ||
-          x.text.includes("11月")
-        )
-        .slice(0, 100)
-    );
-
-    console.log("");
-    console.log("===== 11月 / 1 の要素 =====");
-
-    for (const item of textElements) {
-      console.log(JSON.stringify(item));
-    }
-
-    console.log("==============================");
-
-    // ------------------------------------------------
-    // カレンダーのHTMLを保存
-    // ------------------------------------------------
-
-    const calendarHtml = await page.locator("body").evaluate(() => {
-      const all = Array.from(document.querySelectorAll("*"));
-
-      const candidates = all.filter(el => {
-        const text = (el.innerText || "").trim();
-
-        return (
-          text.includes("11月") &&
-          text.includes("日") &&
-          text.includes("月") &&
-          text.includes("火")
-        );
-      });
-
-      if (candidates.length === 0) {
-        return "CALENDAR NOT FOUND";
-      }
-
-      // 最も小さい候補を探す
-      candidates.sort(
-        (a, b) =>
-          a.outerHTML.length - b.outerHTML.length
+      const header = document.querySelector(
+        "tr:not(.timetable-row):not(.timetable-fake-row)"
       );
 
-      return candidates[0].outerHTML;
+      if (!header) {
+        return {
+          error: "カレンダーのヘッダーが見つかりません"
+        };
+      }
+
+      const dayCells = Array.from(
+        document.querySelectorAll(
+          "tr#timetable-body td.wday"
+        )
+      );
+
+      const dates = dayCells.map(td => ({
+        weekday: td.querySelector(".day-name")?.textContent.trim(),
+        day: td.querySelector(".date-num")?.textContent.trim(),
+        closed: td.classList.contains("day-closed")
+      }));
+
+      // 時間ごとの行
+      const timeRows = Array.from(
+        document.querySelectorAll(
+          "tr.timetable-row:not(.timetable-fake-row)"
+        )
+      );
+
+      const times = timeRows.map(row => {
+        const time =
+          row.querySelector(".time-left")?.textContent.trim();
+
+        const cells = Array.from(
+          row.querySelectorAll("td")
+        );
+
+        return {
+          time,
+          cells: cells.map(td => ({
+            available:
+              !td.classList.contains("not_available") &&
+              !td.classList.contains("closed"),
+            className: td.className,
+            text: td.textContent.trim()
+          }))
+        };
+      });
+
+      return {
+        dates,
+        times
+      };
     });
 
-    console.log("");
-    console.log("===== カレンダーHTML =====");
-    console.log(calendarHtml.slice(0, 15000));
+    console.log("===== カレンダー解析 =====");
+
+    if (result.error) {
+      console.log(result.error);
+      return;
+    }
+
+    console.log(
+      "日付:",
+      JSON.stringify(result.dates, null, 2)
+    );
+
+    console.log(
+      "時間:",
+      JSON.stringify(result.times, null, 2)
+    );
+
     console.log("==========================");
 
+    // ------------------------------------------
+    // 土日だけ空席を抽出
+    // ------------------------------------------
+
+    const available = [];
+
+    for (let i = 0; i < result.dates.length; i++) {
+
+      const date = result.dates[i];
+
+      // 土曜・日曜のみ
+      if (
+        date.weekday !== "土" &&
+        date.weekday !== "日"
+      ) {
+        continue;
+      }
+
+      // day-closed は除外
+      if (date.closed) {
+        continue;
+      }
+
+      for (const time of result.times) {
+
+        if (!time.time) continue;
+
+        const cell = time.cells[i];
+
+        if (!cell) continue;
+
+        if (cell.available) {
+          available.push({
+            day: date.day,
+            weekday: date.weekday,
+            time: time.time
+          });
+        }
+      }
+    }
+
+    console.log("");
+    console.log("===== 🎉 空席候補 =====");
+
+    if (available.length === 0) {
+      console.log("現在、土日の空席候補はありません。");
+    } else {
+      for (const item of available) {
+        console.log(
+          `${item.day}日（${item.weekday}） ${item.time}`
+        );
+      }
+    }
+
+    console.log("======================");
+
   } catch (error) {
+
     console.error("");
     console.error("❌ ERROR");
     console.error(error);
     process.exitCode = 1;
 
   } finally {
+
     await browser.close();
+
   }
 })();
