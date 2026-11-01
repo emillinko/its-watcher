@@ -1,3 +1,4 @@
+
 const { chromium } = require("playwright");
 
 const URL =
@@ -33,6 +34,7 @@ const URL =
     if (await agreement.count() > 0) {
       await agreement.first().click();
       await page.waitForTimeout(1000);
+      console.log("▶ お知らせ同意");
     }
 
     // 大人2名
@@ -41,6 +43,8 @@ const URL =
     ).selectOption("2");
 
     await page.waitForTimeout(2000);
+
+    console.log("▶ 大人2名");
 
     // 日付を取得
     const dates = await page.locator(
@@ -58,7 +62,7 @@ const URL =
     console.log("===== 日付 =====");
     console.log(JSON.stringify(dates, null, 2));
 
-    // 時間ごとの空席状態を取得
+    // 時間行のHTMLを取得
     const rows = await page.locator(
       "tr.timetable-row"
     ).evaluateAll(rows =>
@@ -67,10 +71,10 @@ const URL =
         html: row.outerHTML
       }))
     );
-    
+
     console.log("");
     console.log("===== 時間行のHTML =====");
-    
+
     for (const row of rows) {
       console.log("");
       console.log("CLASS:", row.className);
@@ -78,32 +82,13 @@ const URL =
     }
 
     console.log("");
-    console.log("===== 時間ごとの状態 =====");
-
-    for (const row of rows) {
-      console.log("");
-      console.log("時間:", row.time);
-
-      row.cells.forEach((cell, index) => {
-        const date = dates[index];
-
-        if (!date) return;
-
-        console.log(
-          `${date.day}日(${date.weekday})`,
-          `class=${cell.className}`,
-          `text=${cell.text}`
-        );
-      });
-    }
-
-    console.log("");
     console.log("===== 取得件数 =====");
     console.log("日付:", dates.length);
-    console.log("時間帯:", rows.length);
+    console.log("時間行:", rows.length);
     console.log("==============================");
 
   } catch (error) {
+    console.error("");
     console.error("❌ ERROR");
     console.error(error);
     process.exitCode = 1;
