@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 土日空席チェック");
+    console.log("PAUL四谷 カレンダー確認");
     console.log("==============================");
 
     await page.goto(URL, {
@@ -22,7 +22,10 @@ const URL =
       timeout: 30000
     });
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(5000);
+
+    console.log("URL:", page.url());
+    console.log("タイトル:", await page.title());
 
     // お知らせ同意
     const agreement = page.getByText(
@@ -31,160 +34,70 @@ const URL =
     );
 
     if (await agreement.count() > 0) {
+      console.log("▶ お知らせ同意");
       await agreement.first().click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
     }
 
     // 大人2名
-    await page.locator("#reservation_num_people_adult")
-      .selectOption("2");
+    const adult = page.locator("#reservation_num_people_adult");
 
-    console.log("▶ 大人2名");
-    console.log("");
-
-    // カレンダーの実データを取得
-    const result = await page.locator("#timetable-body").evaluate(() => {
-
-      const header = document.querySelector(
-        "tr:not(.timetable-row):not(.timetable-fake-row)"
-      );
-
-      if (!header) {
-        return {
-          error: "カレンダーのヘッダーが見つかりません"
-        };
-      }
-
-      const dayCells = Array.from(
-        document.querySelectorAll(
-          "tr#timetable-body td.wday"
-        )
-      );
-
-      const dates = dayCells.map(td => ({
-        weekday: td.querySelector(".day-name")?.textContent.trim(),
-        day: td.querySelector(".date-num")?.textContent.trim(),
-        closed: td.classList.contains("day-closed")
-      }));
-
-      // 時間ごとの行
-      const timeRows = Array.from(
-        document.querySelectorAll(
-          "tr.timetable-row:not(.timetable-fake-row)"
-        )
-      );
-
-      const times = timeRows.map(row => {
-        const time =
-          row.querySelector(".time-left")?.textContent.trim();
-
-        const cells = Array.from(
-          row.querySelectorAll("td")
-        );
-
-        return {
-          time,
-          cells: cells.map(td => ({
-            available:
-              !td.classList.contains("not_available") &&
-              !td.classList.contains("closed"),
-            className: td.className,
-            text: td.textContent.trim()
-          }))
-        };
-      });
-
-      return {
-        dates,
-        times
-      };
-    });
-
-    console.log("===== カレンダー解析 =====");
-
-    if (result.error) {
-      console.log(result.error);
-      return;
+    if (await adult.count() > 0) {
+      await adult.selectOption("2");
+      console.log("▶ 大人2名");
+    } else {
+      console.log("⚠ 大人選択欄が見つかりません");
     }
 
-    console.log(
-      "日付:",
-      JSON.stringify(result.dates, null, 2)
-    );
+    await page.waitForTimeout(2000);
 
-    console.log(
-      "時間:",
-      JSON.stringify(result.times, null, 2)
-    );
+    // カレンダー本体を探す
+    const timetable = page.locator("#timetable-body");
+
+    console.log("");
+    console.log("===== カレンダー確認 =====");
+    console.log("#timetable-body 件数:", await timetable.count());
+
+    if (await timetable.count() > 0) {
+      console.log("カレンダー発見！");
+
+      console.log(
+        "HTML長:",
+        (await timetable.evaluate(el => el.outerHTML)).length
+      );
+
+      console.log("");
+      console.log(
+        await timetable.evaluate(el => el.outerHTML)
+      );
+
+    } else {
+      console.log("❌ #timetable-body が見つかりません");
+
+      // timetableという名前を含む要素を探す
+      const candidates = await page.locator(
+        '[id*="timetable"], [class*="timetable"]'
+      ).evaluateAll(elements =>
+        elements.slice(0, 30).map(el => ({
+          tag: el.tagName,
+          id: el.id,
+          class: el.className
+        }))
+      );
+
+      console.log("");
+      console.log("===== timetable候補 =====");
+      console.log(JSON.stringify(candidates, null, 2));
+    }
 
     console.log("==========================");
 
-    // ------------------------------------------
-    // 土日だけ空席を抽出
-    // ------------------------------------------
-
-    const available = [];
-
-    for (let i = 0; i < result.dates.length; i++) {
-
-      const date = result.dates[i];
-
-      // 土曜・日曜のみ
-      if (
-        date.weekday !== "土" &&
-        date.weekday !== "日"
-      ) {
-        continue;
-      }
-
-      // day-closed は除外
-      if (date.closed) {
-        continue;
-      }
-
-      for (const time of result.times) {
-
-        if (!time.time) continue;
-
-        const cell = time.cells[i];
-
-        if (!cell) continue;
-
-        if (cell.available) {
-          available.push({
-            day: date.day,
-            weekday: date.weekday,
-            time: time.time
-          });
-        }
-      }
-    }
-
-    console.log("");
-    console.log("===== 🎉 空席候補 =====");
-
-    if (available.length === 0) {
-      console.log("現在、土日の空席候補はありません。");
-    } else {
-      for (const item of available) {
-        console.log(
-          `${item.day}日（${item.weekday}） ${item.time}`
-        );
-      }
-    }
-
-    console.log("======================");
-
   } catch (error) {
-
-    console.error("");
     console.error("❌ ERROR");
     console.error(error);
     process.exitCode = 1;
 
   } finally {
-
     await browser.close();
-
   }
 })();
