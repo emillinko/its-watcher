@@ -62,25 +62,20 @@ const URL =
     const rows = await page.locator(
       "tr.timetable-row"
     ).evaluateAll(rows =>
-      rows.map(row => {
-        const time = row.querySelector(
-          "th.time-left"
-        )?.textContent.trim();
-
-        const cells = Array.from(
-          row.querySelectorAll("td")
-        ).slice(0, 7);
-
-        return {
-          time,
-          cells: cells.map(td => ({
-            className: td.className,
-            text: td.textContent.trim(),
-            html: td.innerHTML
-          }))
-        };
-      })
+      rows.map(row => ({
+        className: row.className,
+        html: row.outerHTML
+      }))
     );
+    
+    console.log("");
+    console.log("===== 時間行のHTML =====");
+    
+    for (const row of rows) {
+      console.log("");
+      console.log("CLASS:", row.className);
+      console.log(row.html);
+    }
 
     console.log("");
     console.log("===== 時間ごとの状態 =====");
