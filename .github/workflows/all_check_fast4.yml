@@ -55,7 +55,17 @@ jobs:
           fi
 
       # ==========================================
-      # ITS健保 空きチェック
+      # ITS健保 指定2施設チェック
+      # ==========================================
+      - name: Run original vacancy check
+        env:
+          ITS_KENPO_URL: ${{ secrets.ITS_KENPO_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL_PRIVATE: ${{ secrets.DISCORD_WEBHOOK_URL_PRIVATE }}
+        run: node check.js
+
+      # ==========================================
+      # ITS健保 全施設 Fast4チェック
       # ==========================================
       - name: Run fast4 vacancy check
         env:
@@ -66,7 +76,6 @@ jobs:
 
       # ==========================================
       # PAUL四谷 空きチェック
-      # ITSが失敗してもPAULは実行する
       # ==========================================
       - name: Run PAUL Yotsuya vacancy check
         if: always()
@@ -83,7 +92,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add notified.json paul_notified.json
+          git add -f notified.json paul_notified.json
 
           if git diff --cached --quiet; then
             echo "通知履歴に変更なし"
@@ -93,7 +102,5 @@ jobs:
           git commit -m "Update vacancy notification histories"
 
           git fetch origin main
-
           git rebase origin/main
-
           git push origin HEAD:main
