@@ -1,7 +1,11 @@
+
 name: PAUL Yotsuya Test
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   check:
@@ -22,5 +26,15 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Check PAUL Yotsuya
+        env:
+          PAUL_DISCORD_WEBHOOK_URL: ${{ secrets.PAUL_DISCORD_WEBHOOK_URL }}
         run: |
           node paul_check.js
+
+      - name: Save notification history
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paul_notified.json
+          git diff --cached --quiet || (git commit -m "Update PAUL notification history" && git push)
