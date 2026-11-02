@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 カレンダー構造調査");
+    console.log("PAUL四谷 土日選択後の時間帯調査");
     console.log("================================");
 
     await page.goto(URL, {
@@ -58,96 +58,133 @@ const URL =
     );
 
     // --------------------------------------------------
-    // カレンダー本体
+    // 現在の日付
+    // --------------------------------------------------
+
+    async function showCalendar(label) {
+      console.log("");
+      console.log("========== " + label + " ==========");
+
+      const dates = await page.locator(
+        "#timetable-body td.wday"
+      ).evaluateAll(cells =>
+        cells.map((td, index) => ({
+          index,
+          weekday: td.querySelector(
+            ".day-name"
+          )?.textContent.trim(),
+          day: td.querySelector(
+            ".date-num"
+          )?.textContent.trim(),
+          className: td.className
+        }))
+      );
+
+      console.log("日付:");
+      console.log(
+        JSON.stringify(dates, null, 2)
+      );
+
+      const rows = await page.locator(
+        "tr.timetable-row"
+      ).evaluateAll(rows =>
+        rows.map((row, rowIndex) => ({
+          rowIndex,
+          className: row.className,
+          time: row.querySelector(
+            "th.time-left"
+          )?.textContent.trim(),
+          cells: Array.from(
+            row.querySelectorAll("td")
+          ).map((td, index) => ({
+            index,
+            className: td.className,
+            text: td.textContent.trim()
+          }))
+        }))
+      );
+
+      console.log("時間帯:");
+      console.log(
+        JSON.stringify(rows, null, 2)
+      );
+    }
+
+    await showCalendar("選択前");
+
+    // --------------------------------------------------
+    // 土曜日をクリック
     // --------------------------------------------------
 
     console.log("");
-    console.log("========== カレンダー本体 ==========");
+    console.log("========== 土曜日をクリック ==========");
 
-    const calendar = page.locator("#timetable-body");
+    const saturday = page.locator(
+      "#timetable-body td.wday.wday-6"
+    );
 
-    if (await calendar.count() === 0) {
-      console.log("⚠ #timetable-body が見つかりません");
-    } else {
-      const calendarHtml = await calendar.evaluate(
-        el => el.outerHTML
+    console.log(
+      "土曜日セル数:",
+      await saturday.count()
+    );
+
+    if (await saturday.count() > 0) {
+
+      console.log(
+        "土曜日:",
+        await saturday.first().innerText()
       );
 
-      console.log(calendarHtml);
+      await saturday.first().click({
+        force: true
+      });
+
+      await page.waitForTimeout(2500);
+
+      console.log("▶ 土曜日クリック完了");
+
+      await showCalendar("土曜日選択後");
+
+    } else {
+      console.log("⚠ 土曜日セルが見つかりません");
     }
 
     // --------------------------------------------------
-    // 日付セル
+    // 日曜日をクリック
     // --------------------------------------------------
 
     console.log("");
-    console.log("========== 日付セル ==========");
+    console.log("========== 日曜日をクリック ==========");
 
-    const dates = await page.locator(
-      "#timetable-body td.wday"
-    ).evaluateAll(cells =>
-      cells.map((td, index) => ({
-        index,
-        text: td.textContent.trim(),
-        html: td.innerHTML,
-        className: td.className
-      }))
+    const sunday = page.locator(
+      "#timetable-body td.wday.wday-0"
     );
 
     console.log(
-      JSON.stringify(dates, null, 2)
+      "日曜日セル数:",
+      await sunday.count()
     );
 
-    // --------------------------------------------------
-    // 時間行
-    // --------------------------------------------------
+    if (await sunday.count() > 0) {
 
-    console.log("");
-    console.log("========== 時間行 ==========");
+      console.log(
+        "日曜日:",
+        await sunday.first().innerText()
+      );
 
-    const rows = await page.locator(
-      "tr.timetable-row"
-    ).evaluateAll(rows =>
-      rows.map((row, rowIndex) => ({
-        rowIndex,
-        className: row.className,
-        html: row.outerHTML
-      }))
-    );
+      await sunday.first().click({
+        force: true
+      });
 
-    console.log(
-      JSON.stringify(rows, null, 2)
-    );
+      await page.waitForTimeout(2500);
 
-    // --------------------------------------------------
-    // 週送りボタン
-    // --------------------------------------------------
+      console.log("▶ 日曜日クリック完了");
 
-    console.log("");
-    console.log("========== 週送りボタン ==========");
+      await showCalendar("日曜日選択後");
 
-    const buttons = await page.locator(
-      ".next_prev_btn"
-    ).evaluateAll(elements =>
-      elements.map((el, index) => ({
-        index,
-        tag: el.tagName,
-        className: el.className,
-        text: el.textContent.trim(),
-        href: el.getAttribute("href"),
-        data: Array.from(el.attributes).reduce(
-          (obj, attr) => {
-            obj[attr.name] = attr.value;
-            return obj;
-          },
-          {}
-        )
-      }))
-    );
-
-    console.log(
-      JSON.stringify(buttons, null, 2)
-    );
+    } else {
+      console.log("⚠ 日曜日セルが見つかりません");
+    }
 
     console.log("");
     console.log("================================");
