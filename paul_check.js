@@ -14,8 +14,62 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 空席取得処理解析");
+    console.log("PAUL四谷 空席API解析");
     console.log("================================");
+
+    // 通信監視を最初から設定
+    page.on("request", request => {
+      if (
+        request.resourceType() === "xhr" ||
+        request.resourceType() === "fetch"
+      ) {
+        console.log("");
+        console.log(">>> REQUEST");
+        console.log("METHOD:", request.method());
+        console.log("URL:", request.url());
+
+        const postData = request.postData();
+        if (postData) {
+          console.log("POST DATA:", postData);
+        }
+      }
+    });
+
+    page.on("response", async response => {
+      const url = response.url();
+
+      if (
+        url.includes("/available") ||
+        response.request().resourceType() === "xhr" ||
+        response.request().resourceType() === "fetch"
+      ) {
+        console.log("");
+        console.log("<<< RESPONSE");
+        console.log("STATUS:", response.status());
+        console.log("URL:", url);
+
+        try {
+          const text = await response.text();
+
+          if (text.length < 10000) {
+            console.log("BODY:");
+            console.log(text);
+          } else {
+            console.log(
+              "BODY:",
+              text.substring(0, 10000)
+            );
+            console.log("（長いため途中まで）");
+          }
+        } catch (e) {
+          console.log("BODY取得失敗:", e.message);
+        }
+      }
+    });
+
+    // --------------------------------
+    // ページ
+    // --------------------------------
 
     await page.goto(URL, {
       waitUntil: "domcontentloaded",
@@ -24,151 +78,95 @@ const URL =
 
     await page.waitForTimeout(4000);
 
+    // --------------------------------
     // お知らせ同意
+    // --------------------------------
+
     const agreement = page.getByText(
       "「お店からのお知らせ」を読み、内容を理解して同意する",
       { exact: true }
     );
 
     if (await agreement.count() > 0) {
+      console.log("▶ お知らせ同意");
       await agreement.first().click();
       await page.waitForTimeout(1000);
     }
 
+    // --------------------------------
     // 大人2名
+    // --------------------------------
+
+    console.log("▶ 大人2名");
+
     await page.locator(
       "#reservation_num_people_adult"
     ).selectOption("2");
 
     await page.waitForTimeout(1500);
 
+    // --------------------------------
     // 現在のモーニングビュッフェ
-    await page.locator(
+    // --------------------------------
+
+    console.log("▶ モーニングビュッフェ選択");
+
+    const menu = page.locator(
       "#reservation_orders_attributes_1_is_group_order"
-    ).check({ force: true });
+    );
+
+    await menu.check({ force: true });
 
     await page.waitForTimeout(3000);
 
     // --------------------------------
-    // OnlineAvailability の詳細
+    // 現在のフォーム状態
     // --------------------------------
 
     console.log("");
-    console.log("========== OnlineAvailability 詳細 ==========");
+    console.log("========== フォーム情報 ==========");
 
-    const details = await page.evaluate(() => {
+    const formData = await page.evaluate(() => {
       const oa = window.OnlineAvailability;
 
-      if (!oa) {
-        return {
-          exists: false
-        };
-      }
+      return {
+        startAtEpoch:
+          typeof ReserveForm !== "undefined"
+            ? ReserveForm.startAtEpoch()
+            : null,
 
-      const result = {
-        exists: true,
-        requestUrl: null,
-        shop: null,
-        liveRequest: null
+        numPeople:
+          typeof ReserveForm !== "undefined"
+            ? ReserveForm.num_people()
+            : null,
+
+        sanitizedFormData:
+          typeof Reserve !== "undefined"
+            ? Reserve.sanitizedFormData()
+            : null,
+
+        requestData:
+          oa && typeof oa.requestData === "function"
+            ? oa.requestData()
+            : null,
+
+        requestUrl:
+          oa && typeof oa.requestUrl === "function"
+            ? oa.requestUrl()
+            : null
       };
-
-      try {
-        result.requestUrl =
-          typeof oa.requestUrl === "function"
-            ? oa.requestUrl.toString()
-            : oa.requestUrl;
-      } catch (e) {
-        result.requestUrl = "[error]";
-      }
-
-      try {
-        result.shop = oa.shop;
-      } catch (e) {
-        result.shop = "[error]";
-      }
-
-      try {
-        result.liveRequest = oa.liveRequest;
-      } catch (e) {
-        result.liveRequest = "[error]";
-      }
-
-      return result;
     });
 
     console.log(
-      JSON.stringify(details, null, 2)
+      JSON.stringify(formData, null, 2)
     );
 
     // --------------------------------
-    // 関数の中身を取得
+    // 土曜日の情報
     // --------------------------------
 
     console.log("");
-    console.log("========== requestData ==========");
-
-    const functions = await page.evaluate(() => {
-      const oa = window.OnlineAvailability;
-
-      const names = [
-        "check",
-        "isRequiredDataPresent",
-        "requestData",
-        "sendRequestForSameDay",
-        "sendRequestForOtherDay",
-        "sendRequest",
-        "requestUrl",
-        "handleClosedDay",
-        "displayMessage"
-      ];
-
-      const result = {};
-
-      for (const name of names) {
-        try {
-          result[name] =
-            typeof oa[name] === "function"
-              ? oa[name].toString()
-              : oa[name];
-        } catch (e) {
-          result[name] = "[error]";
-        }
-      }
-
-      return result;
-    });
-
-    console.log(
-      JSON.stringify(functions, null, 2)
-    );
-
-    // --------------------------------
-    // Network監視
-    // --------------------------------
-
-    console.log("");
-    console.log("========== 空席取得通信 ==========");
-
-    const requests = [];
-
-    page.on("request", request => {
-      const type = request.resourceType();
-
-      if (
-        type === "xhr" ||
-        type === "fetch"
-      ) {
-        requests.push({
-          method: request.method(),
-          url: request.url(),
-          postData: request.postData()
-        });
-      }
-    });
-
-    // --------------------------------
-    // 土曜日クリック
-    // --------------------------------
+    console.log("========== 土曜日 ==========");
 
     const saturday = page.locator(
       "#timetable-body td.wday-6"
@@ -179,24 +177,35 @@ const URL =
       await saturday.innerText()
     );
 
-    console.log("▶ 土曜日クリック");
-
-    await saturday.click();
-
-    await page.waitForTimeout(5000);
+    // --------------------------------
+    // OnlineAvailability.check()
+    // --------------------------------
 
     console.log("");
-    console.log(
-      "========== クリック後の通信 =========="
-    );
+    console.log("========== 空席チェック ==========");
 
     console.log(
-      JSON.stringify(
-        requests,
-        null,
-        2
-      )
+      "OnlineAvailability.check() を実行"
     );
+
+    const checkResult = await page.evaluate(() => {
+      if (
+        window.OnlineAvailability &&
+        typeof window.OnlineAvailability.check === "function"
+      ) {
+        return window.OnlineAvailability.check();
+      }
+
+      return "OnlineAvailability.check() がありません";
+    });
+
+    console.log(
+      "check() result:",
+      checkResult
+    );
+
+    // AJAX完了待ち
+    await page.waitForTimeout(5000);
 
     console.log("");
     console.log("================================");
