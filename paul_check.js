@@ -24,10 +24,7 @@ const URL =
 
     await page.waitForTimeout(4000);
 
-    // --------------------------------
     // お知らせ同意
-    // --------------------------------
-
     const agreement = page.getByText(
       "「お店からのお知らせ」を読み、内容を理解して同意する",
       { exact: true }
@@ -35,16 +32,11 @@ const URL =
 
     if (await agreement.count() > 0) {
       console.log("▶ お知らせ同意");
-
       await agreement.first().click();
-
       await page.waitForTimeout(1000);
     }
 
-    // --------------------------------
     // 大人2名
-    // --------------------------------
-
     console.log("▶ 大人2名");
 
     await page.locator(
@@ -53,10 +45,7 @@ const URL =
 
     await page.waitForTimeout(1000);
 
-    // --------------------------------
-    // 現在のモーニングビュッフェ
-    // --------------------------------
-
+    // モーニングビュッフェ
     console.log("▶ モーニングビュッフェ選択");
 
     await page.locator(
@@ -67,54 +56,42 @@ const URL =
 
     await page.waitForTimeout(2000);
 
-    // --------------------------------
-    // フォーム情報取得
-    // --------------------------------
-
+    // フォーム情報
     const info = await page.evaluate(() => {
-
-      const data =
-        Reserve.sanitizedFormData();
+      const data = Reserve.sanitizedFormData();
 
       return {
         token: data.authenticity_token,
-        requestData:
-          OnlineAvailability.requestData()
+        requestData: OnlineAvailability.requestData()
       };
     });
 
     console.log("");
     console.log("大人: 2名");
     console.log("メニュー: モーニングビュッフェ");
-    console.log("");
 
-    // --------------------------------
-    // 空席APIを直接呼び出す
-    // --------------------------------
-
+    // 空席API
     const result = await page.evaluate(
-      async ({ token, requestData }) => {
-
-        const params =
-          new URLSearchParams();
+      async (info) => {
+        const params = new URLSearchParams();
 
         params.append(
           "authenticity_token",
-          token
+          info.token
         );
 
         params.append(
           "reservation[num_people_adult]",
-          requestData.reservation.num_people_adult
+          info.requestData.reservation.num_people_adult
         );
 
         params.append(
           "reservation[num_people_baby]",
-          requestData.reservation.num_people_baby || ""
+          info.requestData.reservation.num_people_baby || ""
         );
 
         const order =
-          requestData.reservation.orders_attributes[0];
+          info.requestData.reservation.orders_attributes[0];
 
         params.append(
           "reservation[orders_attributes][0][menu_item_id]",
@@ -131,26 +108,23 @@ const URL =
           new Date().toISOString().slice(0, 10)
         );
 
-        const url =
+        const apiUrl =
           "/ja/shops/paul-yotsuya/available/timetable?" +
           params.toString();
 
-        const response =
-          await fetch(url, {
-            credentials: "same-origin"
-          });
+        const response = await fetch(apiUrl, {
+          credentials: "same-origin"
+        });
+
+        const json = await response.json();
 
         return {
           status: response.status,
-          data: await response.json()
+          json: json
         };
       },
       info
     );
-
-    // --------------------------------
-    // API結果
-    // --------------------------------
 
     console.log("");
     console.log("========== API結果 ==========");
@@ -163,41 +137,26 @@ const URL =
       )
     );
 
-    // --------------------------------
-    // 空席だけ抽出
-    // --------------------------------
-
-    console.log("");
-    console.log("========== 空席だけ ==========");
-
+    // 空席抽出
     const available = [];
 
     const slots =
-      result.data &&
-      result.data.data &&
-      result.data.data.slots
-        ? result.data.data.slots
+      result.json &&
+      result.json.data &&
+      result.json.data.slots
+        ? result.json.data.slots
         : {};
 
-    for (
-      const date of Object.keys(slots)
-    ) {
+    for (const date in slots) {
+      const times = slots[date];
 
-      const times =
-        slots[date];
-
-      for (
-        const epoch of Object.keys(times)
-      ) {
-
-        const slot =
-          times[epoch];
+      for (const epoch in times) {
+        const slot = times[epoch];
 
         if (
           slot.available === true &&
           slot.meal === "breakfast"
         ) {
-
           const dateObj =
             new Date(
               Number(epoch) * 1000
@@ -207,70 +166,4 @@ const URL =
             new Intl.DateTimeFormat(
               "ja-JP",
               {
-                timeZone: "Asia/Tokyo",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                weekday: "short"
-              }
-            ).format(dateObj);
-
-          const timeText =
-            new Intl.DateTimeFormat(
-              "ja-JP",
-              {
-                timeZone: "Asia/Tokyo",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false
-              }
-            ).format(dateObj);
-
-          available.push({
-            date: dateText,
-            time: timeText
-          });
-        }
-      }
-    }
-
-    // --------------------------------
-    // 結果表示
-    // --------------------------------
-
-    if (available.length === 0) {
-
-      console.log("空きなし");
-
-    } else {
-
-      console.log("🎉 空きあり！");
-
-      for (
-        const item of available
-      ) {
-
-        console.log(
-          item.date + " " + item.time
-        );
-      }
-    }
-
-    console.log("");
-    console.log("================================");
-    console.log("チェック終了");
-
-  } catch (error) {
-
-    console.error("");
-    console.error("❌ ERROR");
-    console.error(error);
-
-    process.exitCode = 1;
-
-  } finally {
-
-    await browser.close();
-  }
-})();
-```
+                time
