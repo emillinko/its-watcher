@@ -25,23 +25,21 @@ jobs:
           npm install playwright
           npx playwright install --with-deps chromium
 
+      - name: Initialize notification history
+        run: |
+          if [ ! -f paul_notified.json ]; then
+            echo '{"updated_at":"","slots":[]}' > paul_notified.json
+          fi
+
       - name: Check PAUL Yotsuya
         env:
           DISCORD_WEBHOOK_URL_PRIVATE: ${{ secrets.DISCORD_WEBHOOK_URL_PRIVATE }}
         run: |
           node paul_check.js
 
-
       - name: Save notification history
         if: success()
         run: |
-          if [ -f paul_notified.json ]; then
-            echo "通知履歴ファイルを確認しました"
-          else
-            echo '{"updated_at":"","slots":[]}' > paul_notified.json
-            echo "通知履歴ファイルを新規作成しました"
-          fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -51,6 +49,5 @@ jobs:
             git commit -m "Update PAUL notification history"
             git push
           else
-            echo "変更なし"
+            echo "通知履歴に変更はありません"
           fi
-
