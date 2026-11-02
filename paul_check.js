@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 日付クリック時の変化確認");
+    console.log("PAUL四谷 カレンダーJavaScript解析");
     console.log("================================");
 
     await page.goto(URL, {
@@ -43,18 +43,14 @@ const URL =
     await page.waitForTimeout(1500);
 
     // 3,080円メニュー
-    const menu = page.locator(
+    await page.locator(
       "#reservation_orders_attributes_1_is_group_order"
-    );
-
-    await menu.check({ force: true });
+    ).check({ force: true });
 
     await page.waitForTimeout(2500);
 
-    console.log("▶ 初期状態取得");
-
     // --------------------------------
-    // 日付セルのHTML
+    // 土曜日セル
     // --------------------------------
 
     const saturday = page.locator(
@@ -62,84 +58,69 @@ const URL =
     ).first();
 
     if (await saturday.count() === 0) {
-      throw new Error("土曜日が見つかりません");
+      throw new Error("土曜日セルが見つかりません");
     }
 
+    console.log("▶ 土曜日:", await saturday.innerText());
+
+    // --------------------------------
+    // 土曜日セルの親要素を調査
+    // --------------------------------
+
     console.log("");
-    console.log("土曜日セルHTML:");
+    console.log("========== 土曜日周辺HTML ==========");
+
+    const surroundingHTML =
+      await saturday.evaluate(el => {
+        let parent = el;
+
+        for (let i = 0; i < 4 && parent; i++) {
+          parent = parent.parentElement;
+        }
+
+        return parent?.outerHTML || "";
+      });
+
+    console.log(surroundingHTML);
+
+    // --------------------------------
+    // 土曜日セルに設定されている属性
+    // --------------------------------
+
+    console.log("");
+    console.log("========== 土曜日属性 ==========");
+
+    const attributes =
+      await saturday.evaluate(el =>
+        Array.from(el.attributes).map(attr => ({
+          name: attr.name,
+          value: attr.value
+        }))
+      );
+
     console.log(
-      await saturday.evaluate(el => el.outerHTML)
+      JSON.stringify(attributes, null, 2)
     );
 
     // --------------------------------
-    // クリック前の主要要素
+    // timetable関連のscriptを探す
     // --------------------------------
 
-    async function snapshot(label) {
+    console.log("");
+    console.log("========== timetable関連script ==========");
+
+    const scripts = await page.locator("script").allTextContents();
+
+    const matched = scripts.filter(text =>
+      /timetable|next-week|wday|not_available|reservation/i.test(text)
+    );
+
+    console.log("該当script数:", matched.length);
+
+    matched.forEach((text, index) => {
       console.log("");
-      console.log("========== " + label + " ==========");
-
-      const info = await page.evaluate(() => {
-        const selectors = [
-          "#timetable-body",
-          "#timetable-body",
-          ".timetable",
-          ".reservation-time",
-          ".time-list",
-          ".times",
-          ".slot",
-          "[class*='timetable']",
-          "[class*='time']"
-        ];
-
-        const result = {};
-
-        for (const selector of selectors) {
-          const elements =
-            document.querySelectorAll(selector);
-
-          result[selector] = Array.from(elements)
-            .slice(0, 30)
-            .map(el => ({
-              tag: el.tagName,
-              id: el.id,
-              className: el.className,
-              text: el.innerText?.trim().slice(0, 300),
-              display:
-                window.getComputedStyle(el).display,
-              visibility:
-                window.getComputedStyle(el).visibility
-            }));
-        }
-
-        return result;
-      });
-
-      console.log(
-        JSON.stringify(info, null, 2)
-      );
-    }
-
-    await snapshot("クリック前");
-
-    // --------------------------------
-    // リクエスト監視
-    // --------------------------------
-
-    const requests = [];
-
-    page.on("request", request => {
-      const url = request.url();
-
-      if (
-        request.resourceType() === "xhr" ||
-        request.resourceType() === "fetch"
-      ) {
-        requests.push({
-          method: request.method(),
-          url
-        });
-      }
+      console.log("----- script", index, "-----");
+      console.log(text.slice(0, 15000));
     });
 
     // --------------------------------
@@ -151,61 +132,33 @@ const URL =
 
     await saturday.click();
 
-    // AJAXなどが終わるのを待つ
-    await page.waitForTimeout(5000);
-
-    // --------------------------------
-    // クリック後
-    // --------------------------------
-
-    await snapshot("クリック後");
-
-    // --------------------------------
-    // リクエスト一覧
-    // --------------------------------
+    await page.waitForTimeout(3000);
 
     console.log("");
-    console.log("========== クリック時の通信 ==========");
+    console.log("========== クリック後 ==========");
 
-    console.log(
-      JSON.stringify(
-        requests,
-        null,
-        2
-      )
-    );
-
-    // --------------------------------
-    // timetable row
-    // --------------------------------
-
-    console.log("");
-    console.log("========== timetable rows ==========");
-
-    const rows = await page.locator(
-      "tr.timetable-row"
-    ).evaluateAll(rows =>
-      rows.map(row => ({
-        className: row.className,
-        display:
-          window.getComputedStyle(row).display,
-        visibility:
-          window.getComputedStyle(row).visibility,
-        time:
-          row.querySelector(
-            "th.time-left"
-          )?.textContent.trim(),
-        cells:
-          Array.from(
-            row.querySelectorAll("td")
-          ).map((td, index) => ({
-            index,
-            className: td.className,
-            text: td.textContent.trim(),
-            html: td.innerHTML
-          }))
-      }))
-    );
+    const rows =
+      await page.locator(
+        "tr.timetable-row"
+      ).evaluateAll(rows =>
+        rows.map(row => ({
+          className: row.className,
+          display:
+            window.getComputedStyle(row).display,
+          time:
+            row.querySelector(
+              "th.time-left"
+            )?.textContent.trim(),
+          cells:
+            Array.from(
+              row.querySelectorAll("td")
+            ).map((td, index) => ({
+              index,
+              className: td.className,
+              text: td.textContent.trim()
+            }))
+        }))
+      );
 
     console.log(
       JSON.stringify(rows, null, 2)
