@@ -1,3 +1,4 @@
+```javascript
 const { chromium } = require("playwright");
 
 const URL =
@@ -24,38 +25,62 @@ const URL =
 
     await page.waitForTimeout(4000);
 
+    // --------------------------------
     // お知らせ同意
+    // --------------------------------
+
     const agreement = page.getByText(
       "「お店からのお知らせ」を読み、内容を理解して同意する",
       { exact: true }
     );
 
     if (await agreement.count() > 0) {
+      console.log("▶ お知らせ同意");
+
       await agreement.first().click();
+
       await page.waitForTimeout(1000);
     }
 
+    // --------------------------------
     // 大人2名
+    // --------------------------------
+
+    console.log("▶ 大人2名");
+
     await page.locator(
       "#reservation_num_people_adult"
     ).selectOption("2");
 
     await page.waitForTimeout(1000);
 
+    // --------------------------------
     // 現在のモーニングビュッフェ
+    // --------------------------------
+
+    console.log("▶ モーニングビュッフェ選択");
+
     await page.locator(
       "#reservation_orders_attributes_1_is_group_order"
-    ).check({ force: true });
+    ).check({
+      force: true
+    });
 
     await page.waitForTimeout(2000);
 
+    // --------------------------------
     // フォーム情報取得
+    // --------------------------------
+
     const info = await page.evaluate(() => {
-      const data = Reserve.sanitizedFormData();
+
+      const data =
+        Reserve.sanitizedFormData();
 
       return {
         token: data.authenticity_token,
-        requestData: OnlineAvailability.requestData()
+        requestData:
+          OnlineAvailability.requestData()
       };
     });
 
@@ -64,11 +89,15 @@ const URL =
     console.log("メニュー: モーニングビュッフェ");
     console.log("");
 
-    // APIを直接呼び出す
+    // --------------------------------
+    // 空席APIを直接呼び出す
+    // --------------------------------
+
     const result = await page.evaluate(
       async ({ token, requestData }) => {
 
-        const params = new URLSearchParams();
+        const params =
+          new URLSearchParams();
 
         params.append(
           "authenticity_token",
@@ -107,9 +136,10 @@ const URL =
           "/ja/shops/paul-yotsuya/available/timetable?" +
           params.toString();
 
-        const response = await fetch(url, {
-          credentials: "same-origin"
-        });
+        const response =
+          await fetch(url, {
+            credentials: "same-origin"
+          });
 
         return {
           status: response.status,
@@ -119,50 +149,83 @@ const URL =
       info
     );
 
+    // --------------------------------
+    // API結果
+    // --------------------------------
+
     console.log("");
     console.log("========== API結果 ==========");
 
     console.log(
-      JSON.stringify(result, null, 2)
+      JSON.stringify(
+        result,
+        null,
+        2
+      )
     );
 
+    // --------------------------------
     // 空席だけ抽出
+    // --------------------------------
+
     console.log("");
     console.log("========== 空席だけ ==========");
 
     const available = [];
 
     const slots =
-      result.data?.data?.slots || {};
+      result.data &&
+      result.data.data &&
+      result.data.data.slots
+        ? result.data.data.slots
+        : {};
 
-    for (const [date, times] of Object.entries(slots)) {
+    for (
+      const date of Object.keys(slots)
+    ) {
 
-      for (const [epoch, slot] of Object.entries(times)) {
+      const times =
+        slots[date];
+
+      for (
+        const epoch of Object.keys(times)
+      ) {
+
+        const slot =
+          times[epoch];
 
         if (
           slot.available === true &&
           slot.meal === "breakfast"
         ) {
-          const dateObj = new Date(
-            Number(epoch) * 1000
-          );
+
+          const dateObj =
+            new Date(
+              Number(epoch) * 1000
+            );
 
           const dateText =
-            new Intl.DateTimeFormat("ja-JP", {
-              timeZone: "Asia/Tokyo",
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              weekday: "short"
-            }).format(dateObj);
+            new Intl.DateTimeFormat(
+              "ja-JP",
+              {
+                timeZone: "Asia/Tokyo",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                weekday: "short"
+              }
+            ).format(dateObj);
 
           const timeText =
-            new Intl.DateTimeFormat("ja-JP", {
-              timeZone: "Asia/Tokyo",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false
-            }).format(dateObj);
+            new Intl.DateTimeFormat(
+              "ja-JP",
+              {
+                timeZone: "Asia/Tokyo",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+              }
+            ).format(dateObj);
 
           available.push({
             date: dateText,
@@ -172,6 +235,10 @@ const URL =
       }
     }
 
+    // --------------------------------
+    // 結果表示
+    // --------------------------------
+
     if (available.length === 0) {
 
       console.log("空きなし");
@@ -180,7 +247,10 @@ const URL =
 
       console.log("🎉 空きあり！");
 
-      for (const item of available) {
+      for (
+        const item of available
+      ) {
+
         console.log(
           item.date + " " + item.time
         );
@@ -202,7 +272,6 @@ const URL =
   } finally {
 
     await browser.close();
-
   }
 })();
 ```
