@@ -1,3 +1,5 @@
+const { chromium } = require("playwright");
+console.log("PAULスクリプト開始");
 
 async function sendDiscord(slots) {
   const privateWebhook =
