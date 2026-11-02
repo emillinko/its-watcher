@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 カレンダー構造確認");
+    console.log("PAUL四谷 土曜日選択後の時間帯確認");
     console.log("================================");
 
     await page.goto(URL, {
@@ -44,12 +44,13 @@ const URL =
     await page.waitForTimeout(1500);
     console.log("▶ 大人2名");
 
-    // 現在のモーニングビュッフェ（3,080円）
+    // 現在のモーニングビュッフェ 3,080円
     const menu = page.locator(
       "#reservation_orders_attributes_1_is_group_order"
     );
 
     await menu.check({ force: true });
+
     await page.waitForTimeout(2500);
 
     console.log(
@@ -58,115 +59,138 @@ const URL =
     );
 
     // --------------------------------
-    // カレンダーの日付を確認
+    // 土曜日のセルを取得
     // --------------------------------
-    async function showDates(label) {
-      console.log("");
-      console.log("========== " + label + " ==========");
 
-      const dates = await page.locator(
-        "#timetable-body td.wday"
-      ).evaluateAll(cells =>
-        cells.map((td, index) => ({
-          index,
-          weekday: td.querySelector(
-            ".day-name"
-          )?.textContent.trim(),
-          day: td.querySelector(
-            ".date-num"
-          )?.textContent.trim(),
-          className: td.className
-        }))
-      );
+    const saturday = page.locator(
+      "#timetable-body td.wday-6"
+    ).first();
 
-      console.log(
-        JSON.stringify(dates, null, 2)
-      );
+    console.log("");
+    console.log("土曜日セル数:", await saturday.count());
+
+    if (await saturday.count() === 0) {
+      throw new Error("土曜日のセルが見つかりません");
     }
 
-    await showDates("現在");
+    console.log(
+      "土曜日:",
+      await saturday.innerText()
+    );
+
+    // 土曜日をクリック
+    console.log("▶ 土曜日をクリック");
+
+    await saturday.click();
+
+    await page.waitForTimeout(3000);
 
     // --------------------------------
-    // 次週ボタンを調査
+    // 選択後の状態
     // --------------------------------
+
     console.log("");
-    console.log("========== 次週ボタン確認 ==========");
+    console.log("========== 土曜日選択後 ==========");
 
-    const nextButtons = await page.locator(
-      ".next-week.next_prev_btn"
-    ).evaluateAll(elements =>
-      elements.map((el, index) => ({
+    const selected = await page.locator(
+      "#timetable-body td.wday"
+    ).evaluateAll(cells =>
+      cells.map((td, index) => ({
         index,
-        tag: el.tagName,
-        text: el.textContent.trim(),
-        className: el.className,
-        href: el.getAttribute("href"),
-        visible: !!(
-          el.offsetWidth ||
-          el.offsetHeight ||
-          el.getClientRects().length
-        )
+        weekday: td.querySelector(
+          ".day-name"
+        )?.textContent.trim(),
+        day: td.querySelector(
+          ".date-num"
+        )?.textContent.trim(),
+        className: td.className
       }))
     );
 
     console.log(
-      JSON.stringify(nextButtons, null, 2)
+      JSON.stringify(selected, null, 2)
     );
 
     // --------------------------------
-    // timetable 全体のHTML構造を確認
+    // 時間帯を取得
     // --------------------------------
-    console.log("");
-    console.log("========== timetable構造 ==========");
 
-    const timetableInfo = await page.locator(
-      "#timetable-body"
-    ).evaluate(el => ({
-      tag: el.tagName,
-      id: el.id,
-      className: el.className,
-      htmlLength: el.innerHTML.length,
-      html: el.innerHTML
-    }));
+    const rows = await page.locator(
+      "tr.timetable-row"
+    ).evaluateAll(rows =>
+      rows.map((row, rowIndex) => ({
+        rowIndex,
+        className: row.className,
 
-    console.log("tag:", timetableInfo.tag);
-    console.log("id:", timetableInfo.id);
-    console.log("class:", timetableInfo.className);
-    console.log("HTML length:", timetableInfo.htmlLength);
+        timeLeft: row.querySelector(
+          "th.time-left"
+        )?.textContent.trim(),
 
-    console.log("");
-    console.log("----- timetable HTML -----");
-    console.log(timetableInfo.html);
+        timeRight: row.querySelector(
+          "th.time-right"
+        )?.textContent.trim(),
 
-    // --------------------------------
-    // 次週ボタンをクリック
-    // --------------------------------
-    const nextButton = page.locator(
-      ".next-week.next_prev_btn"
-    ).filter({ visible: true }).first();
+        cells: Array.from(
+          row.querySelectorAll("td")
+        ).map((td, cellIndex) => ({
+          cellIndex,
+          className: td.className,
+          text: td.textContent.trim(),
+          html: td.innerHTML
+        }))
+      }))
+    );
 
     console.log("");
+    console.log("========== 時間帯 ==========");
+
     console.log(
-      "次週ボタン visible:",
-      await nextButton.count()
+      JSON.stringify(rows, null, 2)
     );
 
-    if (await nextButton.count() > 0) {
-      console.log("▶ 次週ボタンをクリック");
+    // --------------------------------
+    // 表示されている時間帯だけ
+    // --------------------------------
 
-      await nextButton.click();
+    console.log("");
+    console.log("========== 表示されている時間 ==========");
 
-      await page.waitForTimeout(3000);
+    const visibleRows =
+      await page.locator(
+        "tr.timetable-row"
+      ).evaluateAll(rows =>
+        rows
+          .filter(row => {
+            const style =
+              window.getComputedStyle(row);
 
-      await showDates("次週");
+            return (
+              style.display !== "none" &&
+              style.visibility !== "hidden"
+            );
+          })
+          .map(row => ({
+            className: row.className,
+            time: row.querySelector(
+              "th.time-left"
+            )?.textContent.trim(),
+            cells: Array.from(
+              row.querySelectorAll("td")
+            ).map((td, index) => ({
+              index,
+              className: td.className,
+              text: td.textContent.trim()
+            }))
+          }))
+      );
 
-      console.log("");
-      console.log("次週のURL:");
-      console.log(page.url());
-
-    } else {
-      console.log("⚠ 次週ボタンが見つかりません");
-    }
+    console.log(
+      JSON.stringify(
+        visibleRows,
+        null,
+        2
+      )
+    );
 
     console.log("");
     console.log("================================");
