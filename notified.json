@@ -235,10 +235,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-15": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-11-24": {
     "status": "△",
     "channel": "normal"
@@ -251,7 +247,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト鬼怒川|2026-11-16": {
+  "ホテルハーヴェスト伊東|2026-11-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "リソルの森|2026-11-12": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-11-16": {
     "status": "△",
     "channel": "normal"
   }
