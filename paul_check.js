@@ -1,3 +1,4 @@
+```javascript
 const { chromium } = require("playwright");
 
 const URL =
@@ -14,62 +15,8 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 空席API解析");
+    console.log("PAUL四谷 土日モーニング空席チェック");
     console.log("================================");
-
-    // 通信監視を最初から設定
-    page.on("request", request => {
-      if (
-        request.resourceType() === "xhr" ||
-        request.resourceType() === "fetch"
-      ) {
-        console.log("");
-        console.log(">>> REQUEST");
-        console.log("METHOD:", request.method());
-        console.log("URL:", request.url());
-
-        const postData = request.postData();
-        if (postData) {
-          console.log("POST DATA:", postData);
-        }
-      }
-    });
-
-    page.on("response", async response => {
-      const url = response.url();
-
-      if (
-        url.includes("/available") ||
-        response.request().resourceType() === "xhr" ||
-        response.request().resourceType() === "fetch"
-      ) {
-        console.log("");
-        console.log("<<< RESPONSE");
-        console.log("STATUS:", response.status());
-        console.log("URL:", url);
-
-        try {
-          const text = await response.text();
-
-          if (text.length < 10000) {
-            console.log("BODY:");
-            console.log(text);
-          } else {
-            console.log(
-              "BODY:",
-              text.substring(0, 10000)
-            );
-            console.log("（長いため途中まで）");
-          }
-        } catch (e) {
-          console.log("BODY取得失敗:", e.message);
-        }
-      }
-    });
-
-    // --------------------------------
-    // ページ
-    // --------------------------------
 
     await page.goto(URL, {
       waitUntil: "domcontentloaded",
@@ -78,146 +25,185 @@ const URL =
 
     await page.waitForTimeout(4000);
 
-    // --------------------------------
     // お知らせ同意
-    // --------------------------------
-
     const agreement = page.getByText(
       "「お店からのお知らせ」を読み、内容を理解して同意する",
       { exact: true }
     );
 
     if (await agreement.count() > 0) {
-      console.log("▶ お知らせ同意");
       await agreement.first().click();
       await page.waitForTimeout(1000);
     }
 
-    // --------------------------------
     // 大人2名
-    // --------------------------------
-
-    console.log("▶ 大人2名");
-
     await page.locator(
       "#reservation_num_people_adult"
     ).selectOption("2");
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(1000);
 
-    // --------------------------------
     // 現在のモーニングビュッフェ
-    // --------------------------------
-
-    console.log("▶ モーニングビュッフェ選択");
-
-    const menu = page.locator(
+    await page.locator(
       "#reservation_orders_attributes_1_is_group_order"
-    );
+    ).check({ force: true });
 
-    await menu.check({ force: true });
+    await page.waitForTimeout(2000);
 
-    await page.waitForTimeout(3000);
-
-    // --------------------------------
-    // 現在のフォーム状態
-    // --------------------------------
-
-    console.log("");
-    console.log("========== フォーム情報 ==========");
-
-    const formData = await page.evaluate(() => {
-      const oa = window.OnlineAvailability;
+    // フォーム情報取得
+    const info = await page.evaluate(() => {
+      const data = Reserve.sanitizedFormData();
 
       return {
-        startAtEpoch:
-          typeof ReserveForm !== "undefined"
-            ? ReserveForm.startAtEpoch()
-            : null,
-
-        numPeople:
-          typeof ReserveForm !== "undefined"
-            ? ReserveForm.num_people()
-            : null,
-
-        sanitizedFormData:
-          typeof Reserve !== "undefined"
-            ? Reserve.sanitizedFormData()
-            : null,
-
-        requestData:
-          oa && typeof oa.requestData === "function"
-            ? oa.requestData()
-            : null,
-
-        requestUrl:
-          oa && typeof oa.requestUrl === "function"
-            ? oa.requestUrl()
-            : null
+        token: data.authenticity_token,
+        requestData: OnlineAvailability.requestData()
       };
     });
 
-    console.log(
-      JSON.stringify(formData, null, 2)
-    );
+    console.log("");
+    console.log("大人: 2名");
+    console.log("メニュー: モーニングビュッフェ");
+    console.log("");
 
-    // --------------------------------
-    // 土曜日の情報
-    // --------------------------------
+    // APIを直接呼び出す
+    const result = await page.evaluate(
+      async ({ token, requestData }) => {
+
+        const params = new URLSearchParams();
+
+        params.append(
+          "authenticity_token",
+          token
+        );
+
+        params.append(
+          "reservation[num_people_adult]",
+          requestData.reservation.num_people_adult
+        );
+
+        params.append(
+          "reservation[num_people_baby]",
+          requestData.reservation.num_people_baby || ""
+        );
+
+        const order =
+          requestData.reservation.orders_attributes[0];
+
+        params.append(
+          "reservation[orders_attributes][0][menu_item_id]",
+          order.menu_item_id
+        );
+
+        params.append(
+          "reservation[orders_attributes][0][is_group_order]",
+          order.is_group_order
+        );
+
+        params.append(
+          "reservation[start_date]",
+          new Date().toISOString().slice(0, 10)
+        );
+
+        const url =
+          "/ja/shops/paul-yotsuya/available/timetable?" +
+          params.toString();
+
+        const response = await fetch(url, {
+          credentials: "same-origin"
+        });
+
+        return {
+          status: response.status,
+          data: await response.json()
+        };
+      },
+      info
+    );
 
     console.log("");
-    console.log("========== 土曜日 ==========");
-
-    const saturday = page.locator(
-      "#timetable-body td.wday-6"
-    ).first();
+    console.log("========== API結果 ==========");
 
     console.log(
-      "土曜日:",
-      await saturday.innerText()
+      JSON.stringify(result, null, 2)
     );
 
-    // --------------------------------
-    // OnlineAvailability.check()
-    // --------------------------------
-
+    // 空席だけ抽出
     console.log("");
-    console.log("========== 空席チェック ==========");
+    console.log("========== 空席だけ ==========");
 
-    console.log(
-      "OnlineAvailability.check() を実行"
-    );
+    const available = [];
 
-    const checkResult = await page.evaluate(() => {
-      if (
-        window.OnlineAvailability &&
-        typeof window.OnlineAvailability.check === "function"
-      ) {
-        return window.OnlineAvailability.check();
+    const slots =
+      result.data?.data?.slots || {};
+
+    for (const [date, times] of Object.entries(slots)) {
+
+      for (const [epoch, slot] of Object.entries(times)) {
+
+        if (
+          slot.available === true &&
+          slot.meal === "breakfast"
+        ) {
+          const dateObj = new Date(
+            Number(epoch) * 1000
+          );
+
+          const dateText =
+            new Intl.DateTimeFormat("ja-JP", {
+              timeZone: "Asia/Tokyo",
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              weekday: "short"
+            }).format(dateObj);
+
+          const timeText =
+            new Intl.DateTimeFormat("ja-JP", {
+              timeZone: "Asia/Tokyo",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            }).format(dateObj);
+
+          available.push({
+            date: dateText,
+            time: timeText
+          });
+        }
       }
+    }
 
-      return "OnlineAvailability.check() がありません";
-    });
+    if (available.length === 0) {
 
-    console.log(
-      "check() result:",
-      checkResult
-    );
+      console.log("空きなし");
 
-    // AJAX完了待ち
-    await page.waitForTimeout(5000);
+    } else {
+
+      console.log("🎉 空きあり！");
+
+      for (const item of available) {
+        console.log(
+          `${item.date} ${item.time}`
+        );
+      }
+    }
 
     console.log("");
     console.log("================================");
-    console.log("確認終了");
+    console.log("チェック終了");
 
   } catch (error) {
+
     console.error("");
     console.error("❌ ERROR");
     console.error(error);
+
     process.exitCode = 1;
 
   } finally {
+
     await browser.close();
+
   }
 })();
+```
