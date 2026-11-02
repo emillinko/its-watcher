@@ -1,4 +1,3 @@
-```javascript
 const { chromium } = require("playwright");
 
 const URL =
