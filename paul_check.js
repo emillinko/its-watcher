@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 OnlineAvailability解析");
+    console.log("PAUL四谷 空席取得処理解析");
     console.log("================================");
 
     await page.goto(URL, {
@@ -47,72 +47,124 @@ const URL =
       "#reservation_orders_attributes_1_is_group_order"
     ).check({ force: true });
 
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(3000);
 
     // --------------------------------
-    // OnlineAvailability の状態
+    // OnlineAvailability の詳細
     // --------------------------------
 
     console.log("");
-    console.log("========== OnlineAvailability ==========");
+    console.log("========== OnlineAvailability 詳細 ==========");
 
-    const oa = await page.evaluate(() => {
-      const obj = window.OnlineAvailability;
+    const details = await page.evaluate(() => {
+      const oa = window.OnlineAvailability;
 
-      if (!obj) {
+      if (!oa) {
         return {
           exists: false
         };
       }
 
-      return {
+      const result = {
         exists: true,
-        keys: Object.keys(obj),
-        properties: Object.getOwnPropertyNames(obj),
-        isShow: obj.isShow,
-        autoAccept: obj.autoAccept
+        requestUrl: null,
+        shop: null,
+        liveRequest: null
       };
+
+      try {
+        result.requestUrl =
+          typeof oa.requestUrl === "function"
+            ? oa.requestUrl.toString()
+            : oa.requestUrl;
+      } catch (e) {
+        result.requestUrl = "[error]";
+      }
+
+      try {
+        result.shop = oa.shop;
+      } catch (e) {
+        result.shop = "[error]";
+      }
+
+      try {
+        result.liveRequest = oa.liveRequest;
+      } catch (e) {
+        result.liveRequest = "[error]";
+      }
+
+      return result;
     });
 
     console.log(
-      JSON.stringify(oa, null, 2)
+      JSON.stringify(details, null, 2)
     );
 
     // --------------------------------
-    // windowにある関連オブジェクト
+    // 関数の中身を取得
     // --------------------------------
 
     console.log("");
-    console.log("========== 関連オブジェクト ==========");
+    console.log("========== requestData ==========");
 
-    const globals = await page.evaluate(() => {
-      return Object.keys(window)
-        .filter(key =>
-          /availability|timetable|reserve|calendar|date/i.test(key)
-        )
-        .sort();
+    const functions = await page.evaluate(() => {
+      const oa = window.OnlineAvailability;
+
+      const names = [
+        "check",
+        "isRequiredDataPresent",
+        "requestData",
+        "sendRequestForSameDay",
+        "sendRequestForOtherDay",
+        "sendRequest",
+        "requestUrl",
+        "handleClosedDay",
+        "displayMessage"
+      ];
+
+      const result = {};
+
+      for (const name of names) {
+        try {
+          result[name] =
+            typeof oa[name] === "function"
+              ? oa[name].toString()
+              : oa[name];
+        } catch (e) {
+          result[name] = "[error]";
+        }
+      }
+
+      return result;
     });
 
     console.log(
-      JSON.stringify(globals, null, 2)
+      JSON.stringify(functions, null, 2)
     );
 
     // --------------------------------
-    // JavaScriptファイル一覧
+    // Network監視
     // --------------------------------
 
     console.log("");
-    console.log("========== JavaScriptファイル ==========");
+    console.log("========== 空席取得通信 ==========");
 
-    const jsFiles = await page.locator(
-      'script[src]'
-    ).evaluateAll(scripts =>
-      scripts.map(script => script.src)
-    );
+    const requests = [];
 
-    console.log(
-      JSON.stringify(jsFiles, null, 2)
-    );
+    page.on("request", request => {
+      const type = request.resourceType();
+
+      if (
+        type === "xhr" ||
+        type === "fetch"
+      ) {
+        requests.push({
+          method: request.method(),
+          url: request.url(),
+          postData: request.postData()
+        });
+      }
+    });
 
     // --------------------------------
     // 土曜日クリック
@@ -122,7 +174,6 @@ const URL =
       "#timetable-body td.wday-6"
     ).first();
 
-    console.log("");
     console.log(
       "土曜日:",
       await saturday.innerText()
@@ -132,91 +183,19 @@ const URL =
 
     await saturday.click();
 
-    await page.waitForTimeout(3000);
-
-    // --------------------------------
-    // クリック後のOnlineAvailability
-    // --------------------------------
+    await page.waitForTimeout(5000);
 
     console.log("");
     console.log(
-      "========== クリック後 OnlineAvailability =========="
-    );
-
-    const after = await page.evaluate(() => {
-      const obj = window.OnlineAvailability;
-
-      if (!obj) {
-        return {
-          exists: false
-        };
-      }
-
-      const result = {
-        exists: true,
-        keys: Object.keys(obj),
-        properties: Object.getOwnPropertyNames(obj)
-      };
-
-      for (const key of Object.keys(obj)) {
-        try {
-          const value = obj[key];
-
-          if (
-            typeof value !== "function" &&
-            typeof value !== "object"
-          ) {
-            result[key] = value;
-          }
-        } catch (e) {
-          result[key] = "[error]";
-        }
-      }
-
-      return result;
-    });
-
-    console.log(
-      JSON.stringify(after, null, 2)
-    );
-
-    // --------------------------------
-    // timetableのhidden状態
-    // --------------------------------
-
-    console.log("");
-    console.log(
-      "========== timetable =========="
-    );
-
-    const rows = await page.locator(
-      "tr.timetable-row"
-    ).evaluateAll(rows =>
-      rows.map(row => ({
-        time:
-          row.querySelector(
-            "th.time-left"
-          )?.textContent.trim(),
-
-        className: row.className,
-
-        display:
-          window.getComputedStyle(row).display,
-
-        cells:
-          Array.from(
-            row.querySelectorAll("td")
-          ).map((td, index) => ({
-            index,
-            className: td.className,
-            text: td.textContent.trim(),
-            html: td.innerHTML
-          }))
-      }))
+      "========== クリック後の通信 =========="
     );
 
     console.log(
-      JSON.stringify(rows, null, 2)
+      JSON.stringify(
+        requests,
+        null,
+        2
+      )
     );
 
     console.log("");
