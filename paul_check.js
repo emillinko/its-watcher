@@ -14,7 +14,7 @@ const URL =
   });
 
   try {
-    console.log("PAUL四谷 カレンダーJavaScript解析");
+    console.log("PAUL四谷 OnlineAvailability解析");
     console.log("================================");
 
     await page.goto(URL, {
@@ -42,7 +42,7 @@ const URL =
 
     await page.waitForTimeout(1500);
 
-    // 3,080円メニュー
+    // 現在のモーニングビュッフェ
     await page.locator(
       "#reservation_orders_attributes_1_is_group_order"
     ).check({ force: true });
@@ -50,115 +50,170 @@ const URL =
     await page.waitForTimeout(2500);
 
     // --------------------------------
-    // 土曜日セル
+    // OnlineAvailability の状態
+    // --------------------------------
+
+    console.log("");
+    console.log("========== OnlineAvailability ==========");
+
+    const oa = await page.evaluate(() => {
+      const obj = window.OnlineAvailability;
+
+      if (!obj) {
+        return {
+          exists: false
+        };
+      }
+
+      return {
+        exists: true,
+        keys: Object.keys(obj),
+        properties: Object.getOwnPropertyNames(obj),
+        isShow: obj.isShow,
+        autoAccept: obj.autoAccept
+      };
+    });
+
+    console.log(
+      JSON.stringify(oa, null, 2)
+    );
+
+    // --------------------------------
+    // windowにある関連オブジェクト
+    // --------------------------------
+
+    console.log("");
+    console.log("========== 関連オブジェクト ==========");
+
+    const globals = await page.evaluate(() => {
+      return Object.keys(window)
+        .filter(key =>
+          /availability|timetable|reserve|calendar|date/i.test(key)
+        )
+        .sort();
+    });
+
+    console.log(
+      JSON.stringify(globals, null, 2)
+    );
+
+    // --------------------------------
+    // JavaScriptファイル一覧
+    // --------------------------------
+
+    console.log("");
+    console.log("========== JavaScriptファイル ==========");
+
+    const jsFiles = await page.locator(
+      'script[src]'
+    ).evaluateAll(scripts =>
+      scripts.map(script => script.src)
+    );
+
+    console.log(
+      JSON.stringify(jsFiles, null, 2)
+    );
+
+    // --------------------------------
+    // 土曜日クリック
     // --------------------------------
 
     const saturday = page.locator(
       "#timetable-body td.wday-6"
     ).first();
 
-    if (await saturday.count() === 0) {
-      throw new Error("土曜日セルが見つかりません");
-    }
-
-    console.log("▶ 土曜日:", await saturday.innerText());
-
-    // --------------------------------
-    // 土曜日セルの親要素を調査
-    // --------------------------------
-
     console.log("");
-    console.log("========== 土曜日周辺HTML ==========");
-
-    const surroundingHTML =
-      await saturday.evaluate(el => {
-        let parent = el;
-
-        for (let i = 0; i < 4 && parent; i++) {
-          parent = parent.parentElement;
-        }
-
-        return parent?.outerHTML || "";
-      });
-
-    console.log(surroundingHTML);
-
-    // --------------------------------
-    // 土曜日セルに設定されている属性
-    // --------------------------------
-
-    console.log("");
-    console.log("========== 土曜日属性 ==========");
-
-    const attributes =
-      await saturday.evaluate(el =>
-        Array.from(el.attributes).map(attr => ({
-          name: attr.name,
-          value: attr.value
-        }))
-      );
-
     console.log(
-      JSON.stringify(attributes, null, 2)
+      "土曜日:",
+      await saturday.innerText()
     );
 
-    // --------------------------------
-    // timetable関連のscriptを探す
-    // --------------------------------
-
-    console.log("");
-    console.log("========== timetable関連script ==========");
-
-    const scripts = await page.locator("script").allTextContents();
-
-    const matched = scripts.filter(text =>
-      /timetable|next-week|wday|not_available|reservation/i.test(text)
-    );
-
-    console.log("該当script数:", matched.length);
-
-    matched.forEach((text, index) => {
-      console.log("");
-      console.log("----- script", index, "-----");
-      console.log(text.slice(0, 15000));
-    });
-
-    // --------------------------------
-    // 土曜日クリック
-    // --------------------------------
-
-    console.log("");
     console.log("▶ 土曜日クリック");
 
     await saturday.click();
 
     await page.waitForTimeout(3000);
 
-    console.log("");
-    console.log("========== クリック後 ==========");
+    // --------------------------------
+    // クリック後のOnlineAvailability
+    // --------------------------------
 
-    const rows =
-      await page.locator(
-        "tr.timetable-row"
-      ).evaluateAll(rows =>
-        rows.map(row => ({
-          className: row.className,
-          display:
-            window.getComputedStyle(row).display,
-          time:
-            row.querySelector(
-              "th.time-left"
-            )?.textContent.trim(),
-          cells:
-            Array.from(
-              row.querySelectorAll("td")
-            ).map((td, index) => ({
-              index,
-              className: td.className,
-              text: td.textContent.trim()
-            }))
-        }))
-      );
+    console.log("");
+    console.log(
+      "========== クリック後 OnlineAvailability =========="
+    );
+
+    const after = await page.evaluate(() => {
+      const obj = window.OnlineAvailability;
+
+      if (!obj) {
+        return {
+          exists: false
+        };
+      }
+
+      const result = {
+        exists: true,
+        keys: Object.keys(obj),
+        properties: Object.getOwnPropertyNames(obj)
+      };
+
+      for (const key of Object.keys(obj)) {
+        try {
+          const value = obj[key];
+
+          if (
+            typeof value !== "function" &&
+            typeof value !== "object"
+          ) {
+            result[key] = value;
+          }
+        } catch (e) {
+          result[key] = "[error]";
+        }
+      }
+
+      return result;
+    });
+
+    console.log(
+      JSON.stringify(after, null, 2)
+    );
+
+    // --------------------------------
+    // timetableのhidden状態
+    // --------------------------------
+
+    console.log("");
+    console.log(
+      "========== timetable =========="
+    );
+
+    const rows = await page.locator(
+      "tr.timetable-row"
+    ).evaluateAll(rows =>
+      rows.map(row => ({
+        time:
+          row.querySelector(
+            "th.time-left"
+          )?.textContent.trim(),
+
+        className: row.className,
+
+        display:
+          window.getComputedStyle(row).display,
+
+        cells:
+          Array.from(
+            row.querySelectorAll("td")
+          ).map((td, index) => ({
+            index,
+            className: td.className,
+            text: td.textContent.trim(),
+            html: td.innerHTML
+          }))
+      }))
+    );
 
     console.log(
       JSON.stringify(rows, null, 2)
