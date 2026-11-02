@@ -1,17 +1,79 @@
+
 const { chromium } = require("playwright");
 
-const URL = "https://www.tablecheck.com/ja/shops/paul-yotsuya/reserve";
+const URL =
+  "https://www.tablecheck.com/ja/shops/paul-yotsuya/reserve";
+
+function formatDate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+
+  return y + "-" + m + "-" + d;
+}
+
+function addDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function getTokyoDate() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+
+  const values = {};
+
+  for (const part of parts) {
+    values[part.type] = part.value;
+  }
+
+  return new Date(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day)
+  );
+}
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true
+  });
+
   const page = await browser.newPage({
     locale: "ja-JP",
     timezoneId: "Asia/Tokyo"
   });
 
   try {
-    console.log("PAUL四谷 空席チェック");
-    console.log("==============================");
+    console.log("PAUL四谷 モーニングビュッフェ空席チェック");
+    console.log("====================================");
+
+    const today = getTokyoDate();
+
+    const firstDayNextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1
+    );
+
+    const endDate = new Date(
+      today.getFullYear(),
+      today.getMonth() + 2,
+      0
+    );
+
+    const todayText = formatDate(today);
+    const endText = formatDate(endDate);
+
+    console.log("対象期間: " + todayText + " ～ " + endText);
+    console.log("人数: 大人2名");
+    console.log("対象: 土日・モーニングビュッフェ");
+    console.log("");
 
     await page.goto(URL, {
       waitUntil: "domcontentloaded",
@@ -51,119 +113,197 @@ const URL = "https://www.tablecheck.com/ja/shops/paul-yotsuya/reserve";
       };
     });
 
-    console.log("大人: 2名");
-    console.log("メニュー: モーニングビュッフェ");
+    const order =
+      info.requestData.reservation.orders_attributes[0];
 
-    const result = await page.evaluate(async (info) => {
-      const params = new URLSearchParams();
-      const order = info.requestData.reservation.orders_attributes[0];
+    const allSlots = {};
+    const requestDates = [];
 
-      params.append("authenticity_token", info.token);
-      params.append(
-        "reservation[num_people_adult]",
-        info.requestData.reservation.num_people_adult
-      );
-      params.append(
-        "reservation[num_people_baby]",
-        info.requestData.reservation.num_people_baby || ""
-      );
-      params.append(
-        "reservation[orders_attributes][0][menu_item_id]",
-        order.menu_item_id
-      );
-      params.append(
-        "reservation[orders_attributes][0][is_group_order]",
-        order.is_group_order
-      );
-      params.append(
-        "reservation[start_date]",
-        new Date().toISOString().slice(0, 10)
-      );
+    let queryDate = new Date(today);
 
-      const apiUrl =
-        "/ja/shops/paul-yotsuya/available/timetable?" +
-        params.toString();
+    while (queryDate <= endDate) {
+      requestDates.push(formatDate(queryDate));
+      queryDate = addDays(queryDate, 7);
+    }
 
-      const response = await fetch(apiUrl, {
-        credentials: "same-origin"
+    console.log("週ごとの空席情報を取得します");
+    console.log("");
+
+    for (let i = 0; i < requestDates.length; i++) {
+      const requestDate = requestDates[i];
+
+      console.log("取得中: " + requestDate);
+
+      const result = await page.evaluate(async (params) => {
+        const query = new URLSearchParams();
+
+        query.append(
+          "authenticity_token",
+          params.token
+        );
+
+        query.append(
+          "reservation[num_people_adult]",
+          params.adult
+        );
+
+        query.append(
+          "reservation[num_people_baby]",
+          params.baby
+        );
+
+        query.append(
+          "reservation[orders_attributes][0][menu_item_id]",
+          params.menuId
+        );
+
+        query.append(
+          "reservation[orders_attributes][0][is_group_order]",
+          params.groupOrder
+        );
+
+        query.append(
+          "reservation[start_date]",
+          params.startDate
+        );
+
+        const apiUrl =
+          "/ja/shops/paul-yotsuya/available/timetable?" +
+          query.toString();
+
+        const response = await fetch(apiUrl, {
+          credentials: "same-origin"
+        });
+
+        const data = await response.json();
+
+        return {
+          status: response.status,
+          data: data
+        };
+      }, {
+        token: info.token,
+        adult: info.requestData.reservation.num_people_adult,
+        baby:
+          info.requestData.reservation.num_people_baby || "",
+        menuId: order.menu_item_id,
+        groupOrder: order.is_group_order,
+        startDate: requestDate
       });
 
-      return {
-        status: response.status,
-        data: await response.json()
-      };
-    }, info);
+      if (result.status !== 200) {
+        console.log(
+          "APIエラー: HTTP " + result.status
+        );
+        continue;
+      }
 
-    console.log("");
-    console.log("========== API結果 ==========");
+      const slots =
+        result.data &&
+        result.data.data &&
+        result.data.data.slots
+          ? result.data.data.slots
+          : {};
 
-    console.log(
-      JSON.stringify(result, null, 2)
-    );
+      console.log(
+        "  返却日: " +
+        (result.data.queried_date || "不明") +
+        " / 日付数: " +
+        Object.keys(slots).length
+      );
 
-    console.log("");
-    console.log("========== 空席だけ ==========");
+      for (const date in slots) {
+        if (date < todayText || date > endText) {
+          continue;
+        }
 
-    const slots =
-      result.data &&
-      result.data.data &&
-      result.data.data.slots
-        ? result.data.data.slots
-        : {};
+        const dateParts = date.split("-");
 
-    let count = 0;
+        const dateObject = new Date(
+          Number(dateParts[0]),
+          Number(dateParts[1]) - 1,
+          Number(dateParts[2])
+        );
 
-    for (const date in slots) {
-      const times = slots[date];
+        const day = dateObject.getDay();
 
-      for (const epoch in times) {
-        const slot = times[epoch];
+        if (day !== 0 && day !== 6) {
+          continue;
+        }
 
-        if (
-          slot.available === true &&
-          slot.meal === "breakfast"
-        ) {
-          const d = new Date(Number(epoch) * 1000);
+        for (const epoch in slots[date]) {
+          const slot = slots[date][epoch];
 
-          const dateText =
-            new Intl.DateTimeFormat("ja-JP", {
-              timeZone: "Asia/Tokyo",
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              weekday: "short"
-            }).format(d);
+          if (slot.meal !== "breakfast") {
+            continue;
+          }
 
-          const timeText =
-            new Intl.DateTimeFormat("ja-JP", {
-              timeZone: "Asia/Tokyo",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false
-            }).format(d);
+          const key = date + "_" + epoch;
 
-          console.log(
-            dateText + " " + timeText + " ← 空きあり"
-          );
-
-          count++;
+          allSlots[key] = {
+            date: date,
+            epoch: Number(epoch),
+            available: slot.available === true
+          };
         }
       }
     }
 
-    if (count === 0) {
-      console.log("空きなし");
+    console.log("");
+    console.log("========== 空席結果 ==========");
+
+    const results = Object.values(allSlots);
+
+    results.sort((a, b) => {
+      return a.epoch - b.epoch;
+    });
+
+    let availableCount = 0;
+
+    for (const slot of results) {
+      if (!slot.available) {
+        continue;
+      }
+
+      const d = new Date(slot.epoch * 1000);
+
+      const dateText = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        weekday: "short"
+      }).format(d);
+
+      const timeText = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(d);
+
+      console.log(
+        dateText + " " + timeText + " ← 空きあり"
+      );
+
+      availableCount++;
+    }
+
+    if (availableCount === 0) {
+      console.log("空きは見つかりませんでした");
     }
 
     console.log("");
-    console.log("==============================");
+    console.log("取得した朝食枠数: " + results.length);
+    console.log("空席数: " + availableCount);
+    console.log("====================================");
     console.log("チェック終了");
 
   } catch (error) {
     console.error("ERROR");
     console.error(error);
     process.exitCode = 1;
+  } finally {
+    await browser.close();
   }
-
-  await browser.close();
 })();
