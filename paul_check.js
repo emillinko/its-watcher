@@ -183,7 +183,7 @@ const URL =
 
       for (const item of available) {
         console.log(
-          `${item.date} ${item.time}`
+          item.date + " " + item.time
         );
       }
     }
