@@ -1,8 +1,11 @@
 
 const { chromium } = require("playwright");
+const fs = require("fs");
 
 const URL =
   "https://www.tablecheck.com/ja/shops/paul-yotsuya/reserve";
+
+const HISTORY_FILE = "paul_notified.json";
 
 function formatDate(date) {
   const y = date.getFullYear();
@@ -39,6 +42,98 @@ function getTokyoDate() {
   );
 }
 
+function loadHistory() {
+  if (!fs.existsSync(HISTORY_FILE)) {
+    return [];
+  }
+
+  const saved = JSON.parse(
+    fs.readFileSync(HISTORY_FILE, "utf8")
+  );
+
+  if (!Array.isArray(saved.slots)) {
+    throw new Error("通知履歴の形式が正しくありません");
+  }
+
+  return saved.slots;
+}
+
+function saveHistory(keys) {
+  const data = {
+    updated_at: new Date().toISOString(),
+    slots: keys
+  };
+
+  fs.writeFileSync(
+    HISTORY_FILE,
+    JSON.stringify(data, null, 2) + "\n",
+    "utf8"
+  );
+}
+
+function formatSlot(slot) {
+  const date = new Date(slot.epoch * 1000);
+
+  const dateText = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short"
+  }).format(date);
+
+  const timeText = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).format(date);
+
+  return dateText + " " + timeText;
+}
+
+async function sendDiscord(slots) {
+  const webhook = process.env.PAUL_DISCORD_WEBHOOK_URL;
+
+  if (!webhook) {
+    throw new Error(
+      "GitHub Secrets に PAUL_DISCORD_WEBHOOK_URL が設定されていません"
+    );
+  }
+
+  const lines = [
+    "🟢 PAUL四谷 モーニングビュッフェに新しい空席！",
+    "大人2名"
+  ];
+
+  for (const slot of slots) {
+    lines.push("・" + formatSlot(slot));
+  }
+
+  const response = await fetch(webhook, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      content: lines.join("\n")
+    })
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+
+    throw new Error(
+      "Discord通知エラー: HTTP " +
+      response.status +
+      " " +
+      body
+    );
+  }
+
+  console.log("Discord通知成功！");
+}
+
 (async () => {
   const browser = await chromium.launch({
     headless: true
@@ -54,12 +149,6 @@ function getTokyoDate() {
     console.log("====================================");
 
     const today = getTokyoDate();
-
-    const firstDayNextMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      1
-    );
 
     const endDate = new Date(
       today.getFullYear(),
@@ -175,7 +264,13 @@ function getTokyoDate() {
           credentials: "same-origin"
         });
 
-        const data = await response.json();
+        let data = {};
+
+        try {
+          data = await response.json();
+        } catch (error) {
+          data = {};
+        }
 
         return {
           status: response.status,
@@ -192,10 +287,9 @@ function getTokyoDate() {
       });
 
       if (result.status !== 200) {
-        console.log(
+        throw new Error(
           "APIエラー: HTTP " + result.status
         );
-        continue;
       }
 
       const slots =
@@ -241,6 +335,7 @@ function getTokyoDate() {
           const key = date + "_" + epoch;
 
           allSlots[key] = {
+            key: key,
             date: date,
             epoch: Number(epoch),
             available: slot.available === true
@@ -258,44 +353,49 @@ function getTokyoDate() {
       return a.epoch - b.epoch;
     });
 
-    let availableCount = 0;
+    const availableSlots = results.filter((slot) => {
+      return slot.available;
+    });
 
-    for (const slot of results) {
-      if (!slot.available) {
-        continue;
-      }
-
-      const d = new Date(slot.epoch * 1000);
-
-      const dateText = new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        weekday: "short"
-      }).format(d);
-
-      const timeText = new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      }).format(d);
-
+    for (const slot of availableSlots) {
       console.log(
-        dateText + " " + timeText + " ← 空きあり"
+        formatSlot(slot) + " ← 空きあり"
       );
-
-      availableCount++;
     }
 
-    if (availableCount === 0) {
+    if (availableSlots.length === 0) {
       console.log("空きは見つかりませんでした");
     }
 
     console.log("");
     console.log("取得した朝食枠数: " + results.length);
-    console.log("空席数: " + availableCount);
+    console.log("現在の空席数: " + availableSlots.length);
+
+    const previousKeys = loadHistory();
+    const previousSet = new Set(previousKeys);
+
+    const currentKeys = availableSlots.map((slot) => {
+      return slot.key;
+    });
+
+    const newSlots = availableSlots.filter((slot) => {
+      return !previousSet.has(slot.key);
+    });
+
+    console.log("新しく出た空席数: " + newSlots.length);
+
+    if (newSlots.length > 0) {
+      console.log("");
+      console.log("新しい空席をDiscordに通知します");
+
+      await sendDiscord(newSlots);
+    } else {
+      console.log("新しい空席はありません");
+    }
+
+    saveHistory(currentKeys);
+
+    console.log("通知履歴を保存しました");
     console.log("====================================");
     console.log("チェック終了");
 
