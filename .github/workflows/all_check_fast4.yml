@@ -4,7 +4,7 @@ name: ITS Kenpo All Check Fast 4
 on:
   workflow_dispatch:
 
-# 同じワークフローが同時に走るのを防ぐ
+# 同じワークフローの同時実行を防止
 concurrency:
   group: its-kenpo-check
   cancel-in-progress: false
@@ -84,11 +84,13 @@ jobs:
         run: node paul_check.js
 
       # ==========================================
-      # 通知履歴をGitHubへ保存
+      # 通知履歴を安全にGitHubへ保存
       # ==========================================
       - name: Save notification histories
         if: always()
         run: |
+          set -e
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -101,6 +103,106 @@ jobs:
 
           git commit -m "Update vacancy notification histories"
 
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
+          # 最大3回まで競合解決とPushを試行
+          for attempt in 1 2 3; do
+            echo "================================"
+            echo "保存試行: ${attempt}/3"
+            echo "================================"
+
+            git fetch origin main
+
+            # 最新mainに追従
+            if ! git rebase origin/main; then
+
+              echo "競合を検出。通知履歴を統合します。"
+
+              conflicts=$(git diff --name-only --diff-filter=U)
+
+              # ITS健保・PAULの履歴を個別に統合
+              for file in notified.json paul_notified.json; do
+
+                if printf '%s\n' "$conflicts" | grep -Fxq "$file"; then
+
+                  echo "統合中: $file"
+
+                  node - "$file" <<'NODE'
+          const fs = require("fs");
+          const { execFileSync } = require("child_process");
+
+          const file = process.argv[2];
+
+          const upstream = JSON.parse(
+            execFileSync("git", ["show", `:2:${file}`], {
+              encoding: "utf8"
+            })
+          );
+
+          const local = JSON.parse(
+            execFileSync("git", ["show", `:3:${file}`], {
+              encoding: "utf8"
+            })
+          );
+
+          let merged;
+
+          if (file === "notified.json") {
+            // ITS健保：両方の通知履歴を保持
+            merged = {
+              ...upstream,
+              ...local
+            };
+
+          } else {
+            // PAUL：更新日時が新しい履歴を採用
+            const upstreamTime = Date.parse(
+              upstream.updated_at || ""
+            ) || 0;
+
+            const localTime = Date.parse(
+              local.updated_at || ""
+            ) || 0;
+
+            const latest =
+              localTime >= upstreamTime
+                ? local
+                : upstream;
+
+            merged = {
+              updated_at: latest.updated_at || "",
+              slots: Array.isArray(latest.slots)
+                ? [...new Set(latest.slots)]
+                : []
+            };
+          }
+
+          fs.writeFileSync(
+            file,
+            JSON.stringify(merged, null, 2) + "\n",
+            "utf8"
+          );
+
+          console.log(`${file} の統合完了`);
+          NODE
+
+                  git add "$file"
+
+                fi
+              done
+
+              # 競合解決後、Rebaseを続行
+              GIT_EDITOR=true git rebase --continue
+
+            fi
+
+            # GitHubへPush
+            if git push origin HEAD:main; then
+              echo "通知履歴の保存に成功しました！"
+              exit 0
+            fi
+
+            echo "Push失敗。次の試行に進みます。"
+
+          done
+
+          echo "通知履歴の保存に3回失敗しました"
+          exit 1
