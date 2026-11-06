@@ -231,10 +231,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト浜名湖|2026-11-16": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテル日航プリンセス京都|2026-11-19": {
     "status": "△",
     "channel": "normal"
@@ -251,7 +247,23 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト浜名湖|2026-12-10": {
+  "トスラブ館山ルアーナ|2026-11-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根ビオーレ|2026-11-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ館山ルアーナ|2026-11-25": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "リソルの森|2026-11-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ゆふいん山水館|2026-12-08": {
     "status": "△",
     "channel": "normal"
   }
