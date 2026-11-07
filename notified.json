@@ -159,10 +159,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "鳴子温泉　湯元　吉祥|2026-11-23": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-12-01": {
     "status": "○",
     "channel": "normal"
@@ -233,6 +229,10 @@
   },
   "ブルーベリーヒル勝浦|2026-12-23": {
     "status": "○",
+    "channel": "normal"
+  },
+  "草津温泉　ホテルヴィレッジ|2026-11-26": {
+    "status": "△",
     "channel": "normal"
   }
 }
