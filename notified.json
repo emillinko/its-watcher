@@ -215,15 +215,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト斑尾|2026-11-23": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト伊東|2026-11-18": {
     "status": "△",
     "channel": "normal"
   },
   "ホテル日航プリンセス京都|2026-11-18": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト旧軽井沢|2026-12-03": {
     "status": "△",
     "channel": "normal"
   }
