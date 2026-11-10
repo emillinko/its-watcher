@@ -143,10 +143,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "ホテルハーヴェスト南紀田辺|2026-11-20": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-11-23": {
     "status": "△",
     "channel": "normal"
@@ -188,10 +184,6 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト伊東|2026-11-24": {
-    "status": "△",
-    "channel": "normal"
-  },
-  "ブルーベリーヒル勝浦|2026-11-22": {
     "status": "△",
     "channel": "normal"
   }
