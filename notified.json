@@ -151,10 +151,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-11-16": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-11-17": {
     "status": "△",
     "channel": "normal"
@@ -176,6 +172,14 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-11-29": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2026-11-23": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-12-10": {
     "status": "△",
     "channel": "normal"
   }
