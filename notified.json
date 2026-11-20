@@ -103,10 +103,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト浜名湖|2026-12-01": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト南紀田辺|2026-12-01": {
     "status": "○",
     "channel": "normal"
@@ -160,6 +156,18 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト南紀田辺|2026-12-22": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-12-02": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-12-13": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "リソルの森|2026-11-30": {
     "status": "△",
     "channel": "normal"
   }
