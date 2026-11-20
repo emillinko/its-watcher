@@ -94,6 +94,15 @@ jobs:
         run: node restaurant_check.js
 
       # ==========================================
+      # アルファーロ空きチェック
+      # ==========================================
+      - name: Run Alfaro restaurant check
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL_PRIVATE: ${{ secrets.DISCORD_WEBHOOK_URL_PRIVATE }}
+        run: node alfaro_check.js
+
+      # ==========================================
       # 全通知履歴をまとめてGitHubへ保存
       # ==========================================
       - name: Save notification histories
@@ -105,7 +114,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # 存在する履歴ファイルをまとめて追加
-          for file in notified.json paul_notified.json sakura_notified.json; do
+          for file in notified.json paul_notified.json sakura_notified.json alfaro_notified.json; do
             if [ -f "$file" ]; then
               git add -f "$file"
             fi
@@ -134,7 +143,7 @@ jobs:
               conflicts=$(git diff --name-only --diff-filter=U)
 
               # 各通知履歴を個別に統合
-              for file in notified.json paul_notified.json sakura_notified.json; do
+              for file in notified.json paul_notified.json sakura_notified.json alfaro_notified.json; do
 
                 if printf '%s\n' "$conflicts" | grep -Fxq "$file"; then
 
@@ -180,8 +189,17 @@ jobs:
                 : []
             };
 
+          } else if (file === "alfaro_notified.json") {
+            // アルファーロ：両方の配列を結合して重複を除去
+            merged = [
+              ...new Set([
+                ...(Array.isArray(upstream) ? upstream : []),
+                ...(Array.isArray(local) ? local : [])
+              ])
+            ];
+
           } else {
-            // ITS健保・桜華樓：両方の通知履歴を保持
+            // ITS健保・桜華樓：既存の統合方法を維持
             merged = {
               ...upstream,
               ...local
@@ -219,14 +237,3 @@ jobs:
 
           echo "通知履歴の保存に3回失敗しました"
           exit 1
-
-      # ==========================================
-      # アルファーロ空きチェック
-      # ==========================================
-      - name: Run Alfaro restaurant check
-        run: node alfaro_check.js
-        env:
-          DISCORD_WEBHOOK_URL_PRIVATE: ${{ secrets.DISCORD_WEBHOOK_URL_PRIVATE }}
-          
-
-
