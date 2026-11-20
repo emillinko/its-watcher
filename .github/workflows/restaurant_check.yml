@@ -44,10 +44,23 @@ jobs:
           if [ -f sakura_notified.json ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
             git add sakura_notified.json
+
             if ! git diff --cached --quiet; then
               git commit -m "Update Sakura restaurant notification history"
+
+              # 作業中の変更を一時退避
+              git stash push --include-untracked -m "temporary changes"
+
+              # 最新のGitHub側の変更を取得
               git pull --rebase origin main
-              git push
+
+              # 履歴をGitHubに保存
+              git push origin main
+
+              # 一時退避した変更を戻す
+              git stash pop || true
             fi
           fi
+
