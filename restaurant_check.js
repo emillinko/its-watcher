@@ -1,6 +1,5 @@
 
 const { chromium } = require("playwright");
-const fs = require("fs");
 
 const START_URL =
   "https://as.its-kenpo.or.jp/apply/calendar?s=PT1RTzNnVFBrbG1KbFZuYzAxVFp5Vkhkd0YyWWZWR2JuOTJiblpTWjFKSGQ5a0hkdzFXWg%3D%3D&join_date=";
@@ -12,9 +11,6 @@ const ROOMS = [
   { name: "個室④", id: "882" },
   { name: "個室⑤", id: "883" }
 ];
-
-const HISTORY_FILE = "sakura_notified.json";
-const WEBHOOK = process.env.DISCORD_WEBHOOK_URL_PRIVATE;
 
 function japanDate() {
   return new Intl.DateTimeFormat("en-CA", {
@@ -34,129 +30,144 @@ function addDays(dateString, days) {
 }
 
 function isWeekday(dateString) {
-  const d = new Date(`${dateString}T00:00:00+09:00`);
-  const day = d.getDay();
+  const day = new Date(`${dateString}T00:00:00+09:00`).getDay();
   return day >= 1 && day <= 5;
 }
 
-function loadHistory() {
-  try {
-    return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8"));
-  } catch {
-    return {};
-  }
-}
-
-async function sendDiscord(message) {
-  const response = await fetch(WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content: message })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Discord通知失敗: ${response.status}`);
-  }
-}
-
-// 週送りボタンのHTMLを調査する
-async function debugNextWeek(page, roomName) {
-  console.log(`===== ${roomName} 次週ボタン調査 =====`);
-
-  const nextWeekElements = await page.locator(".next-week").evaluateAll(els =>
-    els.map(el => ({
-      html: el.outerHTML,
-      parent: el.parentElement?.outerHTML,
-      visible: !!(el.offsetWidth || el.offsetHeight)
-    }))
-  );
-
-  console.log(
-    "next-week要素:",
-    JSON.stringify(nextWeekElements, null, 2)
-  );
-
-  const relatedElements = await page.locator(
-    "button, a, span, input"
-  ).evaluateAll(els =>
-    els
-      .filter(el =>
-        /次の週|次週|＞|→/.test(
-          (el.innerText || "") + " " + (el.value || "")
-        )
-      )
-      .map(el => ({
-        html: el.outerHTML,
-        visible: !!(el.offsetWidth || el.offsetHeight)
-      }))
-  );
-
-  console.log(
-    "次週関連要素:",
-    JSON.stringify(relatedElements, null, 2)
-  );
-}
-
-async function getAvailableSlots(page, room) {
-  const tab = page.locator(`#link-${room.id}`);
-
-  if (!(await tab.count())) {
-    throw new Error(`${room.name} のタブが見つかりません`);
-  }
-
-  await tab.click();
-  await page.waitForTimeout(1800);
-
-  const results = new Map();
-  const today = japanDate();
-  const limit = addDays(today, 90);
-
-  console.log(`--- ${room.name} の確認開始 ---`);
-
-  // 週送り操作を確定するまでは、現在表示中の週だけ取得する
-  const cells = await page.locator(
+async function getCalendarDates(page) {
+  return await page.locator(
     'td[data-join-time][data-use-time="20:00"]'
   ).evaluateAll(els =>
     els.map(el => ({
       date: el.getAttribute("data-join-time"),
-      time: el.getAttribute("data-use-time"),
       status: el.innerText.trim()
     }))
   );
+}
 
-  if (!cells.length) {
-    throw new Error(`${room.name}: 20時のカレンダーが取得できません`);
-  }
+async function getVisibleNextButton(page, roomId) {
+  const button = page.locator(
+    `input#nextWeek[onclick*="toNextWeek(${roomId},"]`
+  );
 
-  for (const cell of cells) {
-    if (
-      cell.date &&
-      cell.date >= today &&
-      cell.date <= limit &&
-      isWeekday(cell.date) &&
-      ["○", "△"].includes(cell.status)
-    ) {
-      results.set(cell.date, {
-        room: room.name,
-        date: cell.date,
-        status: cell.status
-      });
+  for (let i = 0; i < 10; i++) {
+    const count = await button.count();
+
+    for (let j = 0; j < count; j++) {
+      const candidate = button.nth(j);
+
+      if (await candidate.isVisible()) {
+        return candidate;
+      }
     }
+
+    await page.waitForTimeout(300);
   }
 
-  const dates = cells.map(c => c.date).filter(Boolean);
-  const lastDate = dates.sort().at(-1);
+  return null;
+}
 
-  console.log(
-    `${room.name}: ${lastDate || "日付不明"} まで確認 / 空き ${results.size}件`
-  );
+async function checkRoom(page, room) {
+  console.log(`\n===== ${room.name} =====`);
 
-  // 次週ボタンのHTMLを記録
-  await debugNextWeek(page, room.name);
+  const tab = page.locator(`#link-${room.id}`);
 
-  console.log(
-    `${room.name}: 今回は週送りせず、現在の週だけを確認しました`
-  );
+  if (!(await tab.count())) {
+    throw new Error(`${room.name} のタブがありません`);
+  }
+
+  await tab.click();
+  await page.waitForTimeout(1500);
+
+  const today = japanDate();
+  const limit = addDays(today, 90);
+
+  const results = new Map();
+  const visitedWeeks = new Set();
+
+  for (let week = 0; week < 16; week++) {
+    const cells = await getCalendarDates(page);
+
+    if (!cells.length) {
+      throw new Error(`${room.name}: カレンダーを取得できません`);
+    }
+
+    const dates = cells.map(c => c.date).filter(Boolean);
+    const firstDate = dates.sort()[0];
+    const lastDate = dates.sort().at(-1);
+
+    if (!firstDate || !lastDate) {
+      throw new Error(`${room.name}: 日付を読み取れません`);
+    }
+
+    if (visitedWeeks.has(firstDate)) {
+      throw new Error(`${room.name}: 週送り後も同じ週です (${firstDate})`);
+    }
+
+    visitedWeeks.add(firstDate);
+
+    for (const cell of cells) {
+      if (
+        cell.date &&
+        cell.date >= today &&
+        cell.date <= limit &&
+        isWeekday(cell.date) &&
+        ["○", "△"].includes(cell.status)
+      ) {
+        results.set(cell.date, {
+          room: room.name,
+          date: cell.date,
+          status: cell.status
+        });
+      }
+    }
+
+    console.log(
+      `${room.name}: ${firstDate} ～ ${lastDate} / 空き ${results.size}件`
+    );
+
+    if (lastDate >= limit) {
+      console.log(`${room.name}: 90日先まで確認完了`);
+      break;
+    }
+
+    const nextButton = await getVisibleNextButton(page, room.id);
+
+    if (!nextButton) {
+      console.log(`${room.name}: 表示中の次週ボタンがありません`);
+      break;
+    }
+
+    // 次週ボタンのonclickを確認
+    const onclick = await nextButton.getAttribute("onclick");
+    console.log(`${room.name}: 次週操作 ${onclick}`);
+
+    // 次週へ進む
+    await nextButton.evaluate(el => el.click());
+
+    // カレンダーの日付が変わるまで待機
+    try {
+      await page.waitForFunction(
+        (previousDate) => {
+          const cells = document.querySelectorAll(
+            'td[data-join-time][data-use-time="20:00"]'
+          );
+
+          return [...cells].some(
+            el => el.getAttribute("data-join-time") !== previousDate
+          );
+        },
+        firstDate,
+        { timeout: 10000 }
+      );
+    } catch {
+      throw new Error(
+        `${room.name}: 次週への更新を確認できませんでした`
+      );
+    }
+
+    await page.waitForTimeout(500);
+  }
 
   return [...results.values()];
 }
@@ -166,19 +177,12 @@ async function getAvailableSlots(page, room) {
     throw new Error("ITS_KENPO_URL が設定されていません");
   }
 
-  if (!WEBHOOK) {
-    throw new Error("DISCORD_WEBHOOK_URL_PRIVATE が設定されていません");
-  }
-
-  const browser = await chromium.launch({
-    headless: true
-  });
-
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
-  const history = loadHistory();
 
   try {
-    console.log("桜華樓チェック開始");
+    console.log("桜華樓 週送りテスト開始");
+    console.log(`基準日: ${japanDate()}`);
 
     await page.goto(process.env.ITS_KENPO_URL, {
       waitUntil: "domcontentloaded",
@@ -194,60 +198,24 @@ async function getAvailableSlots(page, room) {
 
     await page.waitForTimeout(2500);
 
-    const allAvailable = [];
+    const allResults = [];
 
     for (const room of ROOMS) {
-      const slots = await getAvailableSlots(page, room);
-      allAvailable.push(...slots);
+      const results = await checkRoom(page, room);
+      allResults.push(...results);
     }
 
-    console.log(`取得した空き: ${allAvailable.length}件`);
+    console.log("\n===== テスト結果 =====");
+    console.log(`確認した空き: ${allResults.length}件`);
 
-    const newSlots = allAvailable.filter(slot => {
-      const key = `${slot.room}|${slot.date}|20:00`;
-      return !history[key];
-    });
-
-    console.log(`新しく出た空き: ${newSlots.length}件`);
-
-    if (newSlots.length > 0) {
-      const lines = newSlots.map(slot => {
-        const weekday = [
-          "日", "月", "火", "水", "木", "金", "土"
-        ][
-          new Date(`${slot.date}T00:00:00+09:00`).getDay()
-        ];
-
-        return `・${slot.date}（${weekday}）20:00 / ${slot.room} / ${slot.status}`;
-      });
-
-      const message =
-        `【ITS健保 桜華樓 空き通知】\n` +
-        `平日20:00・個室の空きが出ました！\n` +
-        lines.join("\n");
-
-      await sendDiscord(message);
-
-      for (const slot of newSlots) {
-        const key = `${slot.room}|${slot.date}|20:00`;
-
-        history[key] = {
-          status: slot.status,
-          notifiedAt: new Date().toISOString()
-        };
-      }
-
-      fs.writeFileSync(
-        HISTORY_FILE,
-        JSON.stringify(history, null, 2)
+    for (const slot of allResults) {
+      console.log(
+        `${slot.date} / ${slot.room} / 20:00 / ${slot.status}`
       );
-
-      console.log("Discord通知成功・履歴保存完了");
-    } else {
-      console.log("新しい空きはありません");
     }
 
-    console.log("桜華樓チェック終了");
+    console.log("通知・履歴保存は行っていません");
+    console.log("桜華樓 週送りテスト終了");
 
   } catch (error) {
     console.error("桜華樓チェックエラー:", error);
