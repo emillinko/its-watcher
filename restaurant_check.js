@@ -5,6 +5,9 @@ const fs = require("fs");
 const START_URL =
   "https://as.its-kenpo.or.jp/apply/calendar?s=PT1RTzNnVFBrbG1KbFZuYzAxVFp5Vkhkd0YyWWZWR2JuOTJiblpTWjFKSGQ5a0hkdzFXWg%3D%3D&join_date=";
 
+// 通知に載せるカレンダーURL
+const CALENDAR_URL = START_URL;
+
 const ROOMS = [
   { name: "個室①", id: "879" },
   { name: "個室②", id: "880" },
@@ -77,7 +80,6 @@ async function sendDiscord(message) {
   console.log("Discord通知成功");
 }
 
-// 表示中の20時カレンダーだけを取得
 async function getVisibleCalendarDates(page) {
   return await page.locator(
     'td[data-join-time][data-use-time="20:00"]:visible'
@@ -89,7 +91,6 @@ async function getVisibleCalendarDates(page) {
   );
 }
 
-// 指定した個室の表示中の次週ボタンを取得
 async function getVisibleNextButton(page, roomId) {
   const selector =
     `input#nextWeek:visible[onclick*="toNextWeek(${roomId},"]`;
@@ -281,7 +282,6 @@ async function checkRoom(page, room) {
 
     const allAvailable = [];
 
-    // 5部屋すべてを確認
     for (const room of ROOMS) {
       const slots = await checkRoom(page, room);
       allAvailable.push(...slots);
@@ -302,17 +302,18 @@ async function checkRoom(page, room) {
       return;
     }
 
+    // 個室ごとの空き情報にカレンダーリンクを追加
     const lines = newSlots.map(slot =>
       `・${slot.date}（${weekdayJa(slot.date)}）` +
-      ` 20:00 / ${slot.room} / ${slot.status}`
+      ` 20:00 / ${slot.room} / ${slot.status}\n` +
+      `  [${slot.room}のカレンダーを開く](${CALENDAR_URL})`
     );
 
     const message =
       `【ITS健保 桜華樓 空き通知】\n` +
       `平日20:00・個室に新しい空きが出ました！\n\n` +
-      lines.join("\n");
+      lines.join("\n\n");
 
-    // Discord通知
     await sendDiscord(message);
 
     // 通知成功後に履歴を保存
