@@ -2,90 +2,57 @@
 const { chromium } = require("playwright");
 
 (async () => {
-  const browser = await chromium.launch({
-    headless: true
-  });
-
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
-  page.on("response", response => {
-    if (response.url().includes("its-kenpo.or.jp")) {
-      console.log(
-        "通信:",
-        response.status(),
-        response.url()
-      );
-    }
-  });
-
   try {
-    console.log("===== ITS健保入口 =====");
+    console.log("===== ITS健保入口へ接続 =====");
 
     await page.goto(process.env.ITS_KENPO_URL, {
       waitUntil: "domcontentloaded",
       timeout: 60000
     });
 
-    await page.waitForTimeout(2000);
-
-    console.log("入口タイトル:", await page.title());
-    console.log("入口URL:", page.url());
-
-    console.log("\n===== 入口リンク一覧 =====");
-
-    const links = await page.locator("a").evaluateAll(els =>
-      els.map(el => ({
-        text: el.innerText.trim(),
-        href: el.href
-      })).filter(x => x.text || x.href)
-    );
-
-    console.log(JSON.stringify(links, null, 2));
-
-    const alfaroLink = page.locator("a").filter({
-      hasText: "アル・ファーロ"
-    }).first();
-
-    if (!(await alfaroLink.count())) {
-      console.log("アルファーロのリンクが見つかりません");
-      return;
-    }
-
-    console.log("\n===== アルファーロへ移動 =====");
-
-    await alfaroLink.click();
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(3000);
 
     console.log("タイトル:", await page.title());
-    console.log("URL:", page.url());
 
-    console.log("\n===== 画面テキスト =====");
+    console.log("\n===== 画面全体のテキスト =====");
+    console.log(await page.locator("body").innerText());
 
-    const bodyText = await page.locator("body").innerText();
+    console.log("\n===== クリックできそうな要素 =====");
 
-    console.log(bodyText.slice(0, 10000));
-
-    console.log("\n===== カレンダー関連HTML =====");
-
-    const html = await page.locator("body").evaluate(el =>
-      el.innerHTML
-    );
-
-    console.log(
-      html.match(/<table[\s\S]*?<\/table>/gi)?.join("\n") ||
-      "tableが見つかりません"
-    );
-
-    console.log("\n===== ページ内リンク =====");
-
-    const afterLinks = await page.locator("a").evaluateAll(els =>
+    const elements = await page.locator(
+      "a, button, input, select, [onclick], [role='button'], [tabindex]"
+    ).evaluateAll(els =>
       els.map(el => ({
-        text: el.innerText.trim(),
-        href: el.href
+        tag: el.tagName,
+        text: (el.innerText || el.value || el.getAttribute("aria-label") || "").trim(),
+        onclick: el.getAttribute("onclick"),
+        href: el.getAttribute("href"),
+        type: el.getAttribute("type"),
+        html: el.outerHTML.slice(0, 1000)
       }))
     );
 
-    console.log(JSON.stringify(afterLinks, null, 2));
+    console.log(JSON.stringify(elements, null, 2));
+
+    console.log("\n===== アルファーロ関連の要素 =====");
+
+    const matches = await page.locator("body *").evaluateAll(els =>
+      els.filter(el => {
+        const text = (el.innerText || "").trim();
+        return text &&
+          text.length < 300 &&
+          /アル|ファーロ|レストラン|ディナー/i.test(text);
+      }).map(el => ({
+        tag: el.tagName,
+        text: (el.innerText || "").trim(),
+        html: el.outerHTML.slice(0, 1500)
+      }))
+    );
+
+    console.log(JSON.stringify(matches, null, 2));
 
   } catch (error) {
     console.error("デバッグエラー:", error);
