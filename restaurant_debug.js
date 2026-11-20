@@ -1,70 +1,73 @@
 
 const { chromium } = require("playwright");
 
-const ALFARO_URL =
+const URL =
   "https://as.its-kenpo.or.jp/apply/calendar2?a_s=876&s_c=11&join_date=2027/01/04";
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage({
-    viewport: { width: 1400, height: 1200 }
+  const page = await browser.newPage();
+
+  page.on("response", response => {
+    if (response.url().includes("its-kenpo.or.jp")) {
+      console.log("RESPONSE", response.status(), response.url());
+    }
+  });
+
+  page.on("requestfailed", request => {
+    console.log("REQUEST FAILED", request.url(),
+      request.failure()?.errorText);
+  });
+
+  page.on("console", msg => {
+    if (msg.type() === "error") {
+      console.log("BROWSER ERROR", msg.text());
+    }
   });
 
   try {
-    const baseUrl = process.env.ITS_KENPO_URL;
-
-    if (!baseUrl) {
-      throw new Error("ITS_KENPO_URL が設定されていません");
-    }
-
-    console.log("===== ホテルと同じ入口からアクセス =====");
-
-    await page.goto(baseUrl, {
+    await page.goto(process.env.ITS_KENPO_URL, {
       waitUntil: "domcontentloaded",
       timeout: 60000
     });
 
     await page.waitForTimeout(1500);
 
-    console.log("入口タイトル:", await page.title());
-    console.log("入口URL:", page.url());
-
-    console.log("\n===== アルファーロへ移動 =====");
-
-    await page.goto(ALFARO_URL, {
+    await page.goto(URL, {
       waitUntil: "domcontentloaded",
       timeout: 60000
     });
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(8000);
 
+    console.log("\n===== ページ情報 =====");
     console.log("タイトル:", await page.title());
     console.log("URL:", page.url());
+    console.log("HTML文字数:", (await page.content()).length);
 
-    const body = await page.locator("body").innerText()
-      .catch(() => "");
+    console.log("\n===== 本文 =====");
+    console.log((await page.locator("body").innerText()).slice(0, 3000));
 
-    console.log("本文先頭:", body.slice(0, 1500));
+    console.log("\n===== フレーム =====");
+    for (const frame of page.frames()) {
+      console.log("FRAME:", frame.url());
+      console.log("TITLE:", await frame.title().catch(() => ""));
+    }
 
-    console.log(
-      "Cloudflare表示:",
-      /Checking your browser|Verify you are human|人間であることを確認|Cloudflare/i.test(body)
-    );
+    console.log("\n===== Cookie =====");
+    const cookies = await page.context().cookies();
+    console.log(cookies.map(c => ({
+      name: c.name,
+      domain: c.domain
+    })));
 
-    console.log("\n===== テーブル =====");
+    console.log("\n===== HTML内のスクリプト =====");
+    console.log(await page.locator("script").evaluateAll(els =>
+      els.map(el => el.src || el.textContent.slice(0, 200))
+    ));
 
-    const rows = await page.locator("tr").evaluateAll(els =>
-      els.map(el => el.innerText.trim()).filter(Boolean)
-    );
-
-    console.log(JSON.stringify(rows, null, 2));
-
-    console.log("\n===== 20時の行 =====");
-    console.log(rows.find(row => row.includes("20:00")) || "20時の行なし");
-
-  } catch (error) {
-    console.error("確認エラー:", error.message);
-    process.exitCode = 1;
+  } catch (e) {
+    console.log("ERROR:", e.message);
   } finally {
     await browser.close();
   }
