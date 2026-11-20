@@ -1,66 +1,94 @@
 
 const { chromium } = require("playwright");
 
-const URL =
-  "https://as.its-kenpo.or.jp/apply/calendar?s=PT1RTzNnVFBrbG1KbFZuYzAxVFp5Vkhkd0YyWWZWR2JuOTJiblpTWjFKSGQ5a0hkdzFXWg%3D%3D&join_date=";
-
-const rooms = [
-  { name: "個室①", id: "879" },
-  { name: "個室②", id: "880" },
-  { name: "個室③", id: "881" },
-  { name: "個室④", id: "882" },
-  { name: "個室⑤", id: "883" }
-];
-
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true
+  });
+
   const page = await browser.newPage();
 
+  page.on("response", response => {
+    if (response.url().includes("its-kenpo.or.jp")) {
+      console.log(
+        "通信:",
+        response.status(),
+        response.url()
+      );
+    }
+  });
+
   try {
+    console.log("===== ITS健保入口 =====");
+
     await page.goto(process.env.ITS_KENPO_URL, {
       waitUntil: "domcontentloaded",
       timeout: 60000
     });
-    await page.waitForTimeout(1500);
 
-    await page.goto(URL, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000
-    });
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(2000);
 
-    for (const room of rooms) {
-      console.log(`\n===== 桜華樓 ${room.name} =====`);
+    console.log("入口タイトル:", await page.title());
+    console.log("入口URL:", page.url());
 
-      const tab = page.locator(`#link-${room.id}`);
-      await tab.click();
-      await page.waitForTimeout(2000);
+    console.log("\n===== 入口リンク一覧 =====");
 
-      console.log("URL:", page.url());
+    const links = await page.locator("a").evaluateAll(els =>
+      els.map(el => ({
+        text: el.innerText.trim(),
+        href: el.href
+      })).filter(x => x.text || x.href)
+    );
 
-      const rows = await page.locator("tr").evaluateAll(els =>
-        els.map(tr => ({
-          text: tr.innerText.trim(),
-          html: tr.outerHTML.slice(0, 1800)
-        })).filter(row => row.text.includes("20") || row.text.includes("時"))
-      );
+    console.log(JSON.stringify(links, null, 2));
 
-      console.log("20時関連の行:");
-      console.log(JSON.stringify(rows, null, 2));
+    const alfaroLink = page.locator("a").filter({
+      hasText: "アル・ファーロ"
+    }).first();
 
-      const cells = await page.locator("td[data-join-time]").evaluateAll(els =>
-        els.map(td => ({
-          text: td.innerText.trim(),
-          id: td.id,
-          joinTime: td.getAttribute("data-join-time"),
-          html: td.outerHTML.slice(0, 800)
-        }))
-      );
-
-      console.log("data-join-timeセル:", JSON.stringify(cells, null, 2));
+    if (!(await alfaroLink.count())) {
+      console.log("アルファーロのリンクが見つかりません");
+      return;
     }
-  } catch (e) {
-    console.log("ERROR:", e.message);
+
+    console.log("\n===== アルファーロへ移動 =====");
+
+    await alfaroLink.click();
+    await page.waitForTimeout(4000);
+
+    console.log("タイトル:", await page.title());
+    console.log("URL:", page.url());
+
+    console.log("\n===== 画面テキスト =====");
+
+    const bodyText = await page.locator("body").innerText();
+
+    console.log(bodyText.slice(0, 10000));
+
+    console.log("\n===== カレンダー関連HTML =====");
+
+    const html = await page.locator("body").evaluate(el =>
+      el.innerHTML
+    );
+
+    console.log(
+      html.match(/<table[\s\S]*?<\/table>/gi)?.join("\n") ||
+      "tableが見つかりません"
+    );
+
+    console.log("\n===== ページ内リンク =====");
+
+    const afterLinks = await page.locator("a").evaluateAll(els =>
+      els.map(el => ({
+        text: el.innerText.trim(),
+        href: el.href
+      }))
+    );
+
+    console.log(JSON.stringify(afterLinks, null, 2));
+
+  } catch (error) {
+    console.error("デバッグエラー:", error);
   } finally {
     await browser.close();
   }
