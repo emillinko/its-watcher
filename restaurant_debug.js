@@ -8,45 +8,58 @@ const START_URL =
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
-  page.on("response", response => {
-    if (response.url().includes("its-kenpo.or.jp")) {
-      console.log("通信:", response.status(), response.url());
-    }
-  });
-
   try {
-    console.log("===== アルファーロ直接アクセス =====");
-
     await page.goto(START_URL, {
       waitUntil: "domcontentloaded",
       timeout: 60000
     });
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(2000);
 
-    console.log("タイトル:", await page.title());
-    console.log("URL:", page.url());
+    console.log("===== カレンダー操作ボタン =====");
 
-    console.log("\n===== 画面テキスト =====");
-    console.log((await page.locator("body").innerText()).slice(0, 10000));
-
-    console.log("\n===== カレンダーHTML =====");
-    const tables = await page.locator("table").evaluateAll(els =>
-      els.map(el => el.outerHTML)
+    const controls = await page.locator(
+      "a, button, input, [onclick]"
+    ).evaluateAll(els =>
+      els.map(el => ({
+        tag: el.tagName,
+        text: (el.innerText || el.value || "").trim(),
+        onclick: el.getAttribute("onclick"),
+        href: el.getAttribute("href"),
+        html: el.outerHTML
+      }))
     );
-    console.log(JSON.stringify(tables, null, 2));
 
-    console.log("\n===== 20:00の要素 =====");
-    const targets = await page.locator("body *").evaluateAll(els =>
-      els.filter(el =>
-        el.children.length === 0 &&
-        (el.innerText || "").trim().includes("20:00")
-      ).map(el => el.outerHTML)
+    console.log(JSON.stringify(controls, null, 2));
+
+    console.log("\n===== 週送り関連HTML =====");
+
+    const html = await page.locator("body").evaluate(el => el.innerHTML);
+
+    const lines = html.split("\n").filter(line =>
+      /next|prev|week|join_date|次週|翌週|前週|カレンダー/i.test(line)
     );
-    console.log(JSON.stringify(targets, null, 2));
+
+    console.log(lines.join("\n"));
+
+    console.log("\n===== 1週間後のURLを確認 =====");
+
+    const nextUrl = new URL(START_URL);
+    nextUrl.searchParams.set("join_date", "2027-01-11");
+
+    await page.goto(nextUrl.toString(), {
+      waitUntil: "domcontentloaded",
+      timeout: 60000
+    });
+
+    await page.waitForTimeout(2000);
+
+    console.log("移動後URL:", page.url());
+    console.log("移動後テキスト:");
+    console.log((await page.locator("body").innerText()).slice(0, 3000));
 
   } catch (error) {
-    console.error("デバッグエラー:", error);
+    console.error("エラー:", error);
   } finally {
     await browser.close();
   }
