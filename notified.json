@@ -163,10 +163,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト那須|2026-12-01": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト那須|2026-11-30": {
     "status": "△",
     "channel": "normal"
@@ -176,6 +172,10 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-12-20": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-12-04": {
     "status": "△",
     "channel": "normal"
   }
