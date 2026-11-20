@@ -16,50 +16,45 @@ const { chromium } = require("playwright");
 
     await page.waitForTimeout(1500);
 
-    console.log("===== ページタイトル =====");
-    console.log(await page.title());
+    console.log("===== 桜華樓 個室切り替えテスト =====");
 
-    console.log("===== 現在のURL =====");
-    console.log(page.url());
+    for (let i = 1; i <= 5; i++) {
+      const roomName = `桜華樓(ディナー・個室${["①", "②", "③", "④", "⑤"][i - 1]})`;
 
-    console.log("===== 個室切り替えリンク =====");
+      console.log(`\n===== ${roomName} =====`);
 
-    const links = await page.locator("a").evaluateAll(els =>
-      els.map(a => ({
-        text: a.innerText.trim(),
-        href: a.href
-      })).filter(x =>
-        x.text.includes("桜華樓") ||
-        x.text.includes("個室")
-      )
-    );
+      const link = page.locator("a").filter({
+        hasText: roomName
+      }).first();
 
-    console.log(JSON.stringify(links, null, 2));
+      if (await link.count() === 0) {
+        console.log("切り替えリンクが見つかりません");
+        continue;
+      }
 
-    console.log("===== カレンダーの行 =====");
+      await link.click();
+      await page.waitForTimeout(1000);
 
-    const rows = await page.locator("tr").evaluateAll(els =>
-      els.map(tr => tr.innerText.trim()).filter(Boolean)
-    );
+      const rows = await page.locator("tr").evaluateAll(els =>
+        els.map(tr => tr.innerText.trim()).filter(Boolean)
+      );
 
-    console.log(JSON.stringify(rows, null, 2));
+      console.log("現在のURL:", page.url());
 
-    console.log("===== 入力・ボタン =====");
+      const dateRow = rows.find(row => row.includes("日付"));
+      const dayRow = rows.find(row => row.includes("曜日"));
+      const timeRow = rows.find(row => row.includes("20:00"));
 
-    const controls = await page.locator(
-      "input, select, button"
-    ).evaluateAll(els =>
-      els.map(el => ({
-        tag: el.tagName,
-        type: el.getAttribute("type"),
-        value: el.value || "",
-        text: el.innerText || "",
-        name: el.getAttribute("name"),
-        className: el.className
-      }))
-    );
+      console.log("日付:", dateRow || "取得できず");
+      console.log("曜日:", dayRow || "取得できず");
+      console.log("20時:", timeRow || "取得できず");
 
-    console.log(JSON.stringify(controls, null, 2));
+      if (timeRow) {
+        console.log("判定:", /○|△/.test(timeRow) ? "空きあり" : "空きなし");
+      }
+    }
+
+    console.log("\n===== 個室テスト終了 =====");
 
   } catch (error) {
     console.error("確認エラー:", error);
