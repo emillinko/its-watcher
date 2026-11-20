@@ -222,18 +222,16 @@ async function sendDiscord(messages) {
       const oldDate = firstDate;
 
       await nextButton.click();
-
       await page.waitForFunction(
         old => {
           const cell = document.querySelector(
-            `td[data-use-time="${TARGET_TIME}"][data-join-time]`
+            'td[data-use-time="20:00"][data-join-time]'
           );
           return cell && cell.getAttribute("data-join-time") !== old;
         },
         oldDate,
         { timeout: 15000 }
       );
-    }
 
     if (weekCount >= 16) {
       throw new Error("週送り上限に達しました。確認が完了していません");
