@@ -219,3 +219,14 @@ jobs:
 
           echo "通知履歴の保存に3回失敗しました"
           exit 1
+
+      # ==========================================
+      # アルファーロ空きチェック
+      # ==========================================
+      - name: Run Alfaro restaurant check
+        run: node alfaro_check.js
+        env:
+          DISCORD_WEBHOOK_URL_PRIVATE: ${{ secrets.DISCORD_WEBHOOK_URL_PRIVATE }}
+          
+
+
