@@ -8,9 +8,9 @@ const BASE_URL =
 const HISTORY_FILE = "alfaro_notified.json";
 const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL_PRIVATE;
 
-const FACILITY_ID = 876;
 const TARGET_TIME = "20:00";
 const CHECK_DAYS = 90;
+const MAX_WEEKS = 16;
 
 function jstDateString(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -74,7 +74,6 @@ async function sendDiscord(messages) {
     throw new Error("DISCORD_WEBHOOK_URL_PRIVATE が設定されていません");
   }
 
-  // Discordの文字数制限を考慮して分割送信
   const chunks = [];
   let current = "**🍽️ アル・ファーロ（ディナー）新規空き情報**\n";
 
@@ -83,6 +82,7 @@ async function sendDiscord(messages) {
       chunks.push(current);
       current = "**🍽️ アル・ファーロ（ディナー）新規空き情報（続き）**\n";
     }
+
     current += message + "\n";
   }
 
@@ -146,8 +146,9 @@ async function sendDiscord(messages) {
 
     let previousFirstDate = "";
     let weekCount = 0;
+    let completed = false;
 
-    while (weekCount < 16) {
+    while (weekCount < MAX_WEEKS) {
       weekCount++;
 
       const cells = await page.locator(
@@ -179,14 +180,20 @@ async function sendDiscord(messages) {
       console.log(`\n===== 第${weekCount}週 =====`);
       console.log("週開始日:", firstDate);
 
+      const dates = cells
+        .map(cell => cell.date)
+        .filter(Boolean);
+
+      const lastDate = dates.sort().at(-1);
+
       for (const cell of cells) {
         if (!cell.date || cell.time !== TARGET_TIME) continue;
 
-        // 今日より前、90日より先は対象外
         if (cell.date < today || cell.date > endDate) continue;
 
-        // 土日を除外
         const weekday = getWeekday(cell.date);
+
+        // 土日を除外
         if (weekday === "土" || weekday === "日") continue;
 
         console.log(
@@ -210,8 +217,15 @@ async function sendDiscord(messages) {
         }
       }
 
-      // 90日先まで確認したら終了
-      if (firstDate > endDate) break;
+      // カレンダーの最終日が確認期限に達したら終了
+      if (lastDate && lastDate >= endDate) {
+        completed = true;
+        break;
+      }
+
+      if (weekCount >= MAX_WEEKS) {
+        break;
+      }
 
       const nextButton = page.locator("#nextWeek");
 
@@ -222,19 +236,24 @@ async function sendDiscord(messages) {
       const oldDate = firstDate;
 
       await nextButton.click();
+
       await page.waitForFunction(
         old => {
           const cell = document.querySelector(
             'td[data-use-time="20:00"][data-join-time]'
           );
+
           return cell && cell.getAttribute("data-join-time") !== old;
         },
         oldDate,
         { timeout: 15000 }
       );
 
-    if (weekCount >= 16) {
-      throw new Error("週送り上限に達しました。確認が完了していません");
+      await page.waitForTimeout(500);
+    }
+
+    if (!completed) {
+      throw new Error("週送り上限に達しました。90日分の確認が完了していません");
     }
 
     console.log("\n===== チェック結果 =====");
@@ -252,11 +271,12 @@ async function sendDiscord(messages) {
     );
 
     console.log("\n===== Discord通知 =====");
+
     await sendDiscord(messages);
 
     console.log("Discord通知成功！");
 
-    // 通知成功後に履歴を保存
+    // Discord通知成功後に履歴を保存
     for (const slot of newSlots) {
       notifiedSet.add(slot.key);
     }
