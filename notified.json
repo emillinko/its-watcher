@@ -143,10 +143,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2026-12-08": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ゆふいん山水館|2026-12-08": {
     "status": "△",
     "channel": "normal"
@@ -164,6 +160,10 @@
     "channel": "normal"
   },
   "ホテルハーヴェスト那須|2026-12-03": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-12-08": {
     "status": "△",
     "channel": "normal"
   }
