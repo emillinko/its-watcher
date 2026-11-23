@@ -55,10 +55,6 @@
     "status": "○",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-11-27": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-12-10": {
     "status": "△",
     "channel": "normal"
@@ -72,10 +68,6 @@
     "channel": "normal"
   },
   "ブルーベリーヒル勝浦|2026-12-04": {
-    "status": "○",
-    "channel": "normal"
-  },
-  "ホテルハーヴェスト南紀田辺|2026-12-03": {
     "status": "○",
     "channel": "normal"
   },
@@ -127,10 +119,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "鳴子温泉　湯元　吉祥|2026-12-03": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-12-11": {
     "status": "△",
     "channel": "normal"
@@ -139,7 +127,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "リソルの森|2026-12-03": {
+  "トスラブ館山ルアーナ|2026-12-03": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "トスラブ箱根和奏林|2026-12-03": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "日光千姫物語|2026-12-15": {
     "status": "△",
     "channel": "normal"
   }
