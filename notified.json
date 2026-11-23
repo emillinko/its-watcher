@@ -151,8 +151,20 @@
     "status": "△",
     "channel": "normal"
   },
-  "ラビスタ富士河口湖|2026-12-04": {
+  "トスラブ館山ルアーナ|2026-12-03": {
     "status": "△",
-    "channel": "private"
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-12-09": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル日航プリンセス京都|2026-12-11": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "リソルの森|2026-12-03": {
+    "status": "△",
+    "channel": "normal"
   }
 }
