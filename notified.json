@@ -59,10 +59,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ブルーベリーヒル勝浦|2026-11-29": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-12-06": {
     "status": "△",
     "channel": "normal"
@@ -132,6 +128,10 @@
     "channel": "normal"
   },
   "トスラブ館山ルアーナ|2026-12-03": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-12-05": {
     "status": "△",
     "channel": "normal"
   }
