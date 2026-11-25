@@ -302,21 +302,21 @@ async function checkRoom(page, room) {
       return;
     }
 
-    // 個室ごとの空き情報にカレンダーリンクを追加
     // アル・ファーロと統一した通知形式
+    // 📅マークに日付指定のカレンダーURLを設定
     const lines = newSlots.map(slot => {
       const calendarUrl = `${CALENDAR_URL}${slot.date}`;
       const date = slot.date.replace(/-/g, "/");
-  
+
       return (
         `**桜華樓（${slot.room}）新規空き情報** ` +
         `[📅](${calendarUrl}) ` +
         `${date}（${weekdayJa(slot.date)}）20:00〜 ${slot.status}`
       );
     });
-  
+
     const message = lines.join("\n\n");
-  
+
     await sendDiscord(message);
 
     // 通知成功後に履歴を保存
