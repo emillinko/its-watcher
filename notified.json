@@ -131,15 +131,19 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ館山ルアーナ|2026-12-03": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト伊東|2026-12-07": {
     "status": "△",
     "channel": "normal"
   },
   "ホテルハーヴェスト浜名湖|2026-12-09": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2026-12-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "鳴子温泉　湯元　吉祥|2026-12-05": {
     "status": "△",
     "channel": "normal"
   }
