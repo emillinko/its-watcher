@@ -303,17 +303,20 @@ async function checkRoom(page, room) {
     }
 
     // 個室ごとの空き情報にカレンダーリンクを追加
-    const lines = newSlots.map(slot =>
-      `・${slot.date}（${weekdayJa(slot.date)}）` +
-      ` 20:00 / ${slot.room} / ${slot.status}\n` +
-      `  [${slot.room}のカレンダーを開く](${CALENDAR_URL})`
-    );
-
-    const message =
-      `【ITS健保 桜華樓 空き通知】\n` +
-      `平日20:00・個室に新しい空きが出ました！\n\n` +
-      lines.join("\n\n");
-
+    // アル・ファーロと統一した通知形式
+    const lines = newSlots.map(slot => {
+      const calendarUrl = `${CALENDAR_URL}${slot.date}`;
+      const date = slot.date.replace(/-/g, "/");
+  
+      return (
+        `**桜華樓（${slot.room}）新規空き情報** ` +
+        `[📅](${calendarUrl}) ` +
+        `${date}（${weekdayJa(slot.date)}）20:00〜 ${slot.status}`
+      );
+    });
+  
+    const message = lines.join("\n\n");
+  
     await sendDiscord(message);
 
     // 通知成功後に履歴を保存
