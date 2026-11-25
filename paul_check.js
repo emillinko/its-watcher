@@ -342,6 +342,7 @@ async function sendDiscord(slots) {
       }
 
       const slots = result.data.data.slots;
+      console.log("  取得した日付一覧: " + Object.keys(slots).join(", "));
 
       console.log(
         "  返却日: " +
