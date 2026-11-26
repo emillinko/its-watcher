@@ -303,15 +303,14 @@ async function checkRoom(page, room) {
     }
 
     // アル・ファーロと統一した通知形式
-    // 📅マークに日付指定のカレンダーURLを設定
+    // 部屋ごとの日付指定カレンダーリンク付き
     const lines = newSlots.map(slot => {
       const calendarUrl = `${CALENDAR_URL}${slot.date}`;
       const date = slot.date.replace(/-/g, "/");
 
       return (
-        `**桜華樓（${slot.room}）新規空き情報** ` +
-        `[📅](${calendarUrl}) ` +
-        `${date}（${weekdayJa(slot.date)}）20:00〜 ${slot.status}`
+        `**桜華樓（${slot.room}）新規空き情報** 📅 ${date}（${weekdayJa(slot.date)}）20:00〜 ${slot.status}\n` +
+        `[${slot.room}のカレンダーを開く](${calendarUrl})`
       );
     });
 
