@@ -279,10 +279,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ箱根ビオーレ|2026-12-07": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテルハーヴェスト斑尾|2027-01-13": {
     "status": "△",
     "channel": "normal"
@@ -291,15 +287,15 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト伊東|2027-01-13": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテル日航プリンセス京都|2027-01-14": {
     "status": "△",
     "channel": "normal"
   },
   "ホテルハーヴェスト浜名湖|2026-12-07": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ラビスタ富士河口湖|2026-12-07": {
     "status": "△",
     "channel": "normal"
   }
