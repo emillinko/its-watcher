@@ -143,10 +143,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "草津温泉　ホテルヴィレッジ|2026-12-15": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ブルーベリーヒル勝浦|2026-12-18": {
     "status": "△",
     "channel": "normal"
@@ -168,6 +164,14 @@
     "channel": "normal"
   },
   "ホテル日航プリンセス京都|2026-12-16": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル琵琶レイクオーツカ|2026-12-09": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテル琵琶レイクオーツカ|2026-12-10": {
     "status": "△",
     "channel": "normal"
   }
