@@ -135,10 +135,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "トスラブ箱根ビオーレ|2026-12-08": {
-    "status": "△",
-    "channel": "normal"
-  },
   "草津温泉　ホテルヴィレッジ|2026-12-15": {
     "status": "△",
     "channel": "normal"
@@ -160,6 +156,10 @@
     "channel": "normal"
   },
   "鳴子温泉　湯元　吉祥|2026-12-09": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト浜名湖|2026-12-10": {
     "status": "△",
     "channel": "normal"
   }
