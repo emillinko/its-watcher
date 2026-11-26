@@ -95,10 +95,6 @@
     "status": "△",
     "channel": "normal"
   },
-  "ホテルハーヴェスト浜名湖|2026-12-07": {
-    "status": "△",
-    "channel": "normal"
-  },
   "ホテル琵琶レイクオーツカ|2026-12-07": {
     "status": "△",
     "channel": "normal"
@@ -109,6 +105,170 @@
   },
   "ホテル琵琶レイクオーツカ|2026-12-09": {
     "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2027-01-13": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2027-01-14": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2027-01-19": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト斑尾|2027-01-26": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-05": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-06": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-07": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-08": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-11": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-12": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-13": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-14": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-15": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-17": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-18": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-19": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-20": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-21": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-22": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-24": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-25": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-26": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-27": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-28": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-29": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ブルーベリーヒル勝浦|2027-01-31": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2026-12-18": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-05": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-06": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-07": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-11": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-12": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-13": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-14": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-17": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-24": {
+    "status": "△",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-25": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-26": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-27": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-28": {
+    "status": "○",
+    "channel": "normal"
+  },
+  "ホテルハーヴェスト南紀田辺|2027-01-31": {
+    "status": "○",
     "channel": "normal"
   }
 }
